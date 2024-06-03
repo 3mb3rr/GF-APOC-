@@ -19,7 +19,9 @@ import org.firstinspires.ftc.teamcode.common.pathing.util.CustomPIDFCoefficients
  */
 @Config
 public class robotConstants {
-
+    public static boolean IS_AUTO = true;
+    public static boolean IS_RED = true;
+    public static boolean IS_DROP = true;
     //intake constants
     public static double currentLimit = 0;
     public static double velocityLimit = 0;

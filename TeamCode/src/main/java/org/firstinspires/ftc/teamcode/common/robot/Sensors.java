@@ -9,9 +9,9 @@ public class Sensors {
     public static enum SensorType {
         SLIDE_ENCODER_LEFT,
         SLIDE_ENCODER_RIGHT,
-        POD_LEFT,
-        POD_FRONT,
-        POD_RIGHT,
+        POD_PAR0,
+        POD_PAR1,
+        POD_PERP,
         INTAKE_CURRENT,
         INTAKE_VELOCITY,
         LEFT_DISTANCE,

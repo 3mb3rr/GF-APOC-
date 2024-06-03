@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.common.pathing.follower.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
@@ -28,6 +29,16 @@ public class Drawing {
      * @param follower
      */
     public static void drawDebug(Follower follower) {
+        if (follower.getCurrentPath() != null) {
+            drawPath(follower.getCurrentPath(), "#3F51B5");
+            Point closestPoint = follower.getPointFromPath(follower.getCurrentPath().getClosestPointTValue());
+            drawRobot(new Pose(closestPoint.getX(), closestPoint.getY(), follower.getCurrentPath().getHeadingGoal(follower.getCurrentPath().getClosestPointTValue())), "#3F51B5");
+        }
+        drawPoseHistory(follower.getDashboardPoseTracker(), "#4CAF50");
+        drawRobot(follower.getPose(), "#4CAF50");
+        sendPacket();
+    }
+    public static void drawDebug(followerSubsystem follower) {
         if (follower.getCurrentPath() != null) {
             drawPath(follower.getCurrentPath(), "#3F51B5");
             Point closestPoint = follower.getPointFromPath(follower.getCurrentPath().getClosestPointTValue());

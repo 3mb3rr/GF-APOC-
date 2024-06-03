@@ -46,11 +46,10 @@ public class PoseUpdater {
     /**
      * Creates a new PoseUpdater from a HardwareMap and a Localizer.
      *
-     * @param hardwareMap the HardwareMap
+     * @param
      * @param localizer the Localizer
      */
-    public PoseUpdater(HardwareMap hardwareMap, Localizer localizer) {
-        this.hardwareMap = hardwareMap;
+    public PoseUpdater(Localizer localizer) {
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -66,7 +65,7 @@ public class PoseUpdater {
      */
     public PoseUpdater(HardwareMap hardwareMap) {
         // TODO: replace the second argument with your preferred localizer
-        this(hardwareMap, new FusionLocalizer(hardwareMap));
+        this(new FusionLocalizer(hardwareMap));
     }
 
     /**
@@ -83,6 +82,9 @@ public class PoseUpdater {
         previousPoseTime = currentPoseTime;
         currentPoseTime = System.nanoTime();
         localizer.update();
+    }
+    public void periodic(){
+        update();
     }
 
     /**

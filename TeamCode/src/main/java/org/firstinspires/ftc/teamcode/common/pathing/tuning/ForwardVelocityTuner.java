@@ -37,6 +37,9 @@ import java.util.List;
 @Config
 @Autonomous (name = "Forward Velocity Tuner", group = "Autonomous Pathing Tuning")
 public class ForwardVelocityTuner extends OpMode {
+
+
+
     private ArrayList<Double> velocities = new ArrayList<>();
 
     private DcMotorEx leftFront;
@@ -58,6 +61,7 @@ public class ForwardVelocityTuner extends OpMode {
      * This initializes the drive motors as well as the cache of velocities and the FTC Dashboard
      * telemetry.
      */
+
     @Override
     public void init() {
         poseUpdater = new PoseUpdater(hardwareMap);

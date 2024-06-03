@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.common.pathing.localization;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotConstants;
+import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.Time;
@@ -45,6 +48,7 @@ import com.acmerobotics.roadrunner.Pose2d;
  */
 @Config
 public class FusionLocalizer extends Localizer {
+    private final robotHardware robot = robotHardware.getInstance();
     public static class Params {
         public double par0YTicks = robotConstants.par0YTicks; // y position of the first parallel encoder (in tick units)
         public double par1YTicks = robotConstants.par1YTicks; // y position of the second parallel encoder (in tick units)
@@ -53,7 +57,7 @@ public class FusionLocalizer extends Localizer {
 
     public static Params PARAMS = new Params();
 
-    public final Encoder par0, par1, perp;
+
 
     public final double inPerTick;
     private Pose2d pose;
@@ -71,23 +75,16 @@ public class FusionLocalizer extends Localizer {
      * @param map the HardwareMap
      */
     public FusionLocalizer(HardwareMap map) {
-        this(map, new Pose());
+        this(new Pose());
     }
 
     /**
      * This creates a new ThreeWheelLocalizer from a HardwareMap and a Pose, with the Pose
      * specifying the starting pose of the localizer.
      *
-     * @param map the HardwareMap
      * @param setStartPose the Pose to start from
      */
-    public FusionLocalizer(HardwareMap map, Pose setStartPose) {
-        par0 = new OverflowEncoder(new RawEncoder(map.get(DcMotorEx.class, "par0")));
-        par1 = new OverflowEncoder(new RawEncoder(map.get(DcMotorEx.class, "par1")));
-        perp = new OverflowEncoder(new RawEncoder(map.get(DcMotorEx.class, "perp")));
-
-        // TODO: reverse encoder directions if needed
-        //   par0.setDirection(DcMotorSimple.Direction.REVERSE);
+    public FusionLocalizer(Pose setStartPose) {
 
         inPerTick = robotConstants.inPerTick; //(Placeholder value)
         setStartPose(setStartPose);
@@ -151,11 +148,12 @@ public class FusionLocalizer extends Localizer {
      * change position of the Encoders. Then, the robot's global change in position is calculated
      * using the pose exponential method.
      */
+
     @Override
     public void update() {
-        PositionVelocityPair par0PosVel = par0.getPositionAndVelocity();
-        PositionVelocityPair par1PosVel = par1.getPositionAndVelocity();
-        PositionVelocityPair perpPosVel = perp.getPositionAndVelocity();
+        PositionVelocityPair par0PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR0);
+        PositionVelocityPair par1PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR1);
+        PositionVelocityPair perpPosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PERP);
 
 
 
