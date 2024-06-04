@@ -7,8 +7,8 @@ import java.util.HashMap;
 
 public class Sensors {
     public static enum SensorType {
-        SLIDE_ENCODER_LEFT,
-        SLIDE_ENCODER_RIGHT,
+        SLIDE_ENCODER,
+        SLIDE_LIMIT,
         POD_PAR0,
         POD_PAR1,
         POD_PERP,

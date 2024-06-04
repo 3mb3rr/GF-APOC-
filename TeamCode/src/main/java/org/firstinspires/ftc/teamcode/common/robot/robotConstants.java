@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDController;
 
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
@@ -22,6 +23,11 @@ public class robotConstants {
     public static boolean IS_AUTO = true;
     public static boolean IS_RED = true;
     public static boolean IS_DROP = true;
+
+    // Slide constants
+    public static PIDController slideController = new PIDController(0.015, 0, 0.005);
+    public static double slideFF = 0.03;
+
     //intake constants
     public static double currentLimit = 0;
     public static double velocityLimit = 0;

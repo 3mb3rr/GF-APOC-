@@ -22,6 +22,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
@@ -41,6 +43,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.follower.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
+import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -63,14 +66,16 @@ public class robotHardware {
     private static robotHardware instance = null;
     private boolean enabled;
 
+    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll;
     public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
     public Encoder par0, par1, perp, leftSlideEnc, rightSlideEnc;
     public AnalogDistanceSensor USLeft, USRight, USBack;
-    private List<DcMotorEx> motors;
-    public DcMotorEx intakeRoller;
+    private List<DcMotorEx> driveMotors;
+    public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
     public JActuator leftSlide;
     public JActuator rightSlide;
+    public LimitSwitch leftLimit, rightLimit;
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -123,17 +128,36 @@ public class robotHardware {
         USLeft = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USLeft"));
         USRight = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USRight"));
         USBack = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USBack"));
+
+        leftLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseLeft"));
+        rightLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseRight"));
+
         leftColorSensor = hardwareMap.get(RevColorSensorV3.class, "csLeft");
         rightColorSensor = hardwareMap.get(RevColorSensorV3.class, "csRight");
+
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-
+        leftSlideMotor = hardwareMap.get(DcMotorEx.class, "slideLeft");
+        rightSlideMotor = hardwareMap.get(DcMotorEx.class, "slideRight");
         intakeRoller = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+        leftSlide = new JActuator(
+                () -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), () -> boolSubscriber(Sensors.SensorType.SLIDE_LIMIT), leftSlideMotor);
+        leftSlide.setPIDController(robotConstants.slideController);
+        leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
+        leftSlide.setErrorTolerance(5);
+        rightSlide = new JActuator(
+                () -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), () -> boolSubscriber(Sensors.SensorType.SLIDE_LIMIT), leftSlideMotor);
+        leftSlide.setPIDController(robotConstants.slideController);
+        leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
+        leftSlide.setErrorTolerance(5);
+
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -144,21 +168,25 @@ public class robotHardware {
         // TODO: reverse encoder directions if needed
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        motors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
+        driveMotors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
 
-        for (DcMotorEx motor : motors) {
+        // TODO: set motor modes
+        for (DcMotorEx motor : driveMotors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
         }
 
-        for (DcMotorEx motor : motors) {
+        for (DcMotorEx motor : driveMotors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
+        intakeRoller.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
-        values.put(Sensors.SensorType.SLIDE_ENCODER_LEFT, 0);
-        values.put(Sensors.SensorType.SLIDE_ENCODER_RIGHT, 0.0);
+        values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
+        values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
         values.put(Sensors.SensorType.POD_PAR0, par0.getPositionAndVelocity());
         values.put(Sensors.SensorType.POD_PAR1, par1.getPositionAndVelocity());
         values.put(Sensors.SensorType.POD_PERP, perp.getPositionAndVelocity());
@@ -201,18 +229,18 @@ public class robotHardware {
         follower.write();
     }
     public void read() {
-        values.put(Sensors.SensorType.SLIDE_ENCODER_LEFT, 0);
-        values.put(Sensors.SensorType.SLIDE_ENCODER_RIGHT, 0.0);
-        values.put(Sensors.SensorType.POD_PAR0, new PositionVelocityPair(0, 0, 0, 0));
-        values.put(Sensors.SensorType.POD_PAR1, new PositionVelocityPair(0, 0, 0, 0));
-        values.put(Sensors.SensorType.POD_PERP, new PositionVelocityPair(0, 0, 0, 0));
+        values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
+        values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
+        values.put(Sensors.SensorType.POD_PAR0, par0.getPositionAndVelocity());
+        values.put(Sensors.SensorType.POD_PAR1, par1.getPositionAndVelocity());
+        values.put(Sensors.SensorType.POD_PERP, perp.getPositionAndVelocity());
         values.put(Sensors.SensorType.INTAKE_VELOCITY, Math.abs(intakeRoller.getVelocity()));
         values.put(Sensors.SensorType.LEFT_DISTANCE, USLeft.getDistance());
         values.put(Sensors.SensorType.RIGHT_DISTANCE, USRight.getDistance());
         values.put(Sensors.SensorType.BACK_DISTANCE, USBack.getDistance());
+        values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
-        values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.getCurrent(CurrentUnit.AMPS));
         values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
     }
 
@@ -235,8 +263,8 @@ public class robotHardware {
     }
 
     public void setDrivetrainPowers(double[] powers){
-        for (int i = 0; i < motors.size(); i++) {
-            motors.get(i).setPower(powers[i]);
+        for (int i = 0; i < driveMotors.size(); i++) {
+            driveMotors.get(i).setPower(powers[i]);
         }
     }
         public double doubleSubscriber(Sensors.SensorType topic) {
