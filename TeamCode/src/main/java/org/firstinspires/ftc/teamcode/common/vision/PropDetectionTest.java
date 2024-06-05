@@ -50,7 +50,7 @@ public class PropDetectionTest extends LinearOpMode
     public void runOpMode() {
         FtcDashboard.getInstance().startCameraStream(visionPortal, 0);
         pipeline = new PropDetectionPipeline(0.3, 0.7, 0.65, PropDetectionPipeline.colour.red);
-
+        startCamera();
 
         telemetry.setMsTransmissionInterval(50);
         //Hardware Mapping HERE etc.
