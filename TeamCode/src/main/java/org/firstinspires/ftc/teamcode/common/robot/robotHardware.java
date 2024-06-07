@@ -2,46 +2,37 @@ package org.firstinspires.ftc.teamcode.common.robot;
 
 import android.util.Size;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.arcrobotics.ftclib.command.Subsystem;
-import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.outoftheboxrobotics.photoncore.Photon;
+
+import com.outoftheboxrobotics.photoncore.hardware.PhotonLynxVoltageSensor;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.AnalogSensor;
-import com.qualcomm.robotcore.hardware.CRServoImplEx;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DigitalChannelImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.common.pathing.follower.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
+import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.droneSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
@@ -49,6 +40,9 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
+import com.outoftheboxrobotics.photoncore.BuildConfig;
+import com.outoftheboxrobotics.photoncore.PeriodicSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,20 +50,19 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.concurrent.GuardedBy;
 
-
+@Photon
 public class robotHardware {
 
     // FINISH THE PERiODIC SUPPLIER CODE FOR CURRENT SENSORS AND CONTROL HUB BaTTERY WITH PHOTONCORE FIX THE ERROR
-
 
     private HardwareMap hardwareMap;
     private static robotHardware instance = null;
     private boolean enabled;
 
-    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll;
+    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
     public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
-    public Encoder par0, par1, perp, leftSlideEnc, rightSlideEnc;
+    public Encoder par0, par1, perp;
     public AnalogDistanceSensor USLeft, USRight, USBack;
     private List<DcMotorEx> driveMotors;
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
@@ -82,16 +75,17 @@ public class robotHardware {
 
     private ArrayList<Subsystem> subsystems;
 
-//    public intakeSubsystem intake;
-//    public depositSubsystem extension;
+    public intakeSubsystem intake;
+    public depositSubsystem deposit;
     public followerSubsystem follower;
+    public droneSubsystem drone;
 
 //    public PreloadDetectionPipeline preloadDetectionPipeline;
     public PropDetectionPipeline propDetectionPipeline;
     public List<LynxModule> modules;
     public LynxModule CONTROL_HUB;
 
-    VoltageSensor battery;
+    public PhotonLynxVoltageSensor battery;
 
     private final Object imuLock = new Object();
     @GuardedBy("imuLock")
@@ -106,9 +100,6 @@ public class robotHardware {
     private double startTime;
     public HashMap<Sensors.SensorType, Object> values;
 
-
-
-    // TODO: FINISH THE PERiODIC SUPPLIER CODE FOR CURRENT SENSORS AND CONTROL HUB BaTTERY WITH PHOTONCORE FIX THE ERROR
     public static robotHardware getInstance() {
         if (instance == null) {
             instance = new robotHardware();
@@ -123,7 +114,7 @@ public class robotHardware {
         this.hardwareMap = hardwareMap;
         this.values = new HashMap<>();
 
-        battery = hardwareMap.voltageSensor.get("Control Hub");
+        battery = hardwareMap.getAll(PhotonLynxVoltageSensor.class).iterator().next();
 
         USLeft = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USLeft"));
         USRight = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USRight"));
@@ -143,6 +134,16 @@ public class robotHardware {
         rightSlideMotor = hardwareMap.get(DcMotorEx.class, "slideRight");
         intakeRoller = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
+        transferFlap = hardwareMap.get(JServo.class, "flapServo");
+        v4Bar = hardwareMap.get(JServo.class, "fourBarServo");
+        fingerRight = hardwareMap.get(JServo.class, "fingerServoRight");
+        fingerLeft = hardwareMap.get(JServo.class, "fingerServoLeft");
+        roll = hardwareMap.get(JServo.class, "wristServo");
+        pivot = hardwareMap.get(JServo.class, "pivotServo");
+        leftPitch = hardwareMap.get(JServo.class, "pitchServoLeft");
+        rightPitch = hardwareMap.get(JServo.class, "pitchServoRight");
+        droneServo = hardwareMap.get(JServo.class, "droneServo");
+
         leftSlide = new JActuator(
                 () -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), () -> boolSubscriber(Sensors.SensorType.SLIDE_LIMIT), leftSlideMotor);
         leftSlide.setPIDController(robotConstants.slideController);
@@ -160,6 +161,7 @@ public class robotHardware {
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeRoller.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
         par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));
@@ -197,7 +199,7 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
-        values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
+        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
 
         modules = hardwareMap.getAll(LynxModule.class);
 
@@ -241,7 +243,7 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
-        values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
+        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
     }
 
     public void startIMUThread(LinearOpMode opMode) {

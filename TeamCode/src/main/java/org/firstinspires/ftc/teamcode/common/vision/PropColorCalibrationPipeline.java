@@ -36,8 +36,7 @@ public class PropColorCalibrationPipeline implements VisionProcessor {
         averageHSV = calculateAverageHSV(centerMat);
 
         // Draw a rectangle around the center region
-        Imgproc.rectangle(output, centerRegion, new Scalar(0, 0, 255), 5);
-
+        Imgproc.rectangle(output, new Point(420, 260), new Point(380, 240), new Scalar(255, 0, 0), 5);
         // Release temporary mats
         centerMat.release();
         inputHSV.release();

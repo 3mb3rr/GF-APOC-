@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
 public class JServo implements Servo {
 
     private Servo servo;
-    private double degPerVolt = 0.0;
+    private double radPerVolt = 0.0;
 
     public JServo(Servo servo) {
         this.servo = servo;
@@ -79,10 +79,13 @@ public class JServo implements Servo {
     }
 
     public void setAngularRange(double v1, double angle1, double v2, double angle2){
-        degPerVolt = (angle2 - angle1)/(v2-v1);
+        radPerVolt = (angle2 - angle1)/(v2-v1);
     }
 
     public void setAngle(double angle){
-        this.servo.setPosition(angle*degPerVolt);
+        this.servo.setPosition(angle*radPerVolt);
+    }
+    public double getAngle(){
+        return getPosition()/radPerVolt;
     }
 }

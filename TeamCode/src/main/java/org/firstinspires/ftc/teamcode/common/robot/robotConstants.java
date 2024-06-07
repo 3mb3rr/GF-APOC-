@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunction
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.pathing.util.CustomPIDFCoefficients;
+import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 
 /**
  * This is the FollowerConstants class. It holds many constants and parameters for various parts of
@@ -27,11 +28,24 @@ public class robotConstants {
     // Slide constants
     public static PIDController slideController = new PIDController(0.015, 0, 0.005);
     public static double slideFF = 0.03;
+    public static double slideAngle = Math.toRadians(60);
+    public static double dropPitch = Math.toRadians(70);
+    public static double waitPitch = Math.toRadians(-90);
+    public static double transferPitch = Math.toRadians(-120);
+    public static double releasePos = 0;
+    public static double grabPos = 1;
+
+    public static double droneLaunchPosition = 1;
+    public static double droneWaitPosition = 0;
+
 
     //intake constants
     public static double currentLimit = 0;
     public static double velocityLimit = 0;
-
+    public static double maxRollerPower = 0.8;
+    public static double v4BarHeight = MathUtils.mmToInches(171.25);
+    public static double v4BarRadius = MathUtils.mmToInches(104);
+    public static double rollerLength = MathUtils.mmToInches(45);
     // localization constants
     public static double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)

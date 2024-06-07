@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.util.wrappers;
 
+import static org.firstinspires.ftc.teamcode.common.util.MathUtils.clamp;
+
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.lynx.LynxModuleIntf;
 import com.qualcomm.hardware.lynx.commands.core.LynxResetMotorEncoderCommand;
@@ -295,7 +297,5 @@ public class JActuator {
     public boolean hasReached() {
         return this.reached;
     }
-    public static double clamp(double num, double min, double max) {
-        return Math.max(min, Math.min(num, max));
-    }
+
 }
