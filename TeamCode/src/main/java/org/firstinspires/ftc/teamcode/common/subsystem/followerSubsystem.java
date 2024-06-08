@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.common.pathing.follower;
+package org.firstinspires.ftc.teamcode.common.subsystem;
 
 import static org.firstinspires.ftc.teamcode.common.robot.robotConstants.drivePIDFSwitch;
 import static org.firstinspires.ftc.teamcode.common.robot.robotConstants.forwardZeroPowerAcceleration;
@@ -16,6 +16,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.pathing.follower.DriveVectorScaler;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;

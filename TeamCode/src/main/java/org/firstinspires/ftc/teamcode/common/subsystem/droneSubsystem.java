@@ -27,8 +27,10 @@ public class droneSubsystem extends JSubsystem {
         switch(state){
             case wait:
                 droneServoPosition = robotConstants.droneWaitPosition;
+                break;
             case launch:
                 droneServoPosition = robotConstants.droneLaunchPosition;
+                break;
         }
     }
     @Override

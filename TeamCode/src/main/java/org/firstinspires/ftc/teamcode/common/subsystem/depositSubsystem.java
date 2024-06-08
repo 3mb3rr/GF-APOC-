@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class depositSubsystem extends JSubsystem {
     robotHardware robot = robotHardware.getInstance();
     private int slideTargetPosition = 0;
+    private int slideTargetRow = 0;
     armState ArmState = armState.wait;
     dropperState leftDropperState = dropperState.release;
     dropperState rightDropperState = dropperState.release;
@@ -58,28 +59,40 @@ public class depositSubsystem extends JSubsystem {
             case wait:
                 pitchTargetAngle = 0;
                 pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                break;
             case transfer:
                 pitchTargetAngle = 0;
                 pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                break;
             case drop:
                 pitchTargetAngle = 70;
                 pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                break;
             case rearrange:
                 pitchTargetAngle = 70;
                 pivotTargetAngle = 90;
+                break;
         }
         switch(leftDropperState){
             case release:
                 leftFingerPos = robotConstants.releasePos;
+                break;
             case grab:
                 leftFingerPos = robotConstants.grabPos;
+                break;
         }
         switch(rightDropperState){
             case release:
                 rightFingerPos = robotConstants.releasePos;
+                break;
             case grab:
                 rightFingerPos = robotConstants.grabPos;
+                break;
         }
+        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;
+        if(rollAngle != 0 && rollAngle != 180 && rollIndex != 0 && rollIndex != 3) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+        robot.leftSlide.setTargetPosition(slideTargetPosition);
+        robot.rightSlide.setTargetPosition(slideTargetPosition);
 
     }
     @Override
@@ -127,6 +140,9 @@ public class depositSubsystem extends JSubsystem {
     public void updateDropperState(@NotNull depositSubsystem.dropperState state, String side) {
         if(side.equals("left"))this.leftDropperState = state;
         else this.rightDropperState = state;
+    }
+    public void setSlideTargetRow(int row){
+        slideTargetRow = row;
     }
 
 }

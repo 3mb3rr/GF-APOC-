@@ -21,17 +21,24 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
  */
 @Config
 public class robotConstants {
-    public static boolean IS_AUTO = true;
-    public static boolean IS_RED = true;
-    public static boolean IS_DROP = true;
 
     // Slide constants
     public static PIDController slideController = new PIDController(0.015, 0, 0.005);
+    // ticks for slide to place in the first row
+    public static int slideFirstRowTicks = 400;
+    // how many ticks should be added for slides to reach the next row
+    public static int slideRowIncreaseTicks = 100;
+    // how many ticks should be added if angle is changed from 0 to 30 degrees
+    public static int slideAngleIncreaseTicks = 50;
+
     public static double slideFF = 0.03;
+    // Angle of slide with the ground
     public static double slideAngle = Math.toRadians(60);
+    // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(70);
     public static double waitPitch = Math.toRadians(-90);
     public static double transferPitch = Math.toRadians(-120);
+    // values for finger servoes
     public static double releasePos = 0;
     public static double grabPos = 1;
 
@@ -40,11 +47,16 @@ public class robotConstants {
 
 
     //intake constants
+    // limits to check if pixel is in intake
     public static double currentLimit = 0;
     public static double velocityLimit = 0;
+    // roller power
     public static double maxRollerPower = 0.8;
+    // height of pivot point of v4bar from ground
     public static double v4BarHeight = MathUtils.mmToInches(171.25);
+    // length of v4bar
     public static double v4BarRadius = MathUtils.mmToInches(104);
+    // length of one spoke of the rollers in intake
     public static double rollerLength = MathUtils.mmToInches(45);
     // localization constants
     public static double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)

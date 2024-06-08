@@ -5,7 +5,7 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.common.pathing.follower.followerSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;

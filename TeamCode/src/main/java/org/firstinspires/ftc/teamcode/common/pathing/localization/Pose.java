@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.pathing.localization;
 
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 /**
  * This is the Pose class. It defines poses in 2D space, like the Pose2D class in Road Runner except
@@ -45,6 +46,11 @@ public class Pose {
      */
     public Pose() {
         this(0,0,0);
+    }
+    public Pose(AprilTagPoseFtc ftcPose) {
+        this.heading = Math.toRadians(-ftcPose.yaw);
+        this.x = ftcPose.x * Math.cos(heading) - ftcPose.y * Math.sin(heading);
+        this.y = ftcPose.x * Math.sin(heading) + ftcPose.y * Math.cos(heading);
     }
 
     /**
@@ -133,6 +139,12 @@ public class Pose {
         setY(y + pose.getY());
         setHeading(heading + pose.getHeading());
     }
+
+    public Pose scale(double scalar){
+        return new Pose(this.x * scalar, this.y * scalar, this.heading * scalar);
+    }
+
+
 
     /**
      * This subtracts all the values of an input Pose from this Pose. The input Pose's data will not

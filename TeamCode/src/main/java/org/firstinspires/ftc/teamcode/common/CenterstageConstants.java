@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common;
 
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.common.vision.Location;
 
 public class CenterstageConstants {
 
@@ -11,5 +12,16 @@ public class CenterstageConstants {
     public static Pose redStackIntakingPosition= new Pose(0, 0, 0);
     public static Pose blueStackIntakingPosition= new Pose(0, 0, 0);
 
-    public static final Pose BLUE_BACKDROP_POSITION = new Pose(35.5, -61.25, 0);
-    public static final Pose RED_BACKDROP_POSITION = new Pose(-35.5, -61.25, 0);}
+    public static final Pose BLUE_BACKDROP_POSITION = new Pose(-35.5, 61.25, 0);
+    public static final Pose RED_BACKDROP_POSITION = new Pose(35.5, 61.25, 0);
+    public static Location SIDE = Location.FAR;
+    /**
+     * Match constants.
+     */
+    public static boolean IS_AUTO = true;
+    public static Location ALLIANCE = Location.RED;
+    public static Location RANDOMIZATION = Location.LEFT;
+    public static Location PRELOAD = Location.LEFT;
+    public static Location ROUTE = Location.STAGEDOOR;
+}
+

@@ -61,12 +61,15 @@ public class intakeSubsystem extends JSubsystem {
             case intake:
                 rollerPower = robotConstants.maxRollerPower;
                 transferFlapAngle = 0;
+                break;
             case stationary:
                 rollerPower = 0;
                 transferFlapAngle = 90;
+                break;
             case outtake:
                 rollerPower = -robotConstants.maxRollerPower;
                 transferFlapAngle = 0;
+                break;
         }
         if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
             issueColorSensorCheck = true;

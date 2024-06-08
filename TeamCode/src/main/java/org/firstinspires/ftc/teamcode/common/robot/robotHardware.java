@@ -27,7 +27,10 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.common.pathing.follower.followerSubsystem;
+import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
+import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
+import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
@@ -37,12 +40,8 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import com.outoftheboxrobotics.photoncore.PhotonCore;
-import com.outoftheboxrobotics.photoncore.BuildConfig;
-import com.outoftheboxrobotics.photoncore.PeriodicSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -209,7 +208,7 @@ public class robotHardware {
         }
 
         propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65, PropDetectionPipeline.colour.red);
-        if (robotConstants.IS_AUTO) {
+        if (CenterstageConstants.IS_AUTO) {
 
             // TODO: Add start camera here
             synchronized (imuLock) {
@@ -326,6 +325,60 @@ public class robotHardware {
         if (visionPortal != null) return visionPortal.getCameraState();
         return null;
     }
+    public Pose getAprilTagPosition() {
+        if (aprilTag != null && localizer != null) {
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+
+            List<Pose> backdropPositions = new ArrayList<>();
+            for (AprilTagDetection detection : currentDetections) {
+                if (detection.metadata != null) {
+                    switch (detection.id) {
+                        case 1:
+                        case 4:
+                            Pose temp1 = new Pose(detection.ftcPose);
+                            temp1.add(new Pose(6, 0, 0));
+                            backdropPositions.add(temp1);
+                            break;
+                        case 2:
+                        case 5:
+                            backdropPositions.add(new Pose(detection.ftcPose));
+                            break;
+                        case 3:
+                        case 6:
+                            Pose temp2 = new Pose(detection.ftcPose);
+                            temp2.subtract(new Pose(6, 0, 0));
+                            backdropPositions.add(temp2);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            Pose accumulator = new Pose();
+
+            // Manually add each Pose to the accumulator
+            for (Pose pose : backdropPositions) {
+                accumulator.add(pose);
+            }
+
+            // Compute the average position
+            Pose backdropPosition = new Pose(accumulator.getX(), accumulator.getY(), accumulator.getHeading());
+            backdropPosition.scale(1.0 / backdropPositions.size());
+
+
+            Pose globalTagPosition = localizer.getPose().getX() < 0 ?
+                    AprilTagConstants.convertBlueBackdropPoseToGlobal(backdropPosition) :
+                    AprilTagConstants.convertRedBackdropPoseToGlobal(backdropPosition);
+
+            if (Double.isNaN(globalTagPosition.getX()) || Double.isNaN(globalTagPosition.getY()) || Double.isNaN(globalTagPosition.getHeading())) return null;
+
+            return globalTagPosition;
+        } else {
+            return null;
+        }
+    }
+
     public void closeCamera() {
         if (visionPortal != null) visionPortal.close();
     }
