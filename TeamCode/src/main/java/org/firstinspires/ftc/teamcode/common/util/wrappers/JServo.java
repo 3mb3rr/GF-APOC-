@@ -7,6 +7,7 @@ public class JServo implements Servo {
 
     private Servo servo;
     private double radPerVolt = 0.0;
+    private double offset = 0.0;
 
     public JServo(Servo servo) {
         this.servo = servo;
@@ -80,12 +81,13 @@ public class JServo implements Servo {
 
     public void setAngularRange(double v1, double angle1, double v2, double angle2){
         radPerVolt = (angle2 - angle1)/(v2-v1);
+        offset=v1-angle1/radPerVolt;
     }
 
     public void setAngle(double angle){
-        this.servo.setPosition(angle*radPerVolt);
+        this.servo.setPosition(angle*radPerVolt+offset);
     }
     public double getAngle(){
-        return getPosition()/radPerVolt;
+        return (getPosition()-offset)/radPerVolt;
     }
 }

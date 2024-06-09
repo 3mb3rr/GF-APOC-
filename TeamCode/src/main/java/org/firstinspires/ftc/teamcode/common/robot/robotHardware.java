@@ -207,7 +207,7 @@ public class robotHardware {
             if (m.isParent() && LynxConstants.isEmbeddedSerialNumber(m.getSerialNumber())) CONTROL_HUB = m;
         }
 
-        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65, PropDetectionPipeline.colour.red);
+        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
         if (CenterstageConstants.IS_AUTO) {
 
             // TODO: Add start camera here

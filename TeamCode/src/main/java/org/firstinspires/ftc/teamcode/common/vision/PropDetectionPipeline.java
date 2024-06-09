@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.common.vision;
 import android.graphics.Canvas;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -29,17 +30,12 @@ public class PropDetectionPipeline implements VisionProcessor {
     int topLimit = 0;
     int leftPixels, centerPixels, rightPixels = 0;
     int zone = 0;
-    public enum colour {
-        blue,
-        red
-    }
-    colour Colour = colour.red;
-    public PropDetectionPipeline(double leftBorder, double rightBorder, double topBorder, colour colour) {
+
+    public PropDetectionPipeline(double leftBorder, double rightBorder, double topBorder) {
         frameList = new ArrayList<>();
         leftLimit=(int)(leftBorder*800);
         rightLimit=(int)((rightBorder)*800);
         topLimit = (int)((1-topBorder)*448);
-        Colour = colour;
     }
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
@@ -64,7 +60,7 @@ public class PropDetectionPipeline implements VisionProcessor {
         Scalar highHSVBlue = new Scalar(110 ,255, 255);
 
         // filter for red
-        if(Colour == colour.red) Core.inRange(inputHSV, lowHSVRed, highHSVRed, redDetection);
+        if(CenterstageConstants.ALLIANCE == Location.RED) Core.inRange(inputHSV, lowHSVRed, highHSVRed, redDetection);
         else Core.inRange(inputHSV, lowHSVBlue, highHSVBlue, redDetection);
         noiseReduction(redDetection, deNoised);
         leftMat = deNoised.submat(leftRegion);
