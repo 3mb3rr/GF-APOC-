@@ -32,6 +32,7 @@ public class robotConstants {
     public static int slideAngleIncreaseTicks = 50;
 
     public static double slideFF = 0.03;
+    public static double slideFFHang = -0.7;
     // Angle of slide with the ground
     public static double slideAngle = Math.toRadians(60);
     // pitch of arm at different functions

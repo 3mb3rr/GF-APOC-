@@ -144,5 +144,9 @@ public class depositSubsystem extends JSubsystem {
     public void setSlideTargetRow(int row){
         slideTargetRow = row;
     }
+    public int getSlideTargetRow() {return slideTargetRow;}
+    public void setFeedForward(){
+        robot.leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFFHang);
+    }
 
 }

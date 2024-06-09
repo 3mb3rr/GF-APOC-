@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.Vision;
+package org.firstinspires.ftc.teamcode.common.vision;
 /*
  * Copyright (c) 2021 OpenFTC Team
  *
