@@ -77,6 +77,9 @@ public class FusionLocalizer extends Localizer {
     public FusionLocalizer(HardwareMap map) {
         this(new Pose());
     }
+    public FusionLocalizer() {
+        this(new Pose());
+    }
 
     /**
      * This creates a new ThreeWheelLocalizer from a HardwareMap and a Pose, with the Pose

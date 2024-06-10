@@ -21,6 +21,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -49,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.concurrent.GuardedBy;
 
-@Photon
+//@Photon
 public class robotHardware {
 
     // FINISH THE PERiODIC SUPPLIER CODE FOR CURRENT SENSORS AND CONTROL HUB BaTTERY WITH PHOTONCORE FIX THE ERROR
@@ -74,9 +76,9 @@ public class robotHardware {
 
     private ArrayList<Subsystem> subsystems;
 
-    public intakeSubsystem intake;
-    public depositSubsystem deposit;
-    public followerSubsystem follower;
+    public intakeSubsystem intake = new intakeSubsystem();
+    public depositSubsystem deposit = new depositSubsystem();
+    public followerSubsystem follower = new followerSubsystem();
     public droneSubsystem drone;
 
 //    public PreloadDetectionPipeline preloadDetectionPipeline;
@@ -84,8 +86,9 @@ public class robotHardware {
     public List<LynxModule> modules;
     public LynxModule CONTROL_HUB;
 
-    public PhotonLynxVoltageSensor battery;
+//    public PhotonLynxVoltageSensor battery;
 
+    public VoltageSensor battery;
     private final Object imuLock = new Object();
     @GuardedBy("imuLock")
     public IMU imu;
@@ -94,7 +97,7 @@ public class robotHardware {
     private double imuOffset = 0;
     private double startOffset = 0;
     public FusionLocalizer localizer;
-    public PoseUpdater poseUpdater = new PoseUpdater(localizer);
+    public PoseUpdater poseUpdater;
 
     private double startTime;
     public HashMap<Sensors.SensorType, Object> values;
@@ -113,8 +116,8 @@ public class robotHardware {
         this.hardwareMap = hardwareMap;
         this.values = new HashMap<>();
 
-        battery = hardwareMap.getAll(PhotonLynxVoltageSensor.class).iterator().next();
-
+        //battery = hardwareMap.getAll(PhotonLynxVoltageSensor.class).iterator().next();
+        battery = hardwareMap.voltageSensor.get("Control Hub");
         USLeft = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USLeft"));
         USRight = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USRight"));
         USBack = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USBack"));
@@ -122,34 +125,35 @@ public class robotHardware {
         leftLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseLeft"));
         rightLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseRight"));
 
-        leftColorSensor = hardwareMap.get(RevColorSensorV3.class, "csLeft");
-        rightColorSensor = hardwareMap.get(RevColorSensorV3.class, "csRight");
+        leftColorSensor = hardwareMap.get(RevColorSensorV3.class, "CSLeft");
+        rightColorSensor = hardwareMap.get(RevColorSensorV3.class, "CSRight");
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftSlideMotor = hardwareMap.get(DcMotorEx.class, "slideLeft");
         rightSlideMotor = hardwareMap.get(DcMotorEx.class, "slideRight");
         intakeRoller = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        transferFlap = hardwareMap.get(JServo.class, "flapServo");
-        v4Bar = hardwareMap.get(JServo.class, "fourBarServo");
-        fingerRight = hardwareMap.get(JServo.class, "fingerServoRight");
-        fingerLeft = hardwareMap.get(JServo.class, "fingerServoLeft");
-        roll = hardwareMap.get(JServo.class, "wristServo");
-        pivot = hardwareMap.get(JServo.class, "pivotServo");
-        leftPitch = hardwareMap.get(JServo.class, "pitchServoLeft");
-        rightPitch = hardwareMap.get(JServo.class, "pitchServoRight");
-        droneServo = hardwareMap.get(JServo.class, "droneServo");
+        transferFlap = new JServo(hardwareMap.get(Servo.class, "flapServo"));
+        v4Bar = new JServo(hardwareMap.get(Servo.class, "fourBarServo"));
+        fingerRight = new JServo(hardwareMap.get(Servo.class, "fingerServoRight"));
+        fingerLeft = new JServo(hardwareMap.get(Servo.class, "fingerServoLeft"));
+        roll = new JServo(hardwareMap.get(Servo.class, "wristServo"));
+        pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
+        leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
+        rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
+        droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
 
-        leftSlide = new JActuator(
-                () -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), () -> boolSubscriber(Sensors.SensorType.SLIDE_LIMIT), leftSlideMotor);
+        localizer = new FusionLocalizer();
+        poseUpdater = new PoseUpdater(localizer);
+
+        leftSlide = new JActuator(leftSlideMotor);
         leftSlide.setPIDController(robotConstants.slideController);
         leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         leftSlide.setErrorTolerance(5);
-        rightSlide = new JActuator(
-                () -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), () -> boolSubscriber(Sensors.SensorType.SLIDE_LIMIT), leftSlideMotor);
+        rightSlide = new JActuator(rightSlideMotor);
         leftSlide.setPIDController(robotConstants.slideController);
         leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         leftSlide.setErrorTolerance(5);
@@ -163,8 +167,8 @@ public class robotHardware {
         intakeRoller.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftRear")));
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack")));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftBack")));
 
         // TODO: reverse encoder directions if needed
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -186,6 +190,11 @@ public class robotHardware {
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
+        roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
+        leftPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
+        rightPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
+        pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
+
         values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
         values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
         values.put(Sensors.SensorType.POD_PAR0, par0.getPositionAndVelocity());
@@ -198,10 +207,11 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
-        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
+//        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
 
+
+        values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
         modules = hardwareMap.getAll(LynxModule.class);
-
         for (LynxModule m : modules) {
             m.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
             if (m.isParent() && LynxConstants.isEmbeddedSerialNumber(m.getSerialNumber())) CONTROL_HUB = m;
@@ -242,7 +252,9 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
-        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
+//        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
+
+        values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
     }
 
     public void startIMUThread(LinearOpMode opMode) {

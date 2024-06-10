@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
  * @version 1.0, 3/4/2024
  */
 public class PoseUpdater {
-    private HardwareMap hardwareMap;
+
 
     private IMU imu;
 
@@ -51,9 +51,6 @@ public class PoseUpdater {
      */
     public PoseUpdater(Localizer localizer) {
 
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
 
         this.localizer = localizer;
     }

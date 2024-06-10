@@ -37,7 +37,7 @@ public class PropCalibration extends LinearOpMode {
 
     public void startCamera() {
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                 .setCameraResolution(new Size(800, 448))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .addProcessor(pipeline)

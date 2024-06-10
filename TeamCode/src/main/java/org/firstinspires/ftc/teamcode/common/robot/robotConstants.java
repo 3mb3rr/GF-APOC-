@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 public class robotConstants {
 
     // Slide constants
-    public static PIDController slideController = new PIDController(0.015, 0, 0.005);
+    public static PIDController slideController = new PIDController(0.02, 0, 0.005);
     // ticks for slide to place in the first row
     public static int slideFirstRowTicks = 400;
     // how many ticks should be added for slides to reach the next row
@@ -31,7 +31,7 @@ public class robotConstants {
     // how many ticks should be added if angle is changed from 0 to 30 degrees
     public static int slideAngleIncreaseTicks = 50;
 
-    public static double slideFF = 0.03;
+    public static double slideFF = 0.1;
     public static double slideFFHang = -0.7;
     // Angle of slide with the ground
     public static double slideAngle = Math.toRadians(60);
@@ -40,7 +40,7 @@ public class robotConstants {
     public static double waitPitch = Math.toRadians(-90);
     public static double transferPitch = Math.toRadians(-120);
     // values for finger servoes
-    public static double releasePos = 0;
+    public static double releasePos = 0.1;
     public static double grabPos = 1;
 
     public static double droneLaunchPosition = 1;

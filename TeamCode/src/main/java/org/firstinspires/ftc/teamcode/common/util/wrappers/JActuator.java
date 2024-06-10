@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.common.util.wrappers;
 import static org.firstinspires.ftc.teamcode.common.util.MathUtils.clamp;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.hardware.lynx.LynxModuleIntf;
-import com.qualcomm.hardware.lynx.commands.core.LynxResetMotorEncoderCommand;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,7 +29,6 @@ public class JActuator {
     private final Map<String, HardwareDevice> devices = new HashMap<>();
     private PIDController controller;
     private DoubleSupplier voltage;
-    private robotHardware robot = robotHardware.getInstance();
 
     private double position = 0.0;
     private double targetPosition = 0.0;
@@ -56,8 +53,11 @@ public class JActuator {
     /**
      * Actuator constructor with varargs HardwareDevice parameter
      *
-     * @param devices
+     * @param
      */
+    public JActuator(){
+
+    }
     public JActuator(HardwareDevice... devices) {
         this.topic1 = null;
         this.topic2 = null;
