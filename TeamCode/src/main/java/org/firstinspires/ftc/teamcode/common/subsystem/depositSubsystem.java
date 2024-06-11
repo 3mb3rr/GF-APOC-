@@ -57,20 +57,20 @@ public class depositSubsystem extends JSubsystem {
         // TODO: wait and transfer values not put
         switch(ArmState){
             case wait:
-                pitchTargetAngle = 0;
-                pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                pitchTargetAngle = robotConstants.waitPitch;
+                pivotTargetAngle = robotConstants.pivotTransferAngle;
                 break;
             case transfer:
-                pitchTargetAngle = 0;
-                pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                pitchTargetAngle = robotConstants.transferPitch;
+                pivotTargetAngle = robotConstants.pivotTransferAngle;
                 break;
             case drop:
-                pitchTargetAngle = 70;
+                pitchTargetAngle = robotConstants.dropPitch;
                 pivotTargetAngle = getPivotAngle(pitchTargetAngle);
                 break;
             case rearrange:
-                pitchTargetAngle = 70;
-                pivotTargetAngle = 90;
+                pitchTargetAngle = robotConstants.dropPitch;
+                pivotTargetAngle = robotConstants.pivotRearrangeAngle;
                 break;
         }
         switch(leftDropperState){

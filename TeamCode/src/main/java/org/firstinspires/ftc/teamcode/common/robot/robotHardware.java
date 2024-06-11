@@ -32,7 +32,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
+//import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
@@ -78,7 +78,7 @@ public class robotHardware {
 
     public intakeSubsystem intake;
     public depositSubsystem deposit;
-    public followerSubsystem follower;
+  //  public followerSubsystem follower;
     public droneSubsystem drone;
 
 //    public PreloadDetectionPipeline preloadDetectionPipeline;
@@ -197,7 +197,7 @@ public class robotHardware {
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();
         drone = new droneSubsystem();
-        follower = new followerSubsystem();
+      //  follower = new followerSubsystem();
 
         values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
         values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
@@ -238,14 +238,14 @@ public class robotHardware {
 
     public void periodic(){
         poseUpdater.periodic();
-        follower.periodic();
+     //   follower.periodic();
         intake.periodic();
         deposit.periodic();
         drone.periodic();
 
     }
     public void write() {
-        follower.write();
+   //     follower.write();
         intake.write();
         deposit.write();
         drone.write();

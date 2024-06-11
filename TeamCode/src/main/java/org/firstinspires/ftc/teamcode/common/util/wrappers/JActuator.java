@@ -25,7 +25,7 @@ public class JActuator {
         ANGLE_BASED,
         ANGLE_BASED_SIN
     }
-private final robotHardware robot = robotHardware.getInstance();
+private robotHardware robot = robotHardware.getInstance();
     private final Map<String, HardwareDevice> devices = new HashMap<>();
     private PIDController controller;
     private DoubleSupplier voltage;

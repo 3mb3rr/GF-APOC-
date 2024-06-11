@@ -39,6 +39,9 @@ public class robotConstants {
     public static double dropPitch = Math.toRadians(70);
     public static double waitPitch = Math.toRadians(-90);
     public static double transferPitch = Math.toRadians(-120);
+    public static double pivotTransferAngle = Math.toRadians(-90);
+    public static double pivotRearrangeAngle = Math.toRadians(90);
+
     // values for finger servoes
     public static double releasePos = 0.1;
     public static double grabPos = 1;
