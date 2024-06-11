@@ -59,9 +59,9 @@ public class teleop extends CommandOpMode {
 
         driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getLeftX());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
-//        driveVector.rotateVector(robot.follower.getPose().getHeading());
-//        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
-//        robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
+        driveVector.rotateVector(robot.follower.getPose().getHeading());
+        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
+        robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
 
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(this::incrementRollLeft));
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(this::incrementRollRight));

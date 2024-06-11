@@ -32,7 +32,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
-//import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
+import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
+import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
@@ -78,7 +80,7 @@ public class robotHardware {
 
     public intakeSubsystem intake;
     public depositSubsystem deposit;
-  //  public followerSubsystem follower;
+    public followerSubsystem follower;
     public droneSubsystem drone;
 
 //    public PreloadDetectionPipeline preloadDetectionPipeline;
@@ -190,14 +192,18 @@ public class robotHardware {
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
         roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
-        leftPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
-        rightPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
+        leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
+        rightPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
         pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
+
+        transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
 
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();
         drone = new droneSubsystem();
-      //  follower = new followerSubsystem();
+        follower = new followerSubsystem();
+        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
+
 
         values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
         values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
