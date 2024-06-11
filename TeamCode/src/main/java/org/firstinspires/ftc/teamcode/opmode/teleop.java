@@ -24,11 +24,12 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
+import org.firstinspires.ftc.teamcode.common.robot.tRobotHardware;
 
 
 @TeleOp
 public class teleop extends CommandOpMode {
-    private final robotHardware robot = robotHardware.getInstance();
+    private final tRobotHardware robot = tRobotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;
     private GamepadEx gamepadMechanism;
     private double loopTime = 0.0;

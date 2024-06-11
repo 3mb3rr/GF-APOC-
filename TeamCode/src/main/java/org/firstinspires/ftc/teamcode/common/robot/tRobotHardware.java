@@ -1,19 +1,12 @@
 package org.firstinspires.ftc.teamcode.common.robot;
 
-import android.util.Size;
-
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.arcrobotics.ftclib.command.Subsystem;
-import com.outoftheboxrobotics.photoncore.Photon;
-
-import com.outoftheboxrobotics.photoncore.hardware.PhotonLynxVoltageSensor;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -26,38 +19,34 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
-import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
-import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.droneSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.annotation.concurrent.GuardedBy;
 
-//@Photon
-public class robotHardware {
+public class tRobotHardware {
 
     // FINISH THE PERiODIC SUPPLIER CODE FOR CURRENT SENSORS AND CONTROL HUB BaTTERY WITH PHOTONCORE FIX THE ERROR
 
     private HardwareMap hardwareMap;
-    private static robotHardware instance = null;
+    private static tRobotHardware instance = null;
     private boolean enabled;
 
     public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
@@ -71,17 +60,18 @@ public class robotHardware {
     public JActuator rightSlide;
     public LimitSwitch leftLimit, rightLimit;
 
+    public intakeSubsystem intake;
+    public depositSubsystem deposit;
+    public followerSubsystem follower;
+
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
 
     private ArrayList<Subsystem> subsystems;
 
-    public intakeSubsystem intake;
-    public depositSubsystem deposit;
-    public followerSubsystem follower;
     public droneSubsystem drone;
 
-//    public PreloadDetectionPipeline preloadDetectionPipeline;
+    //    public PreloadDetectionPipeline preloadDetectionPipeline;
     public PropDetectionPipeline propDetectionPipeline;
     public List<LynxModule> modules;
     public LynxModule CONTROL_HUB;
@@ -101,20 +91,21 @@ public class robotHardware {
 
     private double startTime;
     public HashMap<Sensors.SensorType, Object> values;
-
-    public static robotHardware getInstance() {
+    public static tRobotHardware getInstance() {
         if (instance == null) {
-            instance = new robotHardware();
+            instance = new tRobotHardware();
         }
         instance.enabled = true;
         return instance;
     }
-
-
-    // TODO: FINISH THE PERiODIC SUPPLIER CODE FOR CURRENT SENSORS AND CONTROL HUB BaTTERY WITH PHOTONCORE FIX THE ERROR
+    /*
     public void init(final HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.values = new HashMap<>();
+
+        intake = new intakeSubsystem();
+        deposit = new depositSubsystem();
+        drone = new droneSubsystem();
 
         //battery = hardwareMap.getAll(PhotonLynxVoltageSensor.class).iterator().next();
         battery = hardwareMap.voltageSensor.get("Control Hub");
@@ -174,6 +165,7 @@ public class robotHardware {
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
 
         driveMotors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
+
         // TODO: set motor modes
         for (DcMotorEx motor : driveMotors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -193,11 +185,6 @@ public class robotHardware {
         leftPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
         rightPitch.setAngularRange(0,Math.toRadians(4),0.1,Math.toRadians(-107));
         pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
-
-        intake = new intakeSubsystem();
-        deposit = new depositSubsystem();
-        drone = new droneSubsystem();
-        follower = new followerSubsystem();
 
         values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
         values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
@@ -235,185 +222,5 @@ public class robotHardware {
             imuOffset = AngleUnit.normalizeRadians(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         }
     }
-
-    public void periodic(){
-        poseUpdater.periodic();
-        follower.periodic();
-        intake.periodic();
-        deposit.periodic();
-        drone.periodic();
-
-    }
-    public void write() {
-        follower.write();
-        intake.write();
-        deposit.write();
-        drone.write();
-    }
-    public void read() {
-        values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
-        values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
-        values.put(Sensors.SensorType.POD_PAR0, par0.getPositionAndVelocity());
-        values.put(Sensors.SensorType.POD_PAR1, par1.getPositionAndVelocity());
-        values.put(Sensors.SensorType.POD_PERP, perp.getPositionAndVelocity());
-        values.put(Sensors.SensorType.INTAKE_VELOCITY, Math.abs(intakeRoller.getVelocity()));
-        values.put(Sensors.SensorType.LEFT_DISTANCE, USLeft.getDistance());
-        values.put(Sensors.SensorType.RIGHT_DISTANCE, USRight.getDistance());
-        values.put(Sensors.SensorType.BACK_DISTANCE, USBack.getDistance());
-        values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
-
-        // non bulk read
-//        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
-
-        values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
-    }
-
-    public void startIMUThread(LinearOpMode opMode) {
-        imuThread = new Thread(() -> {
-            while (!opMode.isStopRequested()) {
-                synchronized (imuLock) {
-                    imuAngle = AngleUnit.normalizeRadians(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-                }
-            }
-        });
-        imuThread.start();
-    }
-    public void readIMU() {
-        imuAngle = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-    }
-
-    public double getAngle() {
-        return imuAngle - imuOffset + startOffset;
-    }
-
-    public void setDrivetrainPowers(double[] powers){
-        for (int i = 0; i < driveMotors.size(); i++) {
-            driveMotors.get(i).setPower(powers[i]);
-        }
-    }
-        public double doubleSubscriber(Sensors.SensorType topic) {
-        Object value = values.getOrDefault(topic, 0.0);
-        if (value instanceof Integer) {
-            return ((Integer) value).doubleValue();
-        } else if (value instanceof Double) {
-            return (Double) value;
-        } else {
-            throw new ClassCastException();
-        }
-    }
-
-    public int intSubscriber(Sensors.SensorType topic) {
-        Object value = values.getOrDefault(topic, 0);
-        if (value instanceof Integer) {
-            return (Integer) value;
-        } else if (value instanceof Double) {
-            return ((Double) value).intValue();
-        } else {
-            throw new ClassCastException();
-        }
-    }
-    public PositionVelocityPair encoderSubscriber(Sensors.SensorType topic) {
-        Object value = values.getOrDefault(topic, 0);
-        if (value instanceof PositionVelocityPair) {
-            return (PositionVelocityPair) value;
-        } else {
-            throw new ClassCastException();
-        }
-    }
-
-    public boolean boolSubscriber(Sensors.SensorType topic) {
-        return (boolean) values.getOrDefault(topic, 0);
-    }
-    public void startCamera() {
-        aprilTag = new AprilTagProcessor.Builder()
-                // calibrated using 3DF Zephyr 7.021
-                .setLensIntrinsics(549.651, 549.651, 317.108, 236.644)
-                .build();
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .setCameraResolution(new Size(800, 448))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessors(aprilTag, propDetectionPipeline)
-                .enableLiveView(true)
-                .build();
-
-        visionPortal.setProcessorEnabled(propDetectionPipeline, true);
-    }
-    public List<AprilTagDetection> getAprilTagDetections() {
-        if (aprilTag != null && localizer != null) return aprilTag.getDetections();
-        return null;
-    }
-
-    public VisionPortal.CameraState getCameraState() {
-        if (visionPortal != null) return visionPortal.getCameraState();
-        return null;
-    }
-    public Pose getAprilTagPosition() {
-        if (aprilTag != null && localizer != null) {
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-            List<Pose> backdropPositions = new ArrayList<>();
-            for (AprilTagDetection detection : currentDetections) {
-                if (detection.metadata != null) {
-                    switch (detection.id) {
-                        case 1:
-                        case 4:
-                            Pose temp1 = new Pose(detection.ftcPose);
-                            temp1.add(new Pose(6, 0, 0));
-                            backdropPositions.add(temp1);
-                            break;
-                        case 2:
-                        case 5:
-                            backdropPositions.add(new Pose(detection.ftcPose));
-                            break;
-                        case 3:
-                        case 6:
-                            Pose temp2 = new Pose(detection.ftcPose);
-                            temp2.subtract(new Pose(6, 0, 0));
-                            backdropPositions.add(temp2);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            Pose accumulator = new Pose();
-
-            // Manually add each Pose to the accumulator
-            for (Pose pose : backdropPositions) {
-                accumulator.add(pose);
-            }
-
-            // Compute the average position
-            Pose backdropPosition = new Pose(accumulator.getX(), accumulator.getY(), accumulator.getHeading());
-            backdropPosition.scale(1.0 / backdropPositions.size());
-
-
-            Pose globalTagPosition = localizer.getPose().getX() < 0 ?
-                    AprilTagConstants.convertBlueBackdropPoseToGlobal(backdropPosition) :
-                    AprilTagConstants.convertRedBackdropPoseToGlobal(backdropPosition);
-
-            if (Double.isNaN(globalTagPosition.getX()) || Double.isNaN(globalTagPosition.getY()) || Double.isNaN(globalTagPosition.getHeading())) return null;
-
-            return globalTagPosition;
-        } else {
-            return null;
-        }
-    }
-
-    public void closeCamera() {
-        if (visionPortal != null) visionPortal.close();
-    }
-    public void startTimer(){
-        startTime = System.nanoTime();
-    }
-    public double getTimeSec(){
-        return ((System.nanoTime()-startTime)/100000000);
-    }
-    public double getTimeMs(){
-        return ((System.nanoTime()-startTime)/1000000);
-    }
-
-
+    */
 }
