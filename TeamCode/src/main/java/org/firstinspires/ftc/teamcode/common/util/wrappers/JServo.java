@@ -85,9 +85,9 @@ public class JServo implements Servo {
     }
 
     public void setAngle(double angle){
-        this.servo.setPosition(angle*radPerVolt+offset);
+        this.servo.setPosition((angle/radPerVolt)+offset);
     }
     public double getAngle(){
-        return (getPosition()-offset)/radPerVolt;
+        return (getPosition()-offset)*radPerVolt;
     }
 }

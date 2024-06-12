@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -101,4 +103,6 @@ public class teleop extends CommandOpMode {
     public void increaseSlideRow(){
         robot.deposit.setSlideTargetRow(robot.deposit.getSlideTargetRow()+1);
     }
+
+
 }

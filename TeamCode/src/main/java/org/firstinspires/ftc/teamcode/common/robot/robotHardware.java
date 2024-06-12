@@ -197,6 +197,7 @@ public class robotHardware {
         pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
 
         transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
+        v4Bar.setAngularRange(1,Math.toRadians(15),0.34,Math.toRadians(90));
 
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();

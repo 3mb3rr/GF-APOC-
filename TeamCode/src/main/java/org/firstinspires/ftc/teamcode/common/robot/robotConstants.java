@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 public class robotConstants {
 
     // Slide constants
-    public static PIDController slideController = new PIDController(0.02, 0, 0.005);
+    public static PIDController slideController = new PIDController(0.02, 0, 0.0007);
     // ticks for slide to place in the first row
     public static int slideFirstRowTicks = 400;
     // how many ticks should be added for slides to reach the next row
@@ -52,8 +52,8 @@ public class robotConstants {
 
     //intake constants
     // limits to check if pixel is in intake
-    public static double currentLimit = 0;
-    public static double velocityLimit = 0;
+    public static double currentLimit = 2.5;
+    public static double velocityLimit = 1500;
     // roller power
     public static double maxRollerPower = 0.8;
     // height of pivot point of v4bar from ground
@@ -70,7 +70,7 @@ public class robotConstants {
 
     // Pathing constants
     // This section is for setting the actual drive vector for the front left wheel, if the robot
-    // is facing a heading of 0 radians with the wheel centered at (0,0)
+    // is facing a heading of 0 radians with    the wheel centered at (0,0)
     private static double xMovement = 81.34056;
     private static double yMovement = 65.43028;
     private static double[] convertToPolar = Point.cartesianToPolar(xMovement, -yMovement);

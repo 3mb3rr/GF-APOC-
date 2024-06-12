@@ -50,8 +50,8 @@ public class intakeSubsystem extends JSubsystem {
         isOverCurrentLimit = robot.boolSubscriber(Sensors.SensorType.INTAKE_CURRENT);
         if(issueColorSensorCheck && (robot.getTimeMs()-lastCheckTime>100)){
             lastCheckTime = robot.getTimeMs();
-            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<50);
-            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<50);
+            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
+            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
             issueColorSensorCheck = false;
         }
     }
