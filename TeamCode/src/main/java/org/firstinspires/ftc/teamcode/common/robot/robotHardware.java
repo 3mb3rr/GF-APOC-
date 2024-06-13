@@ -245,14 +245,14 @@ public class robotHardware {
 
     public void periodic(){
         poseUpdater.periodic();
-     //   follower.periodic();
+        follower.periodic();
         intake.periodic();
         deposit.periodic();
         drone.periodic();
 
     }
     public void write() {
-   //     follower.write();
+        follower.write();
         intake.write();
         deposit.write();
         drone.write();

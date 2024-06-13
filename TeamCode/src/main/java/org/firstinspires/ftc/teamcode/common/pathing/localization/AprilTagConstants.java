@@ -18,8 +18,8 @@ public class AprilTagConstants {
         offset.setX(CAMERA_POSE.getX() * Math.cos(pipeline.getHeading()) - CAMERA_POSE.getY() * Math.sin(pipeline.getHeading()));
         offset.setY(CAMERA_POSE.getX() * Math.sin(pipeline.getHeading()) + CAMERA_POSE.getY() * Math.cos(pipeline.getHeading()));
 
-        pipeline.add(offset);
-        pipeline.subtract(BLUE_BACKDROP_POSITION);
+        pipeline.add(BLUE_BACKDROP_POSITION);
+        pipeline.subtract(offset);
         return pipeline;
     }
 
@@ -29,8 +29,8 @@ public class AprilTagConstants {
         offset.setX(CAMERA_POSE.getX() * Math.cos(pipeline.getHeading()) - CAMERA_POSE.getY() * Math.sin(pipeline.getHeading()));
         offset.setY(CAMERA_POSE.getX() * Math.sin(pipeline.getHeading()) + CAMERA_POSE.getY() * Math.cos(pipeline.getHeading()));
 
-        pipeline.add(offset);
-        pipeline.subtract(RED_BACKDROP_POSITION);
+        pipeline.add(RED_BACKDROP_POSITION);
+        pipeline.subtract(offset);
         return pipeline;
     }
 }

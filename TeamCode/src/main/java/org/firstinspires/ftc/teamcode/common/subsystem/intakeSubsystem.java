@@ -29,6 +29,7 @@ public class intakeSubsystem extends JSubsystem {
     private double transferFlapAngle = 0;
     public static double rollerDepth = 0.2;
     public int targetStackHeight = 1;
+    public double waitTimer = 0;
     intakeState state = intakeState.stationary;
 
     public enum intakeState{
@@ -48,8 +49,12 @@ public class intakeSubsystem extends JSubsystem {
     public void read(){
         rollerVelocity = robot.doubleSubscriber(Sensors.SensorType.INTAKE_VELOCITY);
         isOverCurrentLimit = robot.boolSubscriber(Sensors.SensorType.INTAKE_CURRENT);
+
         if(issueColorSensorCheck && (robot.getTimeMs()-lastCheckTime>100)){
             lastCheckTime = robot.getTimeMs();
+            waitTimer = lastCheckTime;
+        }
+        if((robot.getTimeMs()-waitTimer)>300){
             isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
             isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
             issueColorSensorCheck = false;
