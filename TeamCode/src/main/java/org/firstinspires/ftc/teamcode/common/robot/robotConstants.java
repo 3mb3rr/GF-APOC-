@@ -25,11 +25,11 @@ public class robotConstants {
     // Slide constants
     public static PIDController slideController = new PIDController(0.02, 0, 0.0007);
     // ticks for slide to place in the first row
-    public static int slideFirstRowTicks = 400;
+    public static int slideFirstRowTicks = 0;
     // how many ticks should be added for slides to reach the next row
-    public static int slideRowIncreaseTicks = 100;
+    public static int slideRowIncreaseTicks = 230;
     // how many ticks should be added if angle is changed from 0 to 30 degrees
-    public static int slideAngleIncreaseTicks = 50;
+    public static int slideAngleIncreaseTicks = 100;
 
     public static double slideFF = 0.1;
     public static double slideFFHang = -0.7;
@@ -38,9 +38,9 @@ public class robotConstants {
     // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(34);
     public static double waitPitch = Math.toRadians(-80);
-    public static double transferPitch = Math.toRadians(-100);
-    public static double pivotTransferAngle = Math.toRadians(-80);
-    public static double pivotRearrangeAngle = Math.toRadians(56);
+    public static double transferPitch = Math.toRadians(-110);
+    public static double pivotTransferAngle = Math.toRadians(-105);
+    public static double pivotRearrangeAngle = Math.toRadians(90);
 
     // values for finger servoes
     public static double releasePos = 0.1;
@@ -66,7 +66,7 @@ public class robotConstants {
     public static double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)
     public static double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
-    public static double inPerTick = 0.00001;
+    public static double inPerTick = 0.0005315673485;
 
     // Pathing constants
     // This section is for setting the actual drive vector for the front left wheel, if the robot

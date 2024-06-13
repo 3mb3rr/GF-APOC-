@@ -197,13 +197,13 @@ public class robotHardware {
         pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
 
         transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
-        v4Bar.setAngularRange(1,Math.toRadians(15),0.34,Math.toRadians(90));
+        v4Bar.setAngularRange(1,Math.toRadians(75),0.34,Math.toRadians(0));
 
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();
         drone = new droneSubsystem();
         follower = new followerSubsystem();
-        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
+//        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
 
 
         values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
@@ -273,6 +273,11 @@ public class robotHardware {
 //        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
 
         values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
+
+        intake.read();
+        deposit.read();
+        drone.read();
+        follower.read();
     }
 
     public void startIMUThread(LinearOpMode opMode) {

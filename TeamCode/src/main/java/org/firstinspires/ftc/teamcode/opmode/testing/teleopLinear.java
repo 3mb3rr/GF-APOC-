@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.testing;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -21,6 +22,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeComm
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 
@@ -33,6 +35,11 @@ public class teleopLinear extends LinearOpMode {
     private Vector driveVector;
     private Vector headingVector;
 
+    private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(300)};
+    private int rollIndex = 0;
+    private int targetRow = 1;
+    private boolean isLeftDropped = false;
+    private boolean isRightDropped = false;
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -42,6 +49,7 @@ public class teleopLinear extends LinearOpMode {
             gamepadDrivetrain = new GamepadEx(gamepad1);
             gamepadMechanism = new GamepadEx(gamepad2);
             robot.init(hardwareMap);
+            robot.follower.setAuto(CenterstageConstants.IS_AUTO);
             robot.read();
             robot.periodic();
             robot.write();
@@ -78,42 +86,42 @@ public class teleopLinear extends LinearOpMode {
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                    new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new grabLeftPixel(), new grabRightPixel())
+                    new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500),new grabLeftPixel(), new grabRightPixel())
             );
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new armToRearrangePosition());
             if (robot.intake.getLeftPixel() && robot.intake.getRightPixel())
                 CommandScheduler.getInstance().schedule(
-                        new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new grabLeftPixel(), new grabRightPixel())
+                        new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500),new grabLeftPixel(), new grabRightPixel())
                 );
 
             gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
 
-            telemetry.addData("left pixel", robot.intake.getLeftPixel());
-            telemetry.addData("right pixel", robot.intake.getRightPixel());
+            telemetry.addData("intake velocity", robot.intake.issueColorSensorCheck);
+            telemetry.addData("leftPixel", robot.intake.getLeftPixel());
+
+            telemetry.addData("rightPixel", robot.intake.getRightPixel());
             telemetry.update();
         }
 
         }
-        public void incrementRollLeft () {
-            if (robot.deposit.getRollIndex() != 0)
-                robot.deposit.setRollIndex(robot.deposit.getRollIndex() - 1);
-            else robot.deposit.setRollIndex(5);
-        }
+    public void incrementRollLeft(){
+        if(rollIndex != 0) rollIndex-=1;
+        else rollIndex = 5;
+    }
 
-        public void incrementRollRight () {
-            if (robot.deposit.getRollIndex() != 5)
-                robot.deposit.setRollIndex(robot.deposit.getRollIndex() + 1);
-            else robot.deposit.setRollIndex(0);
-        }
+    public void incrementRollRight(){
+        if(rollIndex != 5) rollIndex+=1;
+        else rollIndex = 0;
+    }
 
-        public void decreaseSlideRow () {
-            if (robot.deposit.getSlideTargetRow() != 0)
-                robot.deposit.setSlideTargetRow(robot.deposit.getSlideTargetRow() - 1);
-            else robot.deposit.setSlideTargetRow(0);
-        }
-        public void increaseSlideRow () {
-            robot.deposit.setSlideTargetRow(robot.deposit.getSlideTargetRow() + 1);
-        }
+    public void decreaseSlideRow(){
+        if(targetRow != 0) targetRow-=1;
+        else targetRow = 0;
+    }
+    public void increaseSlideRow(){
+        targetRow+=1;
+    }
+
 
 
 }

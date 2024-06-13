@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,11 +39,12 @@ public class teleop extends CommandOpMode {
     private Vector driveVector;
     private Vector headingVector;
 
-    private double[] rollAngles = {0, Math.toRadians(30), Math.toRadians(150), Math.toRadians(180), Math.toRadians(210), Math.toRadians(270)};
+    private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(300)};
     private int rollIndex = 0;
-    private int targetRow = robot.deposit.getSlideTargetRow();
+    private int targetRow = 1;
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
+    private boolean transferred = false;
     @Override
     public void initialize(){
         CommandScheduler.getInstance().reset();
@@ -50,6 +52,7 @@ public class teleop extends CommandOpMode {
         gamepadDrivetrain = new GamepadEx(gamepad1);
         gamepadMechanism = new GamepadEx(gamepad2);
         robot.init(hardwareMap);
+        robot.follower.setAuto(CenterstageConstants.IS_AUTO);
         robot.read();
         robot.periodic();
         robot.write();
@@ -83,15 +86,24 @@ public class teleop extends CommandOpMode {
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseLeftPixel()); isLeftDropped = true;}
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseRightPixel()); isRightDropped = true;}
         if(isLeftDropped && isRightDropped && (robot.deposit.getArmState() != depositSubsystem.armState.wait)){
+            isLeftDropped = false;
+            isRightDropped = false;
+            transferred = false;
+            rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new slideToRow(0), new armToWaitPosition(), new setRollAngle(0)
+                    new slideToRow(1), new armToWaitPosition(), new setRollAngle(0)
             ));
+
         }
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new grabLeftPixel(), new grabRightPixel())
+                new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500), new grabLeftPixel(), new grabRightPixel())
         );
+        if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
+            CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500), new grabLeftPixel(), new grabRightPixel()));
+            transferred = true;
+        }
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
                 new setRollAngle(rollAngles[rollIndex]), new armToRearrangePosition(), new slideToRow(targetRow)
         ));

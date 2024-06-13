@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoTest extends LinearOpMode {
     private Servo fourbar;
     private DcMotorEx intakeMotor;
-    private double pos;
+    private double pos=0.5;
     @Override
     public void runOpMode() throws InterruptedException {
         while (!isStopRequested() && !isStarted()) {

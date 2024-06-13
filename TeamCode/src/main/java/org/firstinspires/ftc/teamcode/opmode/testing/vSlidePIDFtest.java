@@ -8,9 +8,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 
 
 @Config
@@ -24,16 +27,14 @@ public class vSlidePIDFtest extends OpMode {
     private DcMotorEx slideLeft;
     private DcMotorEx slideRight;
     private DcMotorEx intakeMotor;
-    private Servo pitchServoLeft;
-    private Servo pitchServoRight;
-    private Servo pivotServo;
+    public JServo leftPitch, rightPitch, pivot;
     private Servo wristServo;
     private Servo fingerServoLeft;
     private Servo fingerServoRight;
     private Servo fourbar;
 
-    private TouchSensor slideCloseLeft;
-    private TouchSensor slideCloseRight;
+    private DigitalChannel slideCloseLeft;
+    private DigitalChannel slideCloseRight;
     private int slidePosLeft;
     private int slidePosRight;
     public ElapsedTime time;
@@ -42,9 +43,9 @@ public class vSlidePIDFtest extends OpMode {
         controller = new PIDController(p, i, d);
         slideLeft = hardwareMap.get(DcMotorEx.class, "slideLeft");
         slideRight = hardwareMap.get(DcMotorEx.class, "slideRight");
-        pitchServoLeft = hardwareMap.get(Servo.class, "pitchServoLeft");
-        pitchServoRight = hardwareMap.get(Servo.class, "pitchServoRight");
-        pivotServo = hardwareMap.get(Servo.class, "pivotServo");
+        pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
+        leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
+        rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
         wristServo = hardwareMap.get(Servo.class, "wristServo");
         fingerServoLeft = hardwareMap.get(Servo.class, "fingerServoLeft");
         fingerServoRight = hardwareMap.get(Servo.class, "fingerServoRight");
@@ -52,8 +53,8 @@ public class vSlidePIDFtest extends OpMode {
         fourbar = hardwareMap.get(Servo.class, "fourBarServo");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        slideCloseLeft = hardwareMap.touchSensor.get("slideCloseLeft");
-        slideCloseRight = hardwareMap.touchSensor.get("slideCloseRight");
+        slideCloseLeft = hardwareMap.digitalChannel.get("slideCloseLeft");
+        slideCloseRight = hardwareMap.digitalChannel.get("slideCloseRight");
         slidePosLeft = 0;
         slidePosRight = 0;
         slideRight.setDirection(DcMotorEx.Direction.REVERSE);
@@ -66,6 +67,14 @@ public class vSlidePIDFtest extends OpMode {
 //        pitchServoLeft.setPosition(pos);
 //        pitchServoRight.setPosition(pos);
         time = new ElapsedTime();
+
+        leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
+        rightPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
+        pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
+
+        leftPitch.setAngle(Math.toRadians(34));
+        rightPitch.setAngle(Math.toRadians(34));
+        pivot.setAngle(Math.toRadians(56));
     }
 
     public void loop(){
@@ -80,8 +89,8 @@ public class vSlidePIDFtest extends OpMode {
         controller.setPID(p,i,d);
         double pid=controller.calculate((slidePosLeft+slidePosRight)/2, target);
         double power = (pid +f);
-        slideLeft.setPower(power);
-        slideRight.setPower(power);
+       // slideLeft.setPower(power);
+       // slideRight.setPower(power);
 
         telemetry.addData("slide pos left", slideLeft.getCurrentPosition());
         telemetry.addData("slide pos right",slideRight.getCurrentPosition());
@@ -96,7 +105,7 @@ public class vSlidePIDFtest extends OpMode {
             }
         }
 
-        if (slideCloseLeft.isPressed() || slideCloseRight.isPressed()){
+        if (slideCloseLeft.getState() || slideCloseRight.getState()){
             slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slideLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

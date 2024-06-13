@@ -21,7 +21,7 @@ public class intakeSubsystem extends JSubsystem {
     private double rollerVelocity;
     private boolean isOverCurrentLimit;
     private double rollerPower = 0;
-    private boolean issueColorSensorCheck = true;
+    public boolean issueColorSensorCheck = false;
     private double lastCheckTime = 0;
     private boolean isLeftPixel = false;
     private boolean isRightPixel = false;
@@ -38,6 +38,7 @@ public class intakeSubsystem extends JSubsystem {
         stationary
     }
     public intakeSubsystem() {
+        issueColorSensorCheck = false;
     }
     public intakeSubsystem(double rollerDepth, int targetStackHeight) {
         setRollerDepth(rollerDepth);
@@ -50,11 +51,8 @@ public class intakeSubsystem extends JSubsystem {
         rollerVelocity = robot.doubleSubscriber(Sensors.SensorType.INTAKE_VELOCITY);
         isOverCurrentLimit = robot.boolSubscriber(Sensors.SensorType.INTAKE_CURRENT);
 
-        if(issueColorSensorCheck && (robot.getTimeMs()-lastCheckTime>100)){
+        if(issueColorSensorCheck || (robot.getTimeMs()-lastCheckTime>1000)){
             lastCheckTime = robot.getTimeMs();
-            waitTimer = lastCheckTime;
-        }
-        if((robot.getTimeMs()-waitTimer)>300){
             isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
             isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
             issueColorSensorCheck = false;
