@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 
 /**
  * This is the Drawing class. It handles the drawing of stuff on FTC Dashboard, like the robot.
@@ -48,6 +49,7 @@ public class Drawing {
         drawRobot(follower.getPose(), "#4CAF50");
         sendPacket();
     }
+
 
     /**
      * This adds instructions to the current packet to draw a robot at a specified Pose with a specified

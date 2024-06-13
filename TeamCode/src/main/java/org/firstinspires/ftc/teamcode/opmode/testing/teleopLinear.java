@@ -1,8 +1,5 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -25,7 +22,6 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
-import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
 
 
 @TeleOp

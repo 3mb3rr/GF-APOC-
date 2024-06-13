@@ -28,9 +28,8 @@ public class depositSubsystem extends JSubsystem {
     private double pitchTargetAngle;
     private double pivotTargetAngle;
     private double leftFingerPos, rightFingerPos;
-    private double[] rollAngles = {0, Math.toRadians(30), Math.toRadians(150), Math.toRadians(180), Math.toRadians(210), Math.toRadians(270)};
-    private int rollIndex = 0;
     private double rollAngle = 0;
+    private double targetRollAngle = 0;
 
     public enum armState{
         wait,
@@ -59,18 +58,22 @@ public class depositSubsystem extends JSubsystem {
             case wait:
                 pitchTargetAngle = robotConstants.waitPitch;
                 pivotTargetAngle = robotConstants.pivotTransferAngle;
+                targetRollAngle = 0;
                 break;
             case transfer:
                 pitchTargetAngle = robotConstants.transferPitch;
                 pivotTargetAngle = robotConstants.pivotTransferAngle;
+                targetRollAngle = 0;
                 break;
             case drop:
                 pitchTargetAngle = robotConstants.dropPitch;
                 pivotTargetAngle = getPivotAngle(pitchTargetAngle);
+                targetRollAngle = rollAngle;
                 break;
             case rearrange:
                 pitchTargetAngle = robotConstants.dropPitch;
                 pivotTargetAngle = robotConstants.pivotRearrangeAngle;
+                targetRollAngle = Math.toRadians(180);
                 break;
         }
         switch(leftDropperState){
@@ -90,7 +93,7 @@ public class depositSubsystem extends JSubsystem {
                 break;
         }
         slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;
-        if(rollAngle != 0 && rollAngle != 180 && rollIndex != 0 && rollIndex != 3) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
         robot.leftSlide.setTargetPosition(slideTargetPosition);
         robot.rightSlide.setTargetPosition(slideTargetPosition);
 
@@ -105,8 +108,7 @@ public class depositSubsystem extends JSubsystem {
         robot.pivot.setAngle(pivotTargetAngle);
         robot.fingerLeft.setPosition(leftFingerPos);
         robot.fingerRight.setPosition(rightFingerPos);
-        if(rollIndex==-1)robot.roll.setAngle(rollAngle);
-        else robot.roll.setAngle(rollAngles[rollIndex]);
+        robot.roll.setAngle(targetRollAngle);
 
     }
     @Override
@@ -126,12 +128,8 @@ public class depositSubsystem extends JSubsystem {
     private double getPivotAngle(double pitchAngle){
         return(Math.toRadians(90)+robotConstants.slideAngle-Math.toRadians(60)-pitchAngle);
     }
-    public void setRollIndex(int index){
-        rollIndex = index;
-    }
-    public int getRollIndex(){ return rollIndex;}
+
     public void setRollAngle(double angle){
-        rollIndex = -1;
         rollAngle = angle;
     }
     public void updateArmState(@NotNull depositSubsystem.armState state) {
@@ -145,8 +143,17 @@ public class depositSubsystem extends JSubsystem {
         slideTargetRow = row;
     }
     public int getSlideTargetRow() {return slideTargetRow;}
-    public void setFeedForward(){
-        robot.leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFFHang);
+    public void setFeedForward(double ff){
+        robot.leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, ff);
+    }
+    public dropperState getLeftDropperState(){
+        return leftDropperState;
+    }
+    public dropperState getRightDropperState(){
+        return rightDropperState;
+    }
+    public armState getArmState(){
+        return ArmState;
     }
 
 }
