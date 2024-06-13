@@ -25,7 +25,7 @@ public class intakeSubsystem extends JSubsystem {
     private double lastCheckTime = 0;
     private boolean isLeftPixel = false;
     private boolean isRightPixel = false;
-    private double v4BarAngle = Math.toRadians(90);
+    private double v4BarAngle = Math.toRadians(0);
     private double transferFlapAngle = 0;
     public static double rollerDepth = 0.2;
     public int targetStackHeight = 1;
@@ -83,9 +83,7 @@ public class intakeSubsystem extends JSubsystem {
     @Override
     public void write() {
         robot.intakeRoller.setPower(rollerPower);
-        if(Math.abs(robot.v4Bar.getAngle()-v4BarAngle)>Math.toRadians(1.5)){
-            robot.v4Bar.setAngle(v4BarAngle);
-        }
+        robot.v4Bar.setAngle(v4BarAngle);
         robot.transferFlap.setAngle(transferFlapAngle);
     }
     @Override

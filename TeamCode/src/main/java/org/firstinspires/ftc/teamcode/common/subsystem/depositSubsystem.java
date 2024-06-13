@@ -96,6 +96,9 @@ public class depositSubsystem extends JSubsystem {
         if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
         robot.leftSlide.setTargetPosition(slideTargetPosition);
         robot.rightSlide.setTargetPosition(slideTargetPosition);
+        robot.leftSlide.periodic();
+        robot.rightSlide.periodic();
+
 
     }
     @Override
