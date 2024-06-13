@@ -36,11 +36,11 @@ public class robotConstants {
     // Angle of slide with the ground
     public static double slideAngle = Math.toRadians(60);
     // pitch of arm at different functions
-    public static double dropPitch = Math.toRadians(0);
+    public static double dropPitch = Math.toRadians(34);
     public static double waitPitch = Math.toRadians(-80);
     public static double transferPitch = Math.toRadians(-100);
     public static double pivotTransferAngle = Math.toRadians(-80);
-    public static double pivotRearrangeAngle = Math.toRadians(90);
+    public static double pivotRearrangeAngle = Math.toRadians(56);
 
     // values for finger servoes
     public static double releasePos = 0.1;
