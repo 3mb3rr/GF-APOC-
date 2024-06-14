@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmode.testing;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -57,6 +59,7 @@ public class ServoTestThree extends LinearOpMode {
             driveVector = new Vector();
             headingVector = new Vector();
             while (opModeInInit()) {
+                telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 telemetry.addLine("Robot Initialized.");
                 telemetry.update();
             }
@@ -85,7 +88,7 @@ public class ServoTestThree extends LinearOpMode {
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
                 sleep(100);
             }
-            telemetry.addData("fourbar angle",robot.v4Bar.getAngle());
+            telemetry.addData("fourbar angle",robot.intake.v4BarAngle);
             telemetry.addData("fourbar position",robot.v4Bar.getPosition());
             telemetry.update();
         }

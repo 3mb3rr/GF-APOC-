@@ -25,7 +25,7 @@ public class intakeSubsystem extends JSubsystem {
     private double lastCheckTime = 0;
     private boolean isLeftPixel = false;
     private boolean isRightPixel = false;
-    private double v4BarAngle = Math.toRadians(0);
+    public double v4BarAngle = Math.toRadians(0);
     private double transferFlapAngle = 0;
     public static double rollerDepth = 0.2;
     public int targetStackHeight = 1;
@@ -77,7 +77,7 @@ public class intakeSubsystem extends JSubsystem {
         if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
             issueColorSensorCheck = true;
         }
-        v4BarAngle = v4BarInverseKinematics(targetStackHeight);
+        //v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
     }
     @Override
