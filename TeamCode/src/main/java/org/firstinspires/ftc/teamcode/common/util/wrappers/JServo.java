@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.common.util.wrappers;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
+import org.firstinspires.ftc.teamcode.common.util.MathUtils;
+
 public class JServo implements Servo {
 
     private Servo servo;
@@ -66,7 +68,7 @@ public class JServo implements Servo {
 
     @Override
     public void setPosition(double position) {
-        this.servo.setPosition(position);
+        this.servo.setPosition(MathUtils.clamp(position,0,1));
     }
 
     @Override

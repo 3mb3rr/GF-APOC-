@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -26,7 +27,7 @@ import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 
-
+@Autonomous
 public class ServoTestThree extends LinearOpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;
@@ -70,18 +71,22 @@ public class ServoTestThree extends LinearOpMode {
             if (gamepad2.x) {
                 telemetry.addLine("im straight");
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
+                sleep(100);
             }
             if (gamepad2.y) {
                 telemetry.addLine("im lesbian");
                 i = i + 1;
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
+                sleep(100);
             }
             if (gamepad2.a) {
                 i = i - 1;
                 telemetry.addLine("im gay"); //aryan set these telemetry statements not me wtf is this
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
+                sleep(100);
             }
-
+            telemetry.addData("fourbar angle",robot.v4Bar.getAngle());
+            telemetry.addData("fourbar position",robot.v4Bar.getPosition());
             telemetry.update();
         }
     }
