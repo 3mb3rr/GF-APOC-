@@ -51,8 +51,6 @@ public class depositSubsystem extends JSubsystem {
     }
     @Override
     public void periodic() {
-        robot.leftSlide.setTargetPosition(slideTargetPosition);
-        robot.leftSlide.setTargetPosition(slideTargetPosition);
         // TODO: wait and transfer values not put
         switch(ArmState){
             case wait:

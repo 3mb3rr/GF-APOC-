@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
  * @version 1.0, 3/4/2024
  */
 @Config
-public class robotConstants {
+public class  robotConstants {
 
     // Slide constants
     public static PIDController slideController = new PIDController(0.02, 0, 0.0007);
@@ -57,11 +57,11 @@ public class robotConstants {
     // roller power
     public static double maxRollerPower = 0.8;
     // height of pivot point of v4bar from ground
-    public static double v4BarHeight = MathUtils.mmToInches(171.25);
+    public static double v4BarHeight = MathUtils.mmToInches(122);
     // length of v4bar
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
-    public static double rollerLength = MathUtils.mmToInches(45);
+    public static double rollerLength = MathUtils.mmToInches(40);
     // localization constants
     public static double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)

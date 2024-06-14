@@ -77,7 +77,7 @@ public class intakeSubsystem extends JSubsystem {
         if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
             issueColorSensorCheck = true;
         }
-        //v4BarAngle = v4BarInverseKinematics(targetStackHeight);
+        v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
     }
     @Override

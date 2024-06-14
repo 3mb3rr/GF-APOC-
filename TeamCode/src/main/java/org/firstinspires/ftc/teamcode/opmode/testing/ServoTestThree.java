@@ -74,19 +74,19 @@ public class ServoTestThree extends LinearOpMode {
             if (gamepad2.x) {
                 telemetry.addLine("im straight");
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(100);
+                sleep(1000);
             }
             if (gamepad2.y) {
                 telemetry.addLine("im lesbian");
                 i = i + 1;
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(100);
+                sleep(1000);
             }
             if (gamepad2.a) {
                 i = i - 1;
                 telemetry.addLine("im gay"); //aryan set these telemetry statements not me wtf is this
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(100);
+                sleep(1000);
             }
             telemetry.addData("fourbar angle",robot.intake.v4BarAngle);
             telemetry.addData("fourbar position",robot.v4Bar.getPosition());
