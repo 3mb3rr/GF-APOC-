@@ -30,6 +30,7 @@ public class depositSubsystem extends JSubsystem {
     private double leftFingerPos, rightFingerPos;
     private double rollAngle = 0;
     private double targetRollAngle = 0;
+    private double botVoltage = 12;
 
     public enum armState{
         wait,
@@ -48,6 +49,7 @@ public class depositSubsystem extends JSubsystem {
     public void read(){
         robot.leftSlide.read();
         robot.rightSlide.read();
+        botVoltage = robot.doubleSubscriber(Sensors.SensorType.BATTERY);
     }
     @Override
     public void periodic() {
@@ -92,6 +94,18 @@ public class depositSubsystem extends JSubsystem {
         }
         slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;
         if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+        robot.leftSlide.setVoltageSupplier(new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return botVoltage;
+            }
+        });
+        robot.rightSlide.setVoltageSupplier(new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return botVoltage;
+            }
+        });
         robot.leftSlide.setTargetPosition(slideTargetPosition);
         robot.rightSlide.setTargetPosition(slideTargetPosition);
         robot.leftSlide.periodic();
