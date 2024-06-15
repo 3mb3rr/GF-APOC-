@@ -7,9 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 
 /**
@@ -23,7 +25,7 @@ import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
  */
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
 public class TeleOpEnhancements extends OpMode {
-    private followerSubsystem follower;
+    private final robotHardware robot = robotHardware.getInstance();
 
     GamepadEx pad1;
 
@@ -40,7 +42,12 @@ public class TeleOpEnhancements extends OpMode {
      */
     @Override
     public void init() {
-        follower = new followerSubsystem(false);
+        robot.follower.initialize();
+        robot.follower.setAuto(CenterstageConstants.IS_AUTO);
+        robot.follower.read();
+        robot.follower.periodic();
+        robot.poseUpdater.periodic();
+        robot.follower.write();
 
         pad1=new GamepadEx(gamepad1);
 
@@ -64,13 +71,18 @@ public class TeleOpEnhancements extends OpMode {
      */
     @Override
     public void loop() {
+        robot.follower.read();
+
         driveVector.setOrthogonalComponents(-pad1.getLeftY(), -pad1.getLeftX());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
-        driveVector.rotateVector(follower.getPose().getHeading());
+        driveVector.rotateVector(robot.follower.getPose().getHeading());
 
-        headingVector.setComponents(-pad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)+pad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), follower.getPose().getHeading());
+        headingVector.setComponents(-pad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)+pad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), robot.follower.getPose().getHeading());
 
-        follower.setMovementVectors(follower.getCentripetalForceCorrection(), headingVector, driveVector);
-        follower.update();
+        robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
+
+        robot.follower.periodic();
+        robot.poseUpdater.periodic();
+        robot.follower.write();
     }
 }
