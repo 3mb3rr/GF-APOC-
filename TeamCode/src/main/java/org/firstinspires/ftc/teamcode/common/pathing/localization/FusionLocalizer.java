@@ -89,7 +89,7 @@ public class FusionLocalizer extends Localizer {
      */
     public FusionLocalizer(Pose setStartPose) {
 
-        inPerTick = robotConstants.inPerTick; //(Placeholder value)
+        inPerTick = robotConstants.inPerTick;
         setStartPose(setStartPose);
     }
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.pathing.examples;
 
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,6 +24,8 @@ import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 public class TeleOpEnhancements extends OpMode {
     private Follower follower;
 
+    GamepadEx pad1;
+
     private DcMotorEx leftFront;
     private DcMotorEx leftRear;
     private DcMotorEx rightFront;
@@ -37,9 +41,11 @@ public class TeleOpEnhancements extends OpMode {
     public void init() {
         follower = new Follower(hardwareMap, false);
 
+        pad1=new GamepadEx(gamepad1);
+
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -57,11 +63,11 @@ public class TeleOpEnhancements extends OpMode {
      */
     @Override
     public void loop() {
-        driveVector.setOrthogonalComponents(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
+        driveVector.setOrthogonalComponents(-pad1.getLeftY(), -pad1.getLeftX());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(follower.getPose().getHeading());
 
-        headingVector.setComponents(-gamepad1.left_stick_x, follower.getPose().getHeading());
+        headingVector.setComponents(-pad1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)+pad1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), follower.getPose().getHeading());
 
         follower.setMovementVectors(follower.getCentripetalForceCorrection(), headingVector, driveVector);
         follower.update();

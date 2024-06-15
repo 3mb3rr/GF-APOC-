@@ -10,6 +10,9 @@ public class JServo implements Servo {
     private Servo servo;
     private double radPerVolt = 0.0;
     private double offset = 0.0;
+    private double targetAngle = 0;
+    private double lastPosition = 0;
+
 
     public JServo(Servo servo) {
         this.servo = servo;
@@ -68,12 +71,13 @@ public class JServo implements Servo {
 
     @Override
     public void setPosition(double position) {
-        this.servo.setPosition(MathUtils.clamp(position,0,1));
+        lastPosition = MathUtils.clamp(position,0,1);
+        this.servo.setPosition(lastPosition);
     }
 
     @Override
     public double getPosition() {
-        return this.servo.getPosition();
+        return lastPosition;
     }
 
     @Override
@@ -87,7 +91,8 @@ public class JServo implements Servo {
     }
 
     public void setAngle(double angle){
-        setPosition((angle/radPerVolt)+offset);
+        targetAngle = angle;
+        this.servo.setPosition(MathUtils.clamp(((targetAngle/radPerVolt)+offset),0,1));
     }
     public double getAngle(){
         return (getPosition()-offset)*radPerVolt;

@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.outoftheboxrobotics.photoncore.Photon;
 
 import com.outoftheboxrobotics.photoncore.hardware.PhotonLynxVoltageSensor;
@@ -40,6 +41,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.droneSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.slideSub;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
@@ -80,6 +82,7 @@ public class robotHardware {
     public intakeSubsystem intake;
     public depositSubsystem deposit;
     public followerSubsystem follower;
+    public slideSub slide;
     public droneSubsystem drone;
 
     //    public PreloadDetectionPipeline preloadDetectionPipeline;
@@ -185,8 +188,8 @@ public class robotHardware {
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
-        lift = new JActuator(() -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), leftSlideMotor, rightSlideMotor);
-        lift.setPIDController(robotConstants.slideController);
+        lift = new JActuator(() -> leftSlideMotor.getCurrentPosition(), leftSlideMotor, rightSlideMotor);
+        lift.setPIDController(new PIDController(0.02, 0, 0.000475));
         lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         lift.setErrorTolerance(5);
 
@@ -202,10 +205,11 @@ public class robotHardware {
         deposit = new depositSubsystem();
         drone = new droneSubsystem();
         follower = new followerSubsystem();
+//        slide = new slideSub();
 //        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
 
 
-        values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()+rightSlideMotor.getCurrentPosition())/2);
+//        values.put(Sensors.SensorType.SLIDE_ENCODER, (leftSlideMotor.getCurrentPosition()));
         values.put(Sensors.SensorType.SLIDE_LIMIT, (leftLimit.isPressed() || rightLimit.isPressed()));
         values.put(Sensors.SensorType.POD_PAR0, par0.getPositionAndVelocity());
         values.put(Sensors.SensorType.POD_PAR1, par1.getPositionAndVelocity());
@@ -248,12 +252,14 @@ public class robotHardware {
         intake.periodic();
         deposit.periodic();
         drone.periodic();
+//        slide.periodic();
 
     }
     public void write() {
-        follower.write();
-        intake.write();
         deposit.write();
+       // follower.write();
+        intake.write();
+//        slide.write();
         drone.write();
     }
     public void read() {
@@ -270,11 +276,12 @@ public class robotHardware {
 
         // non bulk read
 //        values.put(Sensors.SensorType.BATTERY, battery.getCachedVoltage());
-
+//
         values.put(Sensors.SensorType.BATTERY, battery.getVoltage());
 
         intake.read();
         deposit.read();
+//        slide.read();
         drone.read();
         follower.read();
     }

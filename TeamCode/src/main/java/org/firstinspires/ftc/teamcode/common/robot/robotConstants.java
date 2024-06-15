@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 public class  robotConstants {
 
     // Slide constants
-    public static PIDController slideController = new PIDController(0.02, 0, 0.000475);
+    public static PIDController slideController = new PIDController(0.018, 0, 0.000475);
     // ticks for slide to place in the first row
     public static int slideFirstRowTicks = 0;
     // how many ticks should be added for slides to reach the next row
@@ -63,9 +63,9 @@ public class  robotConstants {
     // length of one spoke of the rollers in intake
     public static double rollerLength = MathUtils.mmToInches(40);
     // localization constants
-    public static double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
-    public static double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)
-    public static double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
+    public static double par0YTicks = -10558; // y position of the first parallel encoder (in tick units)
+    public static double par1YTicks = 10558; // y position of the second parallel encoder (in tick units)
+    public static double perpXTicks = -11480; // x position of the perpendicular encoder (in tick units)
     public static double inPerTick = 0.0005315673485;
 
     // Pathing constants
@@ -160,7 +160,7 @@ public class  robotConstants {
     public static double smallDrivePIDFFeedForward = 0.01;
 
     // Mass of robot in kilograms
-    public static double mass = 10.65942;
+    public static double mass = 14.5;
 
     // Centripetal force to power scaling
     public static double centripetalScaling = 0.0005;

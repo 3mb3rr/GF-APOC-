@@ -35,8 +35,7 @@ public class droneSubsystem extends JSubsystem {
     }
     @Override
     public void write() {
-        robot.droneServo.setPosition(droneServoPosition);
-    }
+        if(robot.droneServo.getPosition() != droneServoPosition) robot.droneServo.setPosition(droneServoPosition);}
     @Override
     public void reset() {
         state = droneState.wait;

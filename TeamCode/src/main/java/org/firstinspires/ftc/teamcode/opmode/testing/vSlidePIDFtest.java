@@ -26,35 +26,19 @@ public class vSlidePIDFtest extends OpMode {
     public static int target=0;
     private DcMotorEx slideLeft;
     private DcMotorEx slideRight;
-    private DcMotorEx intakeMotor;
-    public JServo leftPitch, rightPitch, pivot;
-    private Servo wristServo;
-    private Servo fingerServoLeft;
-    private Servo fingerServoRight;
-    private Servo fourbar;
-
-    private DigitalChannel slideCloseLeft;
-    private DigitalChannel slideCloseRight;
-    private int slidePosLeft;
+        private int slidePosLeft;
     private int slidePosRight;
     public ElapsedTime time;
     int j;
+
+    private double currentTime=0;
+    private double lastTime = 0.0;
+    private double loopTime=0;
     public void init(){
         controller = new PIDController(p, i, d);
         slideLeft = hardwareMap.get(DcMotorEx.class, "slideLeft");
         slideRight = hardwareMap.get(DcMotorEx.class, "slideRight");
-        pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
-        leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
-        rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
-        wristServo = hardwareMap.get(Servo.class, "wristServo");
-        fingerServoLeft = hardwareMap.get(Servo.class, "fingerServoLeft");
-        fingerServoRight = hardwareMap.get(Servo.class, "fingerServoRight");
 
-        fourbar = hardwareMap.get(Servo.class, "fourBarServo");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-
-        slideCloseLeft = hardwareMap.digitalChannel.get("slideCloseLeft");
-        slideCloseRight = hardwareMap.digitalChannel.get("slideCloseRight");
         slidePosLeft = 0;
         slidePosRight = 0;
         slideRight.setDirection(DcMotorEx.Direction.REVERSE);
@@ -68,13 +52,6 @@ public class vSlidePIDFtest extends OpMode {
 //        pitchServoRight.setPosition(pos);
         time = new ElapsedTime();
 
-        leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-        rightPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-        pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
-
-        leftPitch.setAngle(Math.toRadians(34));
-        rightPitch.setAngle(Math.toRadians(34));
-        pivot.setAngle(Math.toRadians(56));
     }
 
     public void loop(){
@@ -105,12 +82,7 @@ public class vSlidePIDFtest extends OpMode {
             }
         }
 
-        if (!slideCloseLeft.getState() || !slideCloseRight.getState()){
-            slideLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            slideLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            slideRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+
 
 
 //        if (gamepad1.left_bumper) {
@@ -124,6 +96,12 @@ public class vSlidePIDFtest extends OpMode {
 //            pitchServoLeft.setPosition(pos);
 //            pitchServoRight.setPosition(pos);
 //        }
+
+        currentTime=System.nanoTime();
+        loopTime=currentTime - lastTime;
+        lastTime = currentTime;
+
+        telemetry.addData("looptime",loopTime);
 
         telemetry.addData("position of pitch",pos);
     }

@@ -21,7 +21,7 @@ import java.util.function.DoubleSupplier;
 
 public class depositSubsystem extends JSubsystem {
     robotHardware robot = robotHardware.getInstance();
-    private int slideTargetPosition = 0;
+    public int slideTargetPosition = 0;
     private int slideTargetRow = 0;
     armState ArmState = armState.wait;
     dropperState leftDropperState = dropperState.release;
@@ -44,12 +44,19 @@ public class depositSubsystem extends JSubsystem {
         release
     }
     public depositSubsystem() {
+        robot.lift.setVoltageSupplier(new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return botVoltage;
+            }
+        });
     }
 
     @Override
     public void read(){
         robot.lift.read();
         botVoltage = robot.doubleSubscriber(Sensors.SensorType.BATTERY);
+
     }
     @Override
     public void periodic() {
@@ -92,24 +99,13 @@ public class depositSubsystem extends JSubsystem {
                 rightFingerPos = robotConstants.grabPos;
                 break;
         }
-        if(slideTargetRow!=0){
-            slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
-        else{
-            slideTargetPosition = 0;
-        }
-        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
-        robot.lift.setVoltageSupplier(new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return botVoltage;
-            }
-        });
-        robot.lift.setVoltageSupplier(new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return botVoltage;
-            }
-        });
+//        if(slideTargetRow!=0){
+//        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
+//        else{
+//            slideTargetPosition = 0;
+//        }
+//        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+
         robot.lift.setTargetPosition(slideTargetPosition);
         robot.lift.periodic();
 
@@ -119,12 +115,12 @@ public class depositSubsystem extends JSubsystem {
     public void write() {
         robot.lift.write();
 
-        robot.leftPitch.setAngle(pitchTargetAngle);
-        robot.rightPitch.setAngle(pitchTargetAngle);
-        robot.pivot.setAngle(pivotTargetAngle);
-        robot.fingerLeft.setPosition(leftFingerPos);
-        robot.fingerRight.setPosition(rightFingerPos);
-        robot.roll.setAngle(targetRollAngle);
+        if(Math.abs(robot.leftPitch.getAngle() - pitchTargetAngle)> Math.toRadians(2)) robot.leftPitch.setAngle(pitchTargetAngle);
+        if(Math.abs(robot.leftPitch.getAngle() - pitchTargetAngle)> Math.toRadians(2)) robot.rightPitch.setAngle(pitchTargetAngle);
+        if(Math.abs(robot.pivot.getAngle() - pivotTargetAngle)> Math.toRadians(2)) robot.pivot.setAngle(pivotTargetAngle);
+        if(robot.fingerLeft.getPosition() != leftFingerPos) robot.fingerLeft.setPosition(leftFingerPos);
+        if(robot.fingerRight.getPosition() != rightFingerPos) robot.fingerLeft.setPosition(rightFingerPos);
+        if(Math.abs(robot.roll.getAngle() - targetRollAngle)> Math.toRadians(2)) robot.roll.setAngle(targetRollAngle);
 
     }
     @Override

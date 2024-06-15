@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.armRowTenTest;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseRig
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
+import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.Sensors;
@@ -35,16 +37,26 @@ import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 
 
-@TeleOp
-public class teleopLinear extends LinearOpMode {
+@TeleOp(name = "teleop coz neev too smart", group = "ykwsp")
+public class teleopLinearEnhancedDrivetrain extends LinearOpMode {
+    private Follower follower;
+
+    private DcMotorEx leftFront;
+    private DcMotorEx leftRear;
+    private DcMotorEx rightFront;
+    private DcMotorEx rightRear;
+
+    private Vector driveVector;
+    private Vector headingVector;
+    //^^neevs stuff^^
+
+
     private final robotHardware robot = robotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;
     private GamepadEx gamepadMechanism;
     private double currentTime=0;
     private double lastTime = 0.0;
     private double loopTime=0;
-    private Vector driveVector;
-    private Vector headingVector;
 
     private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(300)};
     private int rollIndex = 0;
@@ -82,11 +94,7 @@ public class teleopLinear extends LinearOpMode {
             robot.periodic();
             robot.write();
 
-            driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getLeftX());
-            driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
-            driveVector.rotateVector(robot.follower.getPose().getHeading());
-            headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
-            robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
+
 
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(this::incrementRollLeft));
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(this::incrementRollRight));
