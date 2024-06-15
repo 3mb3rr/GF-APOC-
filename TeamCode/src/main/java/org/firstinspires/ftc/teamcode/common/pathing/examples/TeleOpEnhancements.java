@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
+import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 
 /**
  * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
@@ -22,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
  */
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
 public class TeleOpEnhancements extends OpMode {
-    private Follower follower;
+    private followerSubsystem follower;
 
     GamepadEx pad1;
 
@@ -39,7 +40,7 @@ public class TeleOpEnhancements extends OpMode {
      */
     @Override
     public void init() {
-        follower = new Follower(hardwareMap, false);
+        follower = new followerSubsystem(false);
 
         pad1=new GamepadEx(gamepad1);
 

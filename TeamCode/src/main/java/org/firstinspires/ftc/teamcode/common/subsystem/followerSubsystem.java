@@ -14,10 +14,13 @@ import static org.firstinspires.ftc.teamcode.common.robot.robotConstants.transla
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.pathing.follower.DriveVectorScaler;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
@@ -34,6 +37,8 @@ import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JSubsystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the Follower class. It handles the actual following of the paths and all the on-the-fly
@@ -57,6 +62,7 @@ public class followerSubsystem extends JSubsystem {
     private Path currentPath;
 
     private PathChain currentPathChain;
+    private PoseUpdater poseUpdater;
 
     private final int BEZIER_CURVE_BINARY_STEP_LIMIT = robotConstants.BEZIER_CURVE_BINARY_STEP_LIMIT;
     private final int AVERAGED_VELOCITY_SAMPLE_NUMBER = robotConstants.AVERAGED_VELOCITY_SAMPLE_NUMBER;
@@ -83,6 +89,7 @@ public class followerSubsystem extends JSubsystem {
     private long reachedParametricPathEndTime;
 
     private double[] drivePowers;
+    private List<DcMotorEx> motors;
 
     private Vector[] teleOpMovementVectors = new Vector[]{new Vector(), new Vector(), new Vector()};
 
@@ -134,6 +141,7 @@ public class followerSubsystem extends JSubsystem {
      * second derivatives for teleop are set.
      */
     public void initialize() {
+
         driveVectorScaler = new DriveVectorScaler(robotConstants.frontLeftVector);
 
         for (int i = 0; i < AVERAGED_VELOCITY_SAMPLE_NUMBER; i++) {
@@ -145,6 +153,10 @@ public class followerSubsystem extends JSubsystem {
         calculateAveragedVelocityAndAcceleration();
 
         dashboardPoseTracker = new DashboardPoseTracker(robot.poseUpdater);
+
+        poseUpdater = robot.poseUpdater;
+
+        motors = Arrays.asList(robot.leftFront, robot.leftRear, robot.rightFront, robot.rightRear);
     }
 
     /**
@@ -883,5 +895,82 @@ public class followerSubsystem extends JSubsystem {
     @Override
     public void reset(){
         breakFollowing();
+    }
+
+    public void update() {
+        poseUpdater.update();
+
+        if (drawOnDashboard) {
+            dashboardPoseTracker.update();
+        }
+
+        if (auto) {
+            if (holdingPosition) {
+                closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), 1);
+
+                drivePowers = driveVectorScaler.getDrivePowers(MathFunctions.scalarMultiplyVector(getTranslationalCorrection(), holdPointTranslationalScaling), MathFunctions.scalarMultiplyVector(getHeadingVector(), holdPointHeadingScaling), new Vector(), poseUpdater.getPose().getHeading());
+
+                limitDrivePowers();
+
+                for (int i = 0; i < motors.size(); i++) {
+                    motors.get(i).setPower(drivePowers[i]);
+                }
+            } else {
+                if (isBusy) {
+                    closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), BEZIER_CURVE_BINARY_STEP_LIMIT);
+
+                    if (followingPathChain) updateCallbacks();
+
+                    drivePowers = driveVectorScaler.getDrivePowers(getCorrectiveVector(), getHeadingVector(), getDriveVector(), poseUpdater.getPose().getHeading());
+
+                    limitDrivePowers();
+
+                    for (int i = 0; i < motors.size(); i++) {
+                        motors.get(i).setPower(drivePowers[i]);
+                    }
+                }
+                if (currentPath.isAtParametricEnd()) {
+                    if (followingPathChain && chainIndex < currentPathChain.size() - 1) {
+                        // Not at last path, keep going
+                        breakFollowing();
+                        pathStartTimes[chainIndex] = System.currentTimeMillis();
+                        isBusy = true;
+                        followingPathChain = true;
+                        chainIndex++;
+                        currentPath = currentPathChain.getPath(chainIndex);
+                        closestPose = currentPath.getClosestPoint(poseUpdater.getPose(), BEZIER_CURVE_BINARY_STEP_LIMIT);
+                    } else {
+                        // At last path, run some end detection stuff
+                        // set isBusy to false if at end
+                        if (!reachedParametricPathEnd) {
+                            reachedParametricPathEnd = true;
+                            reachedParametricPathEndTime = System.currentTimeMillis();
+                        }
+
+                        if ((System.currentTimeMillis() - reachedParametricPathEndTime > currentPath.getPathEndTimeoutConstraint()) || (poseUpdater.getVelocity().getMagnitude() < currentPath.getPathEndVelocityConstraint() && MathFunctions.distance(poseUpdater.getPose(), closestPose) < currentPath.getPathEndTranslationalConstraint() && MathFunctions.getSmallestAngleDifference(poseUpdater.getPose().getHeading(), currentPath.getClosestPointHeadingGoal()) < currentPath.getPathEndHeadingConstraint())) {
+                            if (holdPositionAtEnd) {
+                                holdPositionAtEnd = false;
+                                holdPoint(new BezierPoint(currentPath.getLastControlPoint()), currentPath.getHeadingGoal(1));
+                            } else {
+                                breakFollowing();
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            velocities.add(poseUpdater.getVelocity());
+            velocities.remove(velocities.get(velocities.size() - 1));
+
+            calculateAveragedVelocityAndAcceleration();
+
+            drivePowers = driveVectorScaler.getDrivePowers(teleOpMovementVectors[0], teleOpMovementVectors[1], teleOpMovementVectors[2], poseUpdater.getPose().getHeading());
+
+            limitDrivePowers();
+
+            for (int i = 0; i < motors.size(); i++) {
+                motors.get(i).setPower(drivePowers[i]);
+            }
+        }
     }
 }
