@@ -69,8 +69,7 @@ public class robotHardware {
     public AnalogDistanceSensor USLeft, USRight, USBack;
     private List<DcMotorEx> driveMotors;
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
-    public JActuator leftSlide;
-    public JActuator rightSlide;
+    public JActuator lift;
     public LimitSwitch leftLimit, rightLimit;
 
     private VisionPortal visionPortal;
@@ -83,7 +82,7 @@ public class robotHardware {
     public followerSubsystem follower;
     public droneSubsystem drone;
 
-//    public PreloadDetectionPipeline preloadDetectionPipeline;
+    //    public PreloadDetectionPipeline preloadDetectionPipeline;
     public PropDetectionPipeline propDetectionPipeline;
     public List<LynxModule> modules;
     public LynxModule CONTROL_HUB;
@@ -148,22 +147,11 @@ public class robotHardware {
         rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
         droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
 
-        localizer = new FusionLocalizer();
-        poseUpdater = new PoseUpdater(localizer);
-
-        leftSlide = new JActuator(leftSlideMotor);
-        leftSlide.setPIDController(robotConstants.slideController);
-        leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
-        leftSlide.setErrorTolerance(5);
-        rightSlide = new JActuator(rightSlideMotor);
-        leftSlide.setPIDController(robotConstants.slideController);
-        leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
-        leftSlide.setErrorTolerance(5);
-
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRoller.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -174,6 +162,10 @@ public class robotHardware {
 
         // TODO: reverse encoder directions if needed
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        localizer = new FusionLocalizer();
+        poseUpdater = new PoseUpdater(localizer);
+
 
         driveMotors = Arrays.asList(leftFront, leftRear, rightFront, rightRear);
         // TODO: set motor modes
@@ -187,9 +179,16 @@ public class robotHardware {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
         intakeRoller.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
+
+        lift = new JActuator(() -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), leftSlideMotor, rightSlideMotor);
+        lift.setPIDController(robotConstants.slideController);
+        lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
+        lift.setErrorTolerance(5);
 
         roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
         leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
@@ -303,7 +302,7 @@ public class robotHardware {
             driveMotors.get(i).setPower(powers[i]);
         }
     }
-        public double doubleSubscriber(Sensors.SensorType topic) {
+    public double doubleSubscriber(Sensors.SensorType topic) {
         Object value = values.getOrDefault(topic, 0.0);
         if (value instanceof Integer) {
             return ((Integer) value).doubleValue();

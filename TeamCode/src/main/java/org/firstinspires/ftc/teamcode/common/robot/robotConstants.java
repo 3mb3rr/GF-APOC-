@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 public class  robotConstants {
 
     // Slide constants
-    public static PIDController slideController = new PIDController(0.02, 0, 0.0007);
+    public static PIDController slideController = new PIDController(0.02, 0, 0.000475);
     // ticks for slide to place in the first row
     public static int slideFirstRowTicks = 0;
     // how many ticks should be added for slides to reach the next row

@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JSubsystem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
 
 public class depositSubsystem extends JSubsystem {
     robotHardware robot = robotHardware.getInstance();
@@ -47,8 +48,7 @@ public class depositSubsystem extends JSubsystem {
 
     @Override
     public void read(){
-        robot.leftSlide.read();
-        robot.rightSlide.read();
+        robot.lift.read();
         botVoltage = robot.doubleSubscriber(Sensors.SensorType.BATTERY);
     }
     @Override
@@ -92,31 +92,32 @@ public class depositSubsystem extends JSubsystem {
                 rightFingerPos = robotConstants.grabPos;
                 break;
         }
-        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;
+        if(slideTargetRow!=0){
+            slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
+        else{
+            slideTargetPosition = 0;
+        }
         if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
-        robot.leftSlide.setVoltageSupplier(new DoubleSupplier() {
+        robot.lift.setVoltageSupplier(new DoubleSupplier() {
             @Override
             public double getAsDouble() {
                 return botVoltage;
             }
         });
-        robot.rightSlide.setVoltageSupplier(new DoubleSupplier() {
+        robot.lift.setVoltageSupplier(new DoubleSupplier() {
             @Override
             public double getAsDouble() {
                 return botVoltage;
             }
         });
-        robot.leftSlide.setTargetPosition(slideTargetPosition);
-        robot.rightSlide.setTargetPosition(slideTargetPosition);
-        robot.leftSlide.periodic();
-        robot.rightSlide.periodic();
+        robot.lift.setTargetPosition(slideTargetPosition);
+        robot.lift.periodic();
 
 
     }
     @Override
     public void write() {
-        robot.leftSlide.write();
-        robot.rightSlide.write();
+        robot.lift.write();
 
         robot.leftPitch.setAngle(pitchTargetAngle);
         robot.rightPitch.setAngle(pitchTargetAngle);
@@ -138,7 +139,7 @@ public class depositSubsystem extends JSubsystem {
         slideTargetPosition = position;
     }
     public boolean isReached(){
-        return (robot.leftSlide.hasReached() || robot.rightSlide.hasReached());
+        return (robot.lift.hasReached());
     }
     private double getPivotAngle(double pitchAngle){
         return(Math.toRadians(90)+robotConstants.slideAngle-Math.toRadians(60)-pitchAngle);
@@ -159,7 +160,7 @@ public class depositSubsystem extends JSubsystem {
     }
     public int getSlideTargetRow() {return slideTargetRow;}
     public void setFeedForward(double ff){
-        robot.leftSlide.setFeedforward(JActuator.FeedforwardMode.CONSTANT, ff);
+        robot.lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, ff);
     }
     public dropperState getLeftDropperState(){
         return leftDropperState;

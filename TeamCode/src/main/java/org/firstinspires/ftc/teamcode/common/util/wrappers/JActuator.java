@@ -25,7 +25,7 @@ public class JActuator {
         ANGLE_BASED,
         ANGLE_BASED_SIN
     }
-private robotHardware robot = robotHardware.getInstance();
+    private robotHardware robot = robotHardware.getInstance();
     private final Map<String, HardwareDevice> devices = new HashMap<>();
     private PIDController controller;
     private DoubleSupplier voltage;
@@ -39,7 +39,7 @@ private robotHardware robot = robotHardware.getInstance();
     private double feedforwardMax = 0.0;
     private double currentFeedforward = 0.0;
     private double targetPositionOffset = 0.0;
-    private double digitalResetValue;
+    public boolean digitalResetValue;
 
     private boolean reached = false;
     private boolean floating = false;
@@ -77,6 +77,15 @@ private robotHardware robot = robotHardware.getInstance();
         }
         read();
     }
+    public JActuator(Supplier<Object> topic1, HardwareDevice... devices) {
+        this.topic1 = topic1;
+        this.topic2 = null;
+        int i = 0;
+        for (HardwareDevice device : devices) {
+            this.devices.put(device.getDeviceName() + " " + i++, device);
+        }
+        read();
+    }
 
     /**
      * Reads every given hardware device containing either AnalogEncoder or Encoder object.
@@ -97,15 +106,10 @@ private robotHardware robot = robotHardware.getInstance();
         }
         if (topic2 != null) {
             Object value = topic2.get();
-            if (value instanceof Integer) {
-                this.digitalResetValue = (int) value;
-                return;
-            } else if (value instanceof Double) {
-                this.digitalResetValue = (double) value;
-                return;
-            }
+            if (value instanceof Boolean) {
+                this.digitalResetValue = (boolean) value;
+                return;}
         }
-        this.digitalResetValue = 1;
         this.position = 0.0;
     }
 
@@ -115,7 +119,7 @@ private robotHardware robot = robotHardware.getInstance();
      * some tolerance given by a specified value.
      */
     public void periodic() {
-        if(this.digitalResetValue==0){
+        if(this.digitalResetValue==true){
             issueEncoderReset = true;
         }
         if (controller != null) {
