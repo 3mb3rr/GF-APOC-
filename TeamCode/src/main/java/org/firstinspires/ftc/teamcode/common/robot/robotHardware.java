@@ -159,12 +159,14 @@ public class robotHardware {
         intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeRoller.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+
         par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
         par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack")));
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftBack")));
 
         // TODO: reverse encoder directions if needed
-        perp.setDirection(DcMotorSimple.Direction.REVERSE);
+        par0.setDirection(DcMotorEx.Direction.REVERSE);
+        par1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         localizer = new FusionLocalizer();
         poseUpdater = new PoseUpdater(localizer);

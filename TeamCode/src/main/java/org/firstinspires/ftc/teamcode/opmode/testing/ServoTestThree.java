@@ -62,6 +62,12 @@ public class ServoTestThree extends LinearOpMode {
                 telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 telemetry.addLine("Robot Initialized.");
                 telemetry.update();
+                robot.rightPitch.setAngle(Math.toRadians(4));
+                robot.leftPitch.setAngle(Math.toRadians(4));
+                robot.roll.setAngle(0);
+                robot.pivot.setAngle(Math.toRadians(-105));
+                robot.v4Bar.setPosition(1);
+                robot.transferFlap.setPosition(0);
             }
 
         }
@@ -71,22 +77,19 @@ public class ServoTestThree extends LinearOpMode {
             robot.read();
             robot.periodic();
             robot.write();
+
             if (gamepad2.x) {
-                telemetry.addLine("im straight");
-                CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(1000);
+                robot.rightPitch.setAngle(Math.toRadians(-110));
+                robot.leftPitch.setAngle(Math.toRadians(-110));
             }
             if (gamepad2.y) {
-                telemetry.addLine("im lesbian");
-                i = i + 1;
-                CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(1000);
+                robot.rightPitch.setAngle(Math.toRadians(4));
+                robot.leftPitch.setAngle(Math.toRadians(4));
             }
             if (gamepad2.a) {
-                i = i - 1;
-                telemetry.addLine("im gay"); //aryan set these telemetry statements not me wtf is this
-                CommandScheduler.getInstance().schedule(new v4BarToHeight(i));
-                sleep(1000);
+                robot.rightPitch.setAngle(Math.toRadians(34));
+                robot.leftPitch.setAngle(Math.toRadians(34));
+                robot.pivot.setAngle(56);
             }
             telemetry.addData("fourbar angle",robot.intake.v4BarAngle);
             telemetry.addData("fourbar position",robot.v4Bar.getPosition());

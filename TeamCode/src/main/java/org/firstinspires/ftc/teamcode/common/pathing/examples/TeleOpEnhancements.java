@@ -42,7 +42,7 @@ public class TeleOpEnhancements extends OpMode {
      */
     @Override
     public void init() {
-        robot.follower.initialize();
+        robot.init(hardwareMap);
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
         robot.follower.read();
         robot.follower.periodic();
@@ -51,10 +51,10 @@ public class TeleOpEnhancements extends OpMode {
 
         pad1=new GamepadEx(gamepad1);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftBack");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightBack");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = robot.leftFront;
+        leftRear = robot.leftRear;
+        rightRear = robot.rightRear;
+        rightFront = robot.rightFront   ;
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
