@@ -8,9 +8,7 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.outoftheboxrobotics.photoncore.Photon;
 
-import com.outoftheboxrobotics.photoncore.hardware.PhotonLynxVoltageSensor;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -33,15 +31,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
-import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.droneSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
-import org.firstinspires.ftc.teamcode.common.subsystem.slideSub;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
@@ -69,7 +64,7 @@ public class robotHardware {
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
     public Encoder par0, par1, perp;
     public AnalogDistanceSensor USLeft, USRight, USBack;
-    private List<DcMotorEx> driveMotors;
+    public List<DcMotorEx> driveMotors;
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
     public JActuator lift;
     public LimitSwitch leftLimit, rightLimit;
@@ -82,7 +77,6 @@ public class robotHardware {
     public intakeSubsystem intake;
     public depositSubsystem deposit;
     public followerSubsystem follower;
-    public slideSub slide;
     public droneSubsystem drone;
 
     //    public PreloadDetectionPipeline preloadDetectionPipeline;
@@ -181,7 +175,7 @@ public class robotHardware {
         }
 
         for (DcMotorEx motor : driveMotors) {
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         intakeRoller.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -190,18 +184,25 @@ public class robotHardware {
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
-        lift = new JActuator(() -> leftSlideMotor.getCurrentPosition(), leftSlideMotor, rightSlideMotor);
+        lift = new JActuator(() -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), leftSlideMotor, rightSlideMotor);
         lift.setPIDController(new PIDController(0.02, 0, 0.000475));
         lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         lift.setErrorTolerance(5);
 
         roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
-        leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-        rightPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-        pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
+        leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+        rightPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+        pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
 
         transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
         v4Bar.setAngularRange(1,Math.toRadians(75),0.34,Math.toRadians(0));
+
+        roll.setAngle(0);
+        leftPitch.setAngle(robotConstants.waitPitch);
+        rightPitch.setAngle(robotConstants.waitPitch);
+        pivot.setAngle(robotConstants.pivotWaitAngle);
+        transferFlap.setAngle(90);
+        v4Bar.setAngle(2);
 
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();
@@ -245,6 +246,11 @@ public class robotHardware {
             }
 
             imuOffset = AngleUnit.normalizeRadians(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+
+            for (DcMotorEx motor : driveMotors) {
+                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
         }
     }
 
@@ -259,7 +265,7 @@ public class robotHardware {
     }
     public void write() {
         deposit.write();
-       // follower.write();
+        follower.write();
         intake.write();
 //        slide.write();
         drone.write();

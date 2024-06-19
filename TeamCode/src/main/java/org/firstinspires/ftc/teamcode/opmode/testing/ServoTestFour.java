@@ -4,37 +4,66 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
+
 @Autonomous
 public class ServoTestFour extends LinearOpMode {
-    Servo gayassServo1;
-    Servo gayassServo2;
-    Servo gayassServoWrist;
+    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
+    double pivotpos,pitchpos;
     @Override
     public void runOpMode() throws InterruptedException {
-        gayassServo1=hardwareMap.get(Servo.class,"pitchServoLeft");
-        gayassServo2=hardwareMap.get(Servo.class,"pitchServoRight");
-       // gayassServoWrist=hardwareMap.get(Servo.class,"pivotServo");
-        setGayAss(0.5);
+        transferFlap = new JServo(hardwareMap.get(Servo.class, "flapServo"));
+        v4Bar = new JServo(hardwareMap.get(Servo.class, "fourBarServo"));
+        fingerRight = new JServo(hardwareMap.get(Servo.class, "fingerServoRight"));
+        fingerLeft = new JServo(hardwareMap.get(Servo.class, "fingerServoLeft"));
+        roll = new JServo(hardwareMap.get(Servo.class, "wristServo"));
+        pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
+        leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
+        rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
+        droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
 
+        transferFlap.setPosition(0.5);
+        v4Bar.setPosition(0.5);
+        fingerLeft.setPosition(0.5);
+        fingerRight.setPosition(0.5);
+        roll.setPosition(0);
+        pivot.setPosition(0.5);
+        leftPitch.setPosition(0.5);
+        rightPitch.setPosition(0.5);
+        droneServo.setPosition(0.5);
+
+        pivotpos=0.5;
+        pitchpos=0.5;
         waitForStart();
 
         while (!isStopRequested()){
-            if (gamepad1.x)
-                setGayAss(1);
-            if (gamepad1.y)
-                setGayAss(0);
-//            if (gamepad1.a)
-//                gayassServoWrist.setPosition(0.5);
-//            if (gamepad1.b) {
-//                gayassServoWrist.setPosition(1);
-//            }
-//            if (gamepad1.x) {
-//                gayassServoWrist.setPosition(0);
-//            }
+
+            if (gamepad1.dpad_left){
+                pivotpos=pivotpos-0.01;
+                pivot.setPosition(pivotpos);
+                sleep(100);
+            }
+            if (gamepad1.dpad_right){
+                pivotpos=pivotpos+0.01;
+                pivot.setPosition(pivotpos);
+                sleep(100);
+            }
+            if (gamepad1.y){
+                pitchpos=pitchpos+0.01;
+                rightPitch.setPosition(pitchpos);
+                leftPitch.setPosition(pitchpos);
+                sleep(100);
+            }
+            if (gamepad1.a){
+                pitchpos=pitchpos-0.01;
+                rightPitch.setPosition(pitchpos);
+                leftPitch.setPosition(pitchpos);
+                sleep(100);
+            }
+
+            telemetry.addData("pitch",pitchpos);
+            telemetry.addData("pivbot", pivotpos);
+            telemetry.update();
         }
-    }
-    public void setGayAss(double valorantplayers){
-        gayassServo1.setPosition(valorantplayers);
-        gayassServo2.setPosition(valorantplayers);
     }
 }

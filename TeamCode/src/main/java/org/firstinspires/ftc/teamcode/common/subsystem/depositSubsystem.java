@@ -64,7 +64,7 @@ public class depositSubsystem extends JSubsystem {
         switch(ArmState){
             case wait:
                 pitchTargetAngle = robotConstants.waitPitch;
-                pivotTargetAngle = robotConstants.pivotTransferAngle;
+                pivotTargetAngle = robotConstants.pivotWaitAngle;
                 targetRollAngle = 0;
                 break;
             case transfer:
@@ -99,12 +99,12 @@ public class depositSubsystem extends JSubsystem {
                 rightFingerPos = robotConstants.grabPos;
                 break;
         }
-//        if(slideTargetRow!=0){
-//        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
-//        else{
-//            slideTargetPosition = 0;
-//        }
-//        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+        if(slideTargetRow!=0){
+        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
+        else{
+            slideTargetPosition = 0;
+        }
+        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
 
         robot.lift.setTargetPosition(slideTargetPosition);
         robot.lift.periodic();
@@ -119,7 +119,7 @@ public class depositSubsystem extends JSubsystem {
         if(Math.abs(robot.leftPitch.getAngle() - pitchTargetAngle)> Math.toRadians(2)) robot.rightPitch.setAngle(pitchTargetAngle);
         if(Math.abs(robot.pivot.getAngle() - pivotTargetAngle)> Math.toRadians(2)) robot.pivot.setAngle(pivotTargetAngle);
         if(robot.fingerLeft.getPosition() != leftFingerPos) robot.fingerLeft.setPosition(leftFingerPos);
-        if(robot.fingerRight.getPosition() != rightFingerPos) robot.fingerLeft.setPosition(rightFingerPos);
+        if(robot.fingerRight.getPosition() != rightFingerPos) robot.fingerRight.setPosition(rightFingerPos);
         if(Math.abs(robot.roll.getAngle() - targetRollAngle)> Math.toRadians(2)) robot.roll.setAngle(targetRollAngle);
 
     }

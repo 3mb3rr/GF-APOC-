@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -45,6 +46,8 @@ public class teleop extends CommandOpMode {
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
     private boolean transferred = false;
+    private double triggerL=0;
+    private double triggerR=0;
     @Override
     public void initialize(){
         CommandScheduler.getInstance().reset();
@@ -71,10 +74,15 @@ public class teleop extends CommandOpMode {
         robot.periodic();
         robot.write();
 
-        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getLeftX());
+        if (gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)<1) triggerL=gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)*0.5;
+        else triggerL=1;
+        if (gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)<1) triggerR=gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)*0.5;
+        else triggerR=1;
+
+        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getRightY());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
-        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
+        headingVector.setComponents((triggerL-triggerR), robot.follower.getPose().getHeading());
         robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
 
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(this::incrementRollLeft));
@@ -98,10 +106,26 @@ public class teleop extends CommandOpMode {
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500), new grabLeftPixel(), new grabRightPixel())
+                new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(1000), new grabLeftPixel(), new grabRightPixel())
         );
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
-            CommandScheduler.getInstance().schedule(new SequentialCommandGroup(new stopIntake(), new armToTransferPosition(), new WaitCommand(500), new grabLeftPixel(), new grabRightPixel()));
+            CommandScheduler.getInstance().schedule(
+                    new ParallelCommandGroup(
+                            new SequentialCommandGroup(
+                                    new WaitCommand(500),
+                                    new stopIntake()
+                            ),
+                            new SequentialCommandGroup(
+                                    new WaitCommand(1000),
+                                    new armToTransferPosition(),
+                                    new WaitCommand(500),
+                                    new ParallelCommandGroup(
+                                            new grabLeftPixel(),
+                                            new grabRightPixel()
+                                    )
+                            )
+                    )
+            );
             transferred = true;
         }
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(

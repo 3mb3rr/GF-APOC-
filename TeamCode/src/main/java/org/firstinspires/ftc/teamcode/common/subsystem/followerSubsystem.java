@@ -64,6 +64,7 @@ public class followerSubsystem extends JSubsystem {
     private int chainIndex;
 
     private long[] pathStartTimes;
+    private double[] pastDrivePowers;
 
     private boolean followingPathChain;
     private boolean holdingPosition;
@@ -118,6 +119,7 @@ public class followerSubsystem extends JSubsystem {
 
 
     public followerSubsystem() {
+        pastDrivePowers=new double[]{0,0,0,0};
         initialize();
     }
 
@@ -527,8 +529,13 @@ public class followerSubsystem extends JSubsystem {
         headingError = 0;
     }
 
-    public void write(){
-        robot.setDrivetrainPowers(drivePowers);
+    public void write() {
+        for (int i = 0; i < drivePowers.length; i++) {
+//            if (Math.abs(drivePowers[i] - pastDrivePowers[i]) > 0.01) {
+                robot.driveMotors.get(i).setPower(drivePowers[i]);
+                pastDrivePowers = drivePowers;
+//            }
+        }
     }
 
     /**

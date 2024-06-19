@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.util.wrappers;
 
+import static java.lang.Double.NaN;
+
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoController;
 
@@ -10,8 +12,8 @@ public class JServo implements Servo {
     private Servo servo;
     private double radPerVolt = 0.0;
     private double offset = 0.0;
-    private double targetAngle = 0;
-    private double lastPosition = 0;
+    private double targetAngle = 0; //NaN
+    private double lastPosition = 0; //NaN
 
 
     public JServo(Servo servo) {

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 @Config
 @Autonomous
 public class ServoTestTwo extends LinearOpMode {
-    public JServo  leftPitch, rightPitch, pivot;
+    public JServo  leftPitch, rightPitch, pivot,fingL,fingR;
     public static int pitch=0;
     public static int pivott=90;
     @Override
@@ -23,15 +23,18 @@ public class ServoTestTwo extends LinearOpMode {
             pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
             leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
             rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
+            fingL = new JServo(hardwareMap.get(Servo.class, "fingerServoLeft"));
+            fingR = new JServo(hardwareMap.get(Servo.class, "fingerServoRight"));
 
 
-            leftPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-            rightPitch.setAngularRange(0.5,Math.toRadians(4),0.1,Math.toRadians(-107));
-            pivot.setAngularRange(0.56,0,0.86,Math.toRadians(60));
+            leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+            rightPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+            pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
 
             leftPitch.setAngle(Math.toRadians(pitch));
             rightPitch.setAngle(Math.toRadians(pitch));
-            pivot.setAngle(Math.toRadians(pivott));
+           //  pivot.setAngle(Math.toRadians(pivott));
+            pivot.setPosition(0);
         }
 
         while (!isStopRequested()){
@@ -57,6 +60,22 @@ public class ServoTestTwo extends LinearOpMode {
                 pivot.setAngle(Math.toRadians(pivott));
                 sleep(100);
             }
+            if (gamepad1.right_trigger>0.1) {
+                fingL.setPosition(0.1);
+                fingR.setPosition(0.1);
+            }
+            if (gamepad1.left_trigger>0.1){
+                fingL.setPosition(0.95);
+                fingR.setPosition(0.95);
+            }
+            if (gamepad1.y){
+                pivot.setPosition(0.56);
+            }
+            if (gamepad1.x){
+                pivot.setPosition(0.86);
+            }
+            if (gamepad1.dpad_left) pivot.setPosition(0);
+            if (gamepad1.dpad_right) pivot.setPosition(1);
             telemetry.addData("pivot",pivott);
             telemetry.addData("pitch",pitch);
             telemetry.update();

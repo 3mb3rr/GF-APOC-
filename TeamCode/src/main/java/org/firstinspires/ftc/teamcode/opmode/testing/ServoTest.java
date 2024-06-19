@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous
 public class ServoTest extends LinearOpMode {
-    private Servo fourbar;
+    private Servo fourbar,wrist;
     private DcMotorEx intakeMotor;
     private double pos=0.5;
     @Override
@@ -15,8 +15,10 @@ public class ServoTest extends LinearOpMode {
         while (!isStopRequested() && !isStarted()) {
             fourbar = hardwareMap.get(Servo.class, "fourBarServo");
             intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+            wrist = hardwareMap.get(Servo.class,"wristServo");
             pos=1;
             fourbar.setPosition(pos);
+            wrist.setPosition(0);
         }
 
         while (!isStopRequested()){
