@@ -8,10 +8,10 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 
 public class hangCommand extends InstantCommand{
     public hangCommand(){
-        super(() -> robotHardware.getInstance().deposit.setFeedForward(robotConstants.slideFFHang));
+        super(() -> hang());
     }
-    public void hang(){
+    public static void hang(){
         robotHardware.getInstance().deposit.setFeedForward(robotConstants.slideFFHang);
-        robotHardware.getInstance().deposit.setSlideTargetRow(0);
+        robotHardware.getInstance().deposit.setTargetPosition(0);
     }
 }

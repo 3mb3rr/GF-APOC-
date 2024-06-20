@@ -52,12 +52,12 @@ public class intakeSubsystem extends JSubsystem {
         rollerVelocity = robot.doubleSubscriber(Sensors.SensorType.INTAKE_VELOCITY);
         isOverCurrentLimit = robot.boolSubscriber(Sensors.SensorType.INTAKE_CURRENT);
 
-        if(issueColorSensorCheck || (robot.getTimeMs()-lastCheckTime>1000)){
-            lastCheckTime = robot.getTimeMs();
-            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
-            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
-            issueColorSensorCheck = false;
-        }
+//        if(issueColorSensorCheck || (robot.getTimeMs()-lastCheckTime>1000)){
+//            lastCheckTime = robot.getTimeMs();
+//            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
+//            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
+//            issueColorSensorCheck = false;
+//        }
     }
     @Override
     public void periodic() {

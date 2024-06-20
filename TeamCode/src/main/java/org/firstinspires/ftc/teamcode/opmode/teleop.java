@@ -103,26 +103,27 @@ public class teleop extends CommandOpMode {
             transferred = false;
             rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new WaitCommand(200),new slideToRow(1), new pivotToWaitPosition(),new pitchToWaitPosition(), new setRollAngle(0)
+                    new WaitCommand(200),new slideToRow(0), new WaitCommand(200),new pivotToWaitPosition(),new pitchToWaitPosition(), new setRollAngle(0)
             ));
 
         }
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new SequentialCommandGroup(new stopIntake(), new WaitCommand(250),new pivotToTransferPosition(), new WaitCommand(250),new pitchToTransferPosition(), new WaitCommand(550), new grabLeftPixel(), new grabRightPixel())
+                new SequentialCommandGroup(new stopIntake(), new WaitCommand(250),new pivotToTransferPosition(), new WaitCommand(300),new pitchToTransferPosition(), new WaitCommand(660), new grabLeftPixel(), new grabRightPixel())
         );
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new WaitCommand(100),
+                            new WaitCommand(200),
                             new outtakeCommand(),
                             new WaitCommand(200),
                             new stopIntake(),
-                            new WaitCommand(200),
+                            new WaitCommand(250),
                             new pivotToTransferPosition(),
-                            new WaitCommand(50),
+                            new WaitCommand(200),
                             new pitchToTransferPosition(),
+                            new WaitCommand(660),
                             new grabLeftPixel(),
                             new grabRightPixel()
                     )
@@ -132,9 +133,19 @@ public class teleop extends CommandOpMode {
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
                 new pivotToRearrangePosition(), new pitchToRearrangePosition(), new slideToRow(targetRow)
         ));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new SequentialCommandGroup(
-            new setRollAngle(rollAngles[0]), new pitchToDropPosition(), new WaitCommand(80), new pivotToDropPosition(), new slideToRow(targetRow)
-        ));
+        if (gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).get()) {
+            isLeftDropped = false;
+            isRightDropped = false;
+            CommandScheduler.getInstance().schedule(
+                new SequentialCommandGroup(
+                        new setRollAngle(rollAngles[0]),
+                        new pitchToDropPosition(),
+                        new WaitCommand(80),
+                        new pivotToDropPosition(),
+                        new slideToRow(targetRow)
+                )
+            );
+        }
 
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
