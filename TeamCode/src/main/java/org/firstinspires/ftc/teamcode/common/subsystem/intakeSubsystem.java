@@ -35,7 +35,8 @@ public class intakeSubsystem extends JSubsystem {
     public enum intakeState{
         intake,
         outtake,
-        stationary
+        stationary,
+        hang
     }
     public intakeSubsystem() {
         issueColorSensorCheck = false;
@@ -71,6 +72,10 @@ public class intakeSubsystem extends JSubsystem {
                 break;
             case outtake:
                 rollerPower = -robotConstants.maxRollerPower;
+                transferFlapAngle = 0;
+                break;
+            case hang:
+                rollerPower = 0;
                 transferFlapAngle = 0;
                 break;
         }

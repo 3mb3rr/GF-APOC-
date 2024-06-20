@@ -184,7 +184,7 @@ public class robotHardware {
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
-        lift = new JActuator(() -> doubleSubscriber(Sensors.SensorType.SLIDE_ENCODER), leftSlideMotor, rightSlideMotor);
+        lift = new JActuator(() -> leftSlideMotor.getCurrentPosition(), leftSlideMotor, rightSlideMotor);
         lift.setPIDController(new PIDController(0.02, 0, 0.000475));
         lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         lift.setErrorTolerance(5);
@@ -197,18 +197,18 @@ public class robotHardware {
         transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
         v4Bar.setAngularRange(1,Math.toRadians(75),0.34,Math.toRadians(0));
 
+        intake = new intakeSubsystem();
+        deposit = new depositSubsystem();
+        drone = new droneSubsystem();
+        follower = new followerSubsystem();
+
         roll.setAngle(0);
         leftPitch.setAngle(robotConstants.waitPitch);
         rightPitch.setAngle(robotConstants.waitPitch);
         pivot.setAngle(robotConstants.pivotWaitAngle);
         transferFlap.setAngle(90);
-        v4Bar.setAngle(2);
+        intake.setV4BarAngle(1);
 
-        intake = new intakeSubsystem();
-        deposit = new depositSubsystem();
-        drone = new droneSubsystem();
-        follower = new followerSubsystem();
-//        slide = new slideSub();
 //        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
 
 
@@ -260,14 +260,12 @@ public class robotHardware {
         intake.periodic();
         deposit.periodic();
         drone.periodic();
-//        slide.periodic();
 
     }
     public void write() {
         deposit.write();
         follower.write();
         intake.write();
-//        slide.write();
         drone.write();
     }
     public void read() {
@@ -289,7 +287,6 @@ public class robotHardware {
 
         intake.read();
         deposit.read();
-//        slide.read();
         drone.read();
         follower.read();
     }

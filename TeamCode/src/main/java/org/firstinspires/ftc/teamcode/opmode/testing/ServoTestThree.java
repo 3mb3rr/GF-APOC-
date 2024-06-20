@@ -3,29 +3,12 @@ package org.firstinspires.ftc.teamcode.opmode.testing;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.armToRearrangePosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.armToTransferPosition;
-import org.firstinspires.ftc.teamcode.common.commands.droneLaunch;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseLeftPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseRightPixel;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
-import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
-import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 

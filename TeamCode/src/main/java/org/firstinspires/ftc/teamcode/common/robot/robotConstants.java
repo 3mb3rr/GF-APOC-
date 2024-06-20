@@ -38,9 +38,10 @@ public class  robotConstants {
     // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(30);
     public static double waitPitch = Math.toRadians(-97);
-    public static double transferPitch = Math.toRadians(-109);
-    public static double pivotTransferAngle = Math.toRadians(-99);
-    public static double pivotRearrangeAngle = Math.toRadians(90);
+    public static double transferPitch = Math.toRadians(-116);
+    public static double rearrangePitch = Math.toRadians(33);
+    public static double pivotTransferAngle = Math.toRadians(-95);
+    public static double pivotRearrangeAngle = Math.toRadians(117);
     public static double pivotWaitAngle= Math.toRadians(-138);
 
     // values for finger servoes
@@ -62,7 +63,7 @@ public class  robotConstants {
     // length of v4bar
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
-    public static double rollerLength = MathUtils.mmToInches(40);
+    public static double rollerLength = MathUtils.mmToInches(57);
     // localization constants
     public static double par0YTicks = -10688; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 10688; // y position of the second parallel encoder (in tick units)
