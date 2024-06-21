@@ -27,9 +27,11 @@ public class intakeSubsystem extends JSubsystem {
     private boolean isRightPixel = false;
     public double v4BarAngle = Math.toRadians(0);
     private double transferFlapAngle = 0;
+    private double latchPos = 0;
     public static double rollerDepth = 0.2;
     public int targetStackHeight = 1;
-    public double waitTimer = 0;
+    public boolean isRechecked = true;
+
     intakeState state = intakeState.stationary;
 
     public enum intakeState{
@@ -52,12 +54,12 @@ public class intakeSubsystem extends JSubsystem {
         rollerVelocity = robot.doubleSubscriber(Sensors.SensorType.INTAKE_VELOCITY);
         isOverCurrentLimit = robot.boolSubscriber(Sensors.SensorType.INTAKE_CURRENT);
 
-//        if(issueColorSensorCheck || (robot.getTimeMs()-lastCheckTime>1000)){
-//            lastCheckTime = robot.getTimeMs();
-//            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
-//            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
-//            issueColorSensorCheck = false;
-//        }
+        if(issueColorSensorCheck){
+            lastCheckTime = robot.getTimeMs();
+            isLeftPixel = (robot.leftColorSensor.getDistance(DistanceUnit.MM)<10);
+            isRightPixel = (robot.rightColorSensor.getDistance(DistanceUnit.MM)<10);
+            issueColorSensorCheck = false;
+        }
     }
     @Override
     public void periodic() {
@@ -81,7 +83,15 @@ public class intakeSubsystem extends JSubsystem {
         }
         if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
             issueColorSensorCheck = true;
+            isRechecked = false;
+        } else if((lastCheckTime>robot.getTimeMs()+1000 && !isRechecked)){
+            issueColorSensorCheck = true;
+            isRechecked = false;
         }
+        if (isLeftPixel && isRightPixel)
+            latchPos=robotConstants.latchClose;
+        else
+            latchPos=robotConstants.latchOpen;
         v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
     }
@@ -90,6 +100,7 @@ public class intakeSubsystem extends JSubsystem {
         robot.intakeRoller.setPower(rollerPower);
         robot.v4Bar.setAngle(v4BarAngle);
         robot.transferFlap.setAngle(transferFlapAngle);
+        robot.latch.setPosition(latchPos);
     }
     @Override
     public void reset() {

@@ -34,6 +34,8 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import android.util.Size;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -58,16 +60,16 @@ import java.util.Locale;
  */
 
 @TeleOp(name = "Utility: Camera Frame Capture", group = "Utility")
-@Disabled
+//@Disabled
 public class UtilityCameraFrameCapture extends LinearOpMode
 {
     /*
      * EDIT THESE PARAMETERS AS NEEDED
      */
-    final boolean USING_WEBCAM = false;
-    final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
-    final int RESOLUTION_WIDTH = 640;
-    final int RESOLUTION_HEIGHT = 480;
+    final boolean USING_WEBCAM = true;
+    final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.FRONT;
+    final int RESOLUTION_WIDTH = 800;
+    final int RESOLUTION_HEIGHT = 448;
 
     // Internal state
     boolean lastX;
@@ -82,7 +84,7 @@ public class UtilityCameraFrameCapture extends LinearOpMode
         if (USING_WEBCAM)
         {
             portal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                     .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
                     .build();
         }
@@ -93,6 +95,8 @@ public class UtilityCameraFrameCapture extends LinearOpMode
                     .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
                     .build();
         }
+
+        FtcDashboard.getInstance().startCameraStream(portal, 30);
 
         while (!isStopRequested())
         {

@@ -59,7 +59,7 @@ public class robotHardware {
     private static robotHardware instance = null;
     private boolean enabled;
 
-    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
+    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo, latch;
     public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
     public Encoder par0, par1, perp;
@@ -143,6 +143,7 @@ public class robotHardware {
         leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
         rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
         droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
+        latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
 
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);

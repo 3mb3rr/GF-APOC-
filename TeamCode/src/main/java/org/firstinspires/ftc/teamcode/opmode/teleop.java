@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -50,8 +51,6 @@ public class teleop extends CommandOpMode {
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
     private boolean transferred = false;
-    private double triggerL=0;
-    private double triggerR=0;
     @Override
     public void initialize(){
         CommandScheduler.getInstance().reset();
@@ -60,6 +59,63 @@ public class teleop extends CommandOpMode {
         gamepadMechanism = new GamepadEx(gamepad2);
         robot.init(hardwareMap);
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
+
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                targetRow+=1;
+            }
+        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                if(targetRow!=0)targetRow-=1;
+            }
+        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                if(rollIndex != 0) rollIndex-=1;
+                else rollIndex = 5;
+            }
+        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                if(rollIndex != 5) rollIndex+=1;
+                else rollIndex = 0;
+            }
+        }));
+
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
+
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new SequentialCommandGroup(
+                        new stopIntake(),
+                        new WaitCommand(200),
+                        new pivotToTransferPosition(),
+                        new WaitCommand(200),
+                        new pitchToTransferPosition(),
+                        new WaitCommand(300),
+                        new grabLeftPixel(),
+                        new grabRightPixel()
+                )
+        );
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new SequentialCommandGroup(
+                new setRollAngle(rollAngles[rollIndex]),
+                new pitchToDropPosition(),
+                new WaitCommand(80),
+                new pivotToDropPosition()
+        ));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
+                new pivotToRearrangePosition(), new pitchToRearrangePosition()
+        ));
+        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
+        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
+                new slideToRow(8), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
+        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
+
         robot.read();
         robot.periodic();
         robot.write();
@@ -78,22 +134,11 @@ public class teleop extends CommandOpMode {
         robot.periodic();
         robot.write();
 
-        if (gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)<1) triggerL=gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)*0.5;
-        else triggerL=1;
-        if (gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)<1) triggerR=gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)*0.5;
-        else triggerR=1;
-
         driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getRightY());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
-        headingVector.setComponents((triggerL-triggerR), robot.follower.getPose().getHeading());
+        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
         robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
-
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(this::incrementRollLeft));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(this::incrementRollRight));
-
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(new InstantCommand(this::increaseSlideRow));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(new InstantCommand(this::decreaseSlideRow));
 
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseLeftPixel()); isLeftDropped = true;}
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseRightPixel()); isRightDropped = true;}
@@ -103,76 +148,46 @@ public class teleop extends CommandOpMode {
             transferred = false;
             rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new WaitCommand(200),new slideToRow(0), new WaitCommand(200),new pivotToWaitPosition(),new pitchToWaitPosition(), new setRollAngle(0)
+                    new WaitCommand(200), new WaitCommand(200),new pivotToWaitPosition(),new pitchToWaitPosition(), new setRollAngle(0)
             ));
 
         }
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new SequentialCommandGroup(new stopIntake(), new WaitCommand(250),new pivotToTransferPosition(), new WaitCommand(300),new pitchToTransferPosition(), new WaitCommand(660), new grabLeftPixel(), new grabRightPixel())
-        );
+
+
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new WaitCommand(200),
-                            new outtakeCommand(),
-                            new WaitCommand(200),
                             new stopIntake(),
-                            new WaitCommand(250),
+                            new WaitCommand(200),
                             new pivotToTransferPosition(),
                             new WaitCommand(200),
                             new pitchToTransferPosition(),
-                            new WaitCommand(660),
+                            new WaitCommand(300),
                             new grabLeftPixel(),
                             new grabRightPixel()
                     )
             );
             transferred = true;
         }
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
-                new pivotToRearrangePosition(), new pitchToRearrangePosition(), new slideToRow(targetRow)
-        ));
+
         if (gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).get()) {
             isLeftDropped = false;
             isRightDropped = false;
-            CommandScheduler.getInstance().schedule(
-                new SequentialCommandGroup(
-                        new setRollAngle(rollAngles[0]),
-                        new pitchToDropPosition(),
-                        new WaitCommand(80),
-                        new pivotToDropPosition(),
-                        new slideToRow(targetRow)
-                )
-            );
         }
 
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
-                new slideToRow(8), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
 
-
+        if (((robot.deposit.getPivotState() == depositSubsystem.armState.rearrange) || (robot.deposit.getPivotState() == depositSubsystem.armState.drop))) {
+            if (robot.deposit.getSlideTargetRow() != targetRow) {
+                telemetry.addLine("jayveer its true");
+                CommandScheduler.getInstance().schedule(new slideToRow(targetRow));
+            }
+        }
+        else {
+            if (robot.deposit.getSlideTargetRow() != 0) {
+                telemetry.addLine("yo this is the second if");
+                CommandScheduler.getInstance().schedule(new slideToRow(0));
+            }
+        }
     }
-    public void incrementRollLeft(){
-        if(rollIndex != 0) rollIndex-=1;
-        else rollIndex = 5;
-    }
-
-    public void incrementRollRight(){
-        if(rollIndex != 5) rollIndex+=1;
-        else rollIndex = 0;
-    }
-
-    public void decreaseSlideRow(){
-        targetRow = robot.deposit.getSlideTargetRow();
-        if(targetRow != 0) targetRow-=1;
-        else targetRow = 0;
-    }
-    public void increaseSlideRow(){
-        targetRow = robot.deposit.getSlideTargetRow();
-        targetRow+=1;
-    }
-
 
 }

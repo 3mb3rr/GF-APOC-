@@ -38,7 +38,8 @@ public class depositSubsystem extends JSubsystem {
         wait,
         transfer,
         drop,
-        rearrange
+        rearrange,
+        spikedrop
     }
     public enum dropperState{
         grab,
@@ -68,6 +69,9 @@ public class depositSubsystem extends JSubsystem {
             case rearrange:
                 pitchTargetAngle = robotConstants.rearrangePitch;
                 break;
+            case spikedrop:
+                pitchTargetAngle = robotConstants.spikePitch;
+                break;
         }
         switch (pivotState){
             case wait:
@@ -84,6 +88,10 @@ public class depositSubsystem extends JSubsystem {
                 break;
             case rearrange:
                 pivotTargetAngle = robotConstants.pivotRearrangeAngle;
+                targetRollAngle = 0;
+                break;
+            case spikedrop:
+                pivotTargetAngle = robotConstants.pivotSpikeAngle;
                 targetRollAngle = 0;
                 break;
         }
