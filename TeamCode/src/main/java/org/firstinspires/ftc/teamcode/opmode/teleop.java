@@ -31,10 +31,13 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeComma
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeToHang;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
+import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
+import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
+import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 
 
 @TeleOp
@@ -48,6 +51,7 @@ public class teleop extends CommandOpMode {
     private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(300)};
     private int rollIndex = 0;
     private int targetRow = 1;
+    private int fourBarHeight=1;
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
     private boolean transferred = false;
@@ -72,7 +76,7 @@ public class teleop extends CommandOpMode {
                 if(targetRow!=0)targetRow-=1;
             }
         }));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
             @Override
             public void run() {
                 if(rollIndex != 0) rollIndex-=1;
@@ -95,15 +99,14 @@ public class teleop extends CommandOpMode {
                         new stopIntake(),
                         new WaitCommand(200),
                         new pivotToTransferPosition(),
-                        new WaitCommand(200),
+                        new WaitCommand(500),
                         new pitchToTransferPosition(),
-                        new WaitCommand(300),
+                        new WaitCommand(500),
                         new grabLeftPixel(),
                         new grabRightPixel()
                 )
         );
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(new SequentialCommandGroup(
-                new setRollAngle(rollAngles[rollIndex]),
                 new pitchToDropPosition(),
                 new WaitCommand(80),
                 new pivotToDropPosition()
@@ -115,6 +118,21 @@ public class teleop extends CommandOpMode {
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
                 new slideToRow(8), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
+
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                fourBarHeight-=1;
+                fourBarHeight= (int)MathUtils.clamp(fourBarHeight,1,5);
+            }
+        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                fourBarHeight+=1;
+                fourBarHeight=(int) MathUtils.clamp(fourBarHeight,1,5);
+            }
+        }));
 
         robot.read();
         robot.periodic();
@@ -137,7 +155,7 @@ public class teleop extends CommandOpMode {
         driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getRightY());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
-        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
+        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))*0.625, robot.follower.getPose().getHeading());
         robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
 
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseLeftPixel()); isLeftDropped = true;}
@@ -157,17 +175,17 @@ public class teleop extends CommandOpMode {
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new stopIntake(),
-                            new WaitCommand(200),
-                            new pivotToTransferPosition(),
-                            new WaitCommand(200),
-                            new pitchToTransferPosition(),
-                            new WaitCommand(300),
-                            new grabLeftPixel(),
-                            new grabRightPixel()
+                            new stopIntake() //,
+//                            new WaitCommand(200),
+//                            new pivotToTransferPosition(),
+//                            new WaitCommand(500),
+//                            new pitchToTransferPosition(),
+//                            new WaitCommand(500),
+//                            new grabLeftPixel(),
+//                            new grabRightPixel()
                     )
             );
-            transferred = true;
+//            transferred = true;
         }
 
         if (gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).get()) {
@@ -178,15 +196,21 @@ public class teleop extends CommandOpMode {
 
         if (((robot.deposit.getPivotState() == depositSubsystem.armState.rearrange) || (robot.deposit.getPivotState() == depositSubsystem.armState.drop))) {
             if (robot.deposit.getSlideTargetRow() != targetRow) {
-                telemetry.addLine("jayveer its true");
                 CommandScheduler.getInstance().schedule(new slideToRow(targetRow));
             }
         }
         else {
             if (robot.deposit.getSlideTargetRow() != 0) {
-                telemetry.addLine("yo this is the second if");
                 CommandScheduler.getInstance().schedule(new slideToRow(0));
             }
+        }
+
+        if ((robot.deposit.getPivotState() == depositSubsystem.armState.drop) && rollAngles[rollIndex]!=robot.deposit.getRollAngle()){
+            CommandScheduler.getInstance().schedule(new setRollAngle(rollAngles[rollIndex]));
+        }
+
+        if (((robot.intake.getState() == intakeSubsystem.intakeState.outtake) || (robot.intake.getState() == intakeSubsystem.intakeState.intake)) && robot.intake.targetStackHeight!=fourBarHeight){
+            CommandScheduler.getInstance().schedule(new v4BarToHeight(fourBarHeight));
         }
     }
 

@@ -156,6 +156,7 @@ public class depositSubsystem extends JSubsystem {
     public void setRollAngle(double angle){
         rollAngle = angle;
     }
+    public double getRollAngle(){return rollAngle;}
     public void updatePitchState(@NotNull depositSubsystem.armState state) {
         this.pitchState = state;
     }

@@ -39,10 +39,10 @@ public class  robotConstants {
     public static double dropPitch = Math.toRadians(30);
     public static double waitPitch = Math.toRadians(-97);
     public static double transferPitch = Math.toRadians(-116);
-    public static double rearrangePitch = Math.toRadians(33);
+    public static double rearrangePitch = Math.toRadians(36);
     public static double spikePitch = Math.toRadians(86);
     public static double pivotSpikeAngle = Math.toRadians(71);
-    public static double pivotTransferAngle = Math.toRadians(-95);
+    public static double pivotTransferAngle = Math.toRadians(-97);
     public static double pivotRearrangeAngle = Math.toRadians(117);
     public static double pivotWaitAngle= Math.toRadians(-138);
 
@@ -66,8 +66,8 @@ public class  robotConstants {
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
     public static double rollerLength = MathUtils.mmToInches(57);
-    public static double latchClose = 0;
-    public static double latchOpen = 1;
+    public static double latchClose = 0.05;
+    public static double latchOpen = 0.8;
     // localization constants
     public static double par0YTicks = -10688; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 10688; // y position of the second parallel encoder (in tick units)

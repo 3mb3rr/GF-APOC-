@@ -85,7 +85,7 @@ public class teleopLinear extends LinearOpMode {
                     else rollIndex = 5;
                 }
             }));
-            gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+            gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
                 @Override
                 public void run() {
                     if(rollIndex != 5) rollIndex+=1;
@@ -101,9 +101,9 @@ public class teleopLinear extends LinearOpMode {
                             new stopIntake(),
                             new WaitCommand(200),
                             new pivotToTransferPosition(),
-                            new WaitCommand(200),
+                            new WaitCommand(500),
                             new pitchToTransferPosition(),
-                            new WaitCommand(300),
+                            new WaitCommand(500),
                             new grabLeftPixel(),
                             new grabRightPixel()
                     )
@@ -135,6 +135,7 @@ public class teleopLinear extends LinearOpMode {
         }
 
         while (!isStopRequested()) {
+            robot.poseUpdater.update();
             CommandScheduler.getInstance().run();
             robot.read();
             robot.periodic();
@@ -143,7 +144,7 @@ public class teleopLinear extends LinearOpMode {
             driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getRightY());
             driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
             driveVector.rotateVector(robot.follower.getPose().getHeading());
-            headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)), robot.follower.getPose().getHeading());
+            headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))*0.625, robot.follower.getPose().getHeading());
             robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
 
             if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseLeftPixel()); isLeftDropped = true;}
@@ -166,9 +167,9 @@ public class teleopLinear extends LinearOpMode {
                                 new stopIntake(),
                                 new WaitCommand(200),
                                 new pivotToTransferPosition(),
-                                new WaitCommand(200),
+                                new WaitCommand(500),
                                 new pitchToTransferPosition(),
-                                new WaitCommand(300),
+                                new WaitCommand(500),
                                 new grabLeftPixel(),
                                 new grabRightPixel()
                         )
@@ -184,13 +185,11 @@ public class teleopLinear extends LinearOpMode {
 
             if (((robot.deposit.getPivotState() == depositSubsystem.armState.rearrange) || (robot.deposit.getPivotState() == depositSubsystem.armState.drop))) {
                 if (robot.deposit.getSlideTargetRow() != targetRow) {
-                    telemetry.addLine("jayveer its true");
                     CommandScheduler.getInstance().schedule(new slideToRow(targetRow));
                 }
             }
             else {
                 if (robot.deposit.getSlideTargetRow() != 0) {
-                    telemetry.addLine("yo this is the second if");
                     CommandScheduler.getInstance().schedule(new slideToRow(0));
                 }
             }
@@ -207,6 +206,11 @@ public class teleopLinear extends LinearOpMode {
 
             telemetry.addData("left position",robot.lift.getPosition());
             telemetry.addData("target",robot.deposit.slideTargetPosition);
+            telemetry.addData("x", robot.poseUpdater.getPose().getX());
+            telemetry.addData("y", robot.poseUpdater.getPose().getY());
+            telemetry.addData("heading", Math.toDegrees(robot.poseUpdater.getPose().getHeading()));
+            telemetry.addData("total heading", Math.toDegrees(robot.poseUpdater.getTotalHeading()));
+//            telemetry.update();
 
             telemetry.addData("voltage",robot.doubleSubscriber(Sensors.SensorType.BATTERY));
 

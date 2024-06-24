@@ -126,5 +126,8 @@ public class intakeSubsystem extends JSubsystem {
     public void setV4BarAngle(int stackHeight){
         targetStackHeight = stackHeight;
     }
+    public intakeState getState(){
+        return state;
+    }
 
 }

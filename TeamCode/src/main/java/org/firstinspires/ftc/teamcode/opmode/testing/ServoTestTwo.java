@@ -12,9 +12,10 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 @Config
 @Autonomous
 public class ServoTestTwo extends LinearOpMode {
-    public JServo  leftPitch, rightPitch, pivot,fingL,fingR;
+    public JServo  leftPitch, rightPitch, pivot,fingL,fingR, latch;
     public static int pitch=0;
     public static int pivott=90;
+    public static double latchPos=0.5;
     @Override
     public void runOpMode() throws InterruptedException {
         while (!isStarted() && !isStopRequested()) {
@@ -25,6 +26,7 @@ public class ServoTestTwo extends LinearOpMode {
             rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
             fingL = new JServo(hardwareMap.get(Servo.class, "fingerServoLeft"));
             fingR = new JServo(hardwareMap.get(Servo.class, "fingerServoRight"));
+            latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
 
 
             leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
@@ -74,10 +76,21 @@ public class ServoTestTwo extends LinearOpMode {
             if (gamepad1.x){
                 pivot.setPosition(0.86);
             }
-            if (gamepad1.dpad_left) pivot.setPosition(0);
-            if (gamepad1.dpad_right) pivot.setPosition(1);
+            if (gamepad1.dpad_right){
+                latchPos+=0.01;
+                latch.setPosition(latchPos);
+                sleep(100);
+            }
+            if (gamepad1.dpad_left){
+                latchPos-=0.01;
+                latch.setPosition(latchPos);
+                sleep(100);
+            }
+//            if (gamepad1.dpad_left){ pivot.setPosition(0);}
+//            if (gamepad1.dpad_right) pivot.setPosition(1);
             telemetry.addData("pivot",pivott);
             telemetry.addData("pitch",pitch);
+            telemetry.addData("latchpos",latchPos);
             telemetry.update();
 //
 //            telemetry.addData("target pitch left",leftPitch.getPosition());
