@@ -15,13 +15,10 @@ import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToDropPos
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
 import org.firstinspires.ftc.teamcode.common.commands.followPath;
-import org.firstinspires.ftc.teamcode.common.pathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
-import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
-import org.firstinspires.ftc.teamcode.opmode.teleop;
 
 
 @Config

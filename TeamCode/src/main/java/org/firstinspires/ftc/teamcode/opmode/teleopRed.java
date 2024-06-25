@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -41,7 +40,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 
 
 @TeleOp
-public class teleop extends CommandOpMode {
+public class teleopRed extends CommandOpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;
     private GamepadEx gamepadMechanism;
@@ -152,7 +151,7 @@ public class teleop extends CommandOpMode {
         robot.periodic();
         robot.write();
 
-        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getRightY());
+        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getRightY());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
         headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))*0.625, robot.follower.getPose().getHeading());
@@ -166,7 +165,7 @@ public class teleop extends CommandOpMode {
             transferred = false;
             rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new WaitCommand(200), new WaitCommand(200),new pivotToWaitPosition(),new pitchToWaitPosition(), new setRollAngle(0)
+                    new WaitCommand(400),new pivotToWaitPosition(),new pitchToWaitPosition(), new WaitCommand(400),new setRollAngle(0)
             ));
 
         }

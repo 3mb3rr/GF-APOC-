@@ -203,12 +203,7 @@ public class robotHardware {
         drone = new droneSubsystem();
         follower = new followerSubsystem();
 
-        roll.setAngle(0);
-        leftPitch.setAngle(robotConstants.waitPitch);
-        rightPitch.setAngle(robotConstants.waitPitch);
-        pivot.setAngle(robotConstants.pivotWaitAngle);
-        transferFlap.setAngle(90);
-        intake.setV4BarAngle(1);
+
 
 //        follower.holdPoint(new BezierPoint(new Point(0, 0, 1)), 0);
 
@@ -252,7 +247,18 @@ public class robotHardware {
             for (DcMotorEx motor : driveMotors) {
                 motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
+            leftPitch.setAngle(robotConstants.transferPitch);
+            rightPitch.setAngle(robotConstants.transferPitch);
+            pivot.setAngle(robotConstants.pivotTransferAngle);
         }
+        else {
+            leftPitch.setAngle(robotConstants.waitPitch);
+            rightPitch.setAngle(robotConstants.waitPitch);
+            pivot.setAngle(robotConstants.pivotWaitAngle);
+        }
+        roll.setAngle(0);
+        transferFlap.setAngle(90);
+        intake.setV4BarAngle(1);
     }
 
     public void periodic(){

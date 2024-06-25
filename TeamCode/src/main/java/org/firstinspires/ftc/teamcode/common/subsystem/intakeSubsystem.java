@@ -84,9 +84,9 @@ public class intakeSubsystem extends JSubsystem {
         if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
             issueColorSensorCheck = true;
             isRechecked = false;
-        } else if((lastCheckTime>robot.getTimeMs()+1000 && !isRechecked)){
+        } else if((robot.getTimeMs()>lastCheckTime+1000 && !isRechecked)){
             issueColorSensorCheck = true;
-            isRechecked = false;
+            isRechecked = true;
         }
         if (isLeftPixel && isRightPixel)
             latchPos=robotConstants.latchClose;

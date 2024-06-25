@@ -40,8 +40,8 @@ public class  robotConstants {
     public static double waitPitch = Math.toRadians(-97);
     public static double transferPitch = Math.toRadians(-116);
     public static double rearrangePitch = Math.toRadians(36);
-    public static double spikePitch = Math.toRadians(86);
-    public static double pivotSpikeAngle = Math.toRadians(71);
+    public static double spikePitch = Math.toRadians(75);
+    public static double pivotSpikeAngle = Math.toRadians(66);
     public static double pivotTransferAngle = Math.toRadians(-97);
     public static double pivotRearrangeAngle = Math.toRadians(117);
     public static double pivotWaitAngle= Math.toRadians(-138);
