@@ -27,16 +27,11 @@ public class AutonFirstTest extends OpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private Telemetry telemetryA;
 
-    private boolean purpDrop = true;
-    private boolean startCycles = false;
-    private boolean backboard = false;
-    private boolean stack = false;
-    private boolean park = false;
+    public static double DISTANCE = 40;
+    private boolean forward = true;
 
-    private Path toPurpDrop;
-    private Path toStack;
-    private Path toBackboard;
-    private Path toPark;
+    private Path forwards;
+    private Path backwards;
 
 
     /**
@@ -45,15 +40,24 @@ public class AutonFirstTest extends OpMode {
      */
     @Override
     public void init() {
-        toPurpDrop = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(0,30, Point.CARTESIAN)));
-        toPurpDrop.setConstantHeadingInterpolation(0);
-        toStack = new Path(new BezierLine(new Point(0,30, Point.CARTESIAN), new Point(30,30, Point.CARTESIAN)));
-        toStack.setConstantHeadingInterpolation(270);
+        forwards = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(DISTANCE,0, Point.CARTESIAN)));
+        forwards.setConstantHeadingInterpolation(0);
+        backwards = new Path(new BezierLine(new Point(DISTANCE,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)));
+        backwards.setConstantHeadingInterpolation(0);
+
+
+        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryA.addLine("This will run the robot in a straight line going " + DISTANCE
+                + " inches forward. The robot will go forward and backward continuously"
+                + " along the path. Make sure you have enough room.");
+        telemetryA.update();
 
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
         robot.init(hardwareMap);
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
+
+        robot.follower.followPath(forwards);
 //        robot.read();
 //        robot.periodic();
 //        robot.write();
@@ -71,40 +75,24 @@ public class AutonFirstTest extends OpMode {
      */
     @Override
     public void loop() {
+
+
+        if (!robot.follower.isBusy()) {
+            if (forward) {
+                forward = false;
+                robot.follower.followPath(backwards);
+            } else {
+                forward = true;
+                robot.follower.followPath(forwards);
+            }
+        }
+
+        telemetryA.addData("baby do uknow what thats worth", forward);
+
+
         CommandScheduler.getInstance().run();
         robot.read();
         robot.periodic();
         robot.write();
-
-        if (!robot.follower.isBusy()) {
-            if (purpDrop) {
-                CommandScheduler.getInstance().schedule(
-                        new SequentialCommandGroup(
-                                new pitchToDropPosition(),
-                                new WaitCommand(1000),
-                                new grabLeftPixel(),
-                                new grabRightPixel()
-                        )
-                );
-                purpDrop = false;
-                startCycles = true;
-            }
-            else if (startCycles){
-                CommandScheduler.getInstance().schedule(new followPath(toStack));
-//                CommandScheduler.getInstance().schedule(new followPath(to));
-//                for (int i=0; i<3; i++) {
-//                    if (!robot.follower.isBusy() && )
-//                        robot.follower.followPath(toBackboard);
-
-//                }
-                startCycles=false;
-//                follower.followPath(toPark);
-//                park=true;
-            }
-            else if (park){
-                park=false;
-            }
         }
-//        follower.telemetryDebug(telemetryA);
     }
-}

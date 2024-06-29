@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotConstants;
@@ -60,7 +61,7 @@ public class FusionLocalizer extends Localizer {
 
 
     public final double inPerTick;
-    private Pose2d pose;
+    private Pose pose;
     private Pose2d startPose = new Pose2d(0, 0, 0);
     private Pose2d displacementPose = new Pose2d(0, 0, 0);
     private PoseVelocity2d currentVelocityRR;
@@ -100,7 +101,7 @@ public class FusionLocalizer extends Localizer {
      */
     @Override
     public Pose getPose() {
-        return new Pose(pose.position.x, pose.position.y, pose.heading.toDouble());
+        return pose;
     }
 
     /**
@@ -186,13 +187,17 @@ public class FusionLocalizer extends Localizer {
         lastPerpPos = perpPosVel.position;
 
         displacementPose = displacementPose.plus(twist.value());
-        pose = new Pose2d(displacementPose.position.x+startPose.position.x, displacementPose.position.y+startPose.position.y, displacementPose.heading.toDouble()+startPose.heading.toDouble());
+        pose = addDisplacementPose(startPose, displacementPose);
         currentVelocityRR = twist.velocity().value();
         currentVelocity = new Pose(currentVelocityRR.linearVel.x, currentVelocityRR.linearVel.y, currentVelocityRR.angVel);
 
     }
 
-
+    public Pose addDisplacementPose(Pose2d start, Pose2d disp){
+        double x = disp.position.x*Math.cos(start.heading.toDouble())-disp.position.y*Math.sin(start.heading.toDouble());
+        double y = disp.position.x*Math.sin(start.heading.toDouble())+disp.position.y*Math.cos(start.heading.toDouble());
+        return new Pose(start.position.x+x, start.position.y+y, start.heading.toDouble()+disp.heading.toDouble());
+    }
 
     /**
      * This returns how far the robot has turned in radians, in a number not clamped between 0 and
@@ -201,7 +206,7 @@ public class FusionLocalizer extends Localizer {
      * @return returns how far the robot has turned in total, in radians.
      */
     public double getTotalHeading() {
-        return pose.heading.toDouble();
+        return pose.getHeading();
     }
 
     /**

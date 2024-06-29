@@ -32,7 +32,7 @@ public class  robotConstants {
     public static int slideAngleIncreaseTicks = 100;
 
     public static double slideFF = 0.1;
-    public static double slideFFHang = -0.7;
+    public static double slideFFHang = -0.9;
     // Angle of slide with the ground
     public static double slideAngle = Math.toRadians(60);
     // pitch of arm at different functions
@@ -66,8 +66,8 @@ public class  robotConstants {
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
     public static double rollerLength = MathUtils.mmToInches(57);
-    public static double latchClose = 0.05;
-    public static double latchOpen = 0.8;
+    public static double latchClose = 0.04;
+    public static double latchOpen = 0.65;
     // localization constants
     public static double par0YTicks = -10688; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 10688; // y position of the second parallel encoder (in tick units)
@@ -75,8 +75,8 @@ public class  robotConstants {
     public static double inPerTick = 0.0005258084305;
 
     // Pathing constants
-    // This section is for setting the actual drive vector for the front left wheel, if the robot
-    // is facing a heading of 0 radians with    the wheel centered at (0,0)
+//     This section is for setting the actual drive vector for the front left wheel, if the robot
+    // is facing a heading of 0 radians with the wheel centered at (0,0)
     private static double xMovement = 70.8858790145608;
     private static double yMovement = 49.38739020320126;
     private static double[] convertToPolar = Point.cartesianToPolar(xMovement, -yMovement);

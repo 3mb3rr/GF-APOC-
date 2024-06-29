@@ -32,16 +32,22 @@ public class intakeSubsystem extends JSubsystem {
     public int targetStackHeight = 1;
     public boolean isRechecked = true;
 
-    intakeState state = intakeState.stationary;
+    intakeState state;
+
 
     public enum intakeState{
         intake,
         outtake,
         stationary,
-        hang
+        hang,
+        intakeInAuto
     }
     public intakeSubsystem() {
         issueColorSensorCheck = false;
+        if (CenterstageConstants.IS_AUTO)
+            state= intakeState.intakeInAuto;
+        else
+            state=intakeState.stationary;
     }
     public intakeSubsystem(double rollerDepth, int targetStackHeight) {
         setRollerDepth(rollerDepth);
@@ -63,6 +69,26 @@ public class intakeSubsystem extends JSubsystem {
     }
     @Override
     public void periodic() {
+
+        if(((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)) && (state==intakeState.intake || state==intakeState.outtake)){
+            issueColorSensorCheck = true;
+            isRechecked = false;
+        } else if((robot.getTimeMs()>lastCheckTime+2500 && !isRechecked)){
+            issueColorSensorCheck = true;
+            isRechecked = true;
+        }
+        if (isLeftPixel && isRightPixel)
+            latchPos=robotConstants.latchClose;
+        else
+            if (state==intakeState.stationary)
+                latchPos=robotConstants.latchClose;
+            else
+                 latchPos=robotConstants.latchOpen;
+
+        v4BarAngle = v4BarInverseKinematics(targetStackHeight);
+
+
+
         switch(state){
             case intake:
                 rollerPower = robotConstants.maxRollerPower;
@@ -80,19 +106,12 @@ public class intakeSubsystem extends JSubsystem {
                 rollerPower = 0;
                 transferFlapAngle = 0;
                 break;
+            case intakeInAuto:
+                transferFlapAngle = 90;
+                v4BarAngle = 75; //servo position 1
+                latchPos = robotConstants.latchClose;
+                break;
         }
-        if((isOverCurrentLimit) || (rollerVelocity < robotConstants.velocityLimit)){
-            issueColorSensorCheck = true;
-            isRechecked = false;
-        } else if((robot.getTimeMs()>lastCheckTime+1000 && !isRechecked)){
-            issueColorSensorCheck = true;
-            isRechecked = true;
-        }
-        if (isLeftPixel && isRightPixel)
-            latchPos=robotConstants.latchClose;
-        else
-            latchPos=robotConstants.latchOpen;
-        v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
     }
     @Override

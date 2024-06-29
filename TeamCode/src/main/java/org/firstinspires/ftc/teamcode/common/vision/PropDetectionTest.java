@@ -49,6 +49,7 @@ public class PropDetectionTest extends LinearOpMode
     @Override
     public void runOpMode() {
         FtcDashboard.getInstance().startCameraStream(visionPortal, 0);
+        telemetry= FtcDashboard.getInstance().getTelemetry();
         pipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
         startCamera();
 

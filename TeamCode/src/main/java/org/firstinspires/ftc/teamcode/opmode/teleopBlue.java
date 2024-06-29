@@ -75,14 +75,20 @@ public class teleopBlue extends CommandOpMode {
                 if(targetRow!=0)targetRow-=1;
             }
         }));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+//        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(new Runnable() {
+//            @Override
+//            public void run() {
+//                targetRow=8;
+//            }
+//        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
             @Override
             public void run() {
                 if(rollIndex != 0) rollIndex-=1;
                 else rollIndex = 5;
             }
         }));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
             @Override
             public void run() {
                 if(rollIndex != 5) rollIndex+=1;
@@ -90,17 +96,17 @@ public class teleopBlue extends CommandOpMode {
             }
         }));
 
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new intakeCommand());
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new outtakeCommand());
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.X).whenPressed(new SequentialCommandGroup(new intakeCommand(),new v4BarToHeight(1)));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(new outtakeCommand(),new v4BarToHeight(5)));
 
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new SequentialCommandGroup(
                         new stopIntake(),
                         new WaitCommand(200),
                         new pivotToTransferPosition(),
-                        new WaitCommand(500),
+                        new WaitCommand(250),
                         new pitchToTransferPosition(),
-                        new WaitCommand(500),
+                        new WaitCommand(250),
                         new grabLeftPixel(),
                         new grabRightPixel()
                 )
@@ -115,8 +121,20 @@ public class teleopBlue extends CommandOpMode {
         ));
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
-                new slideToRow(8), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
+                new InstantCommand(new Runnable() {
+                    @Override
+                    public void run() {
+                        targetRow=8;
+                    }
+                }), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
+//        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
+        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new SequentialCommandGroup(new hangCommand(),
+                new InstantCommand(new Runnable() {
+                    @Override
+                    public void run() {
+                        targetRow=2;
+                    }
+                })));
 
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
             @Override
@@ -163,18 +181,16 @@ public class teleopBlue extends CommandOpMode {
             isLeftDropped = false;
             isRightDropped = false;
             transferred = false;
-            rollIndex =0;
+//            rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new WaitCommand(400), new pivotToWaitPosition(),new pitchToWaitPosition(), new WaitCommand(400),new setRollAngle(0)
+                    new WaitCommand(400),new pitchToWaitPosition(), new pivotToWaitPosition(), new WaitCommand(400), new setRollAngle(0)
             ));
 
         }
-
-
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new stopIntake() //,
+                            new stopIntake()
 //                            new WaitCommand(200),
 //                            new pivotToTransferPosition(),
 //                            new WaitCommand(500),
@@ -184,7 +200,7 @@ public class teleopBlue extends CommandOpMode {
 //                            new grabRightPixel()
                     )
             );
-//            transferred = true;
+            transferred = true;
         }
 
         if (gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).get()) {
@@ -204,7 +220,7 @@ public class teleopBlue extends CommandOpMode {
             }
         }
 
-        if ((robot.deposit.getPivotState() == depositSubsystem.armState.drop) && rollAngles[rollIndex]!=robot.deposit.getRollAngle()){
+        if ((robot.deposit.getPitchState() == depositSubsystem.armState.drop) && (robot.deposit.getPivotState() == depositSubsystem.armState.drop) && rollAngles[rollIndex]!=robot.deposit.getRollAngle()){
             CommandScheduler.getInstance().schedule(new setRollAngle(rollAngles[rollIndex]));
         }
 
@@ -212,5 +228,4 @@ public class teleopBlue extends CommandOpMode {
             CommandScheduler.getInstance().schedule(new v4BarToHeight(fourBarHeight));
         }
     }
-
 }

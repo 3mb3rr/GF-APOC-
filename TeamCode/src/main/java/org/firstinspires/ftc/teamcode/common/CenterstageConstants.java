@@ -24,18 +24,26 @@ public class CenterstageConstants {
      */
     public static boolean IS_AUTO = true;
     public static Location ALLIANCE = Location.RED;
-    public static Location RANDOMIZATION = Location.LEFT;
-    public static Location PRELOAD = Location.LEFT;
+    public static Location RANDOMIZATION = Location.MIDDLE;
+    public static int realRandomization = 2;
+    public static Location PRELOAD = Location.RIGHT;
     public static Location ROUTE = Location.STAGEDOOR;
-    public static Path toSpikeMiddle = new Path(new BezierLine(new Point(0, 0,Point.CARTESIAN), new Point(21, 0,Point.CARTESIAN)));
-//    toSpike.setConstantHeadingInterpolation(Math.toRadians(0));
-    public static Path toSpikeLeft = new Path(new BezierCurve(new Point(0, 0,Point.CARTESIAN), new Point(21.8, -2.7,Point.CARTESIAN)));
-//    toSpike.setConstantHeadingInterpolation(Math.toRadians(90));
 
-    public static Path toSpikeRight = new Path(new BezierCurve(new Point(0, 0,Point.CARTESIAN), new Point(22.3, 2.9,Point.CARTESIAN)));
-//    toSpike.setConstantHeadingInterpolation(Math.toRadians(-90));
 
-//    public Path getPath()
+    public static Path getPath(int zone, Path left, Path middle, Path right){
+        if (zone==1) {
+            RANDOMIZATION=Location.LEFT;
+            return left;
+        }
+        else if (zone==2){
+            RANDOMIZATION=Location.CENTER;
+            return middle;
+        }
+        RANDOMIZATION=Location.RIGHT;
+        return right;
+    }
+
+
 
 }
 

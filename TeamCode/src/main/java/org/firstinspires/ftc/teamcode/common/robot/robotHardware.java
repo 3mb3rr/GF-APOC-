@@ -31,6 +31,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.AprilTagConstants;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.common.pathing.localization.ThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.FusionLocalizer;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.PoseUpdater;
@@ -176,6 +177,8 @@ public class robotHardware {
         }
 
         for (DcMotorEx motor : driveMotors) {
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         intakeRoller.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -250,15 +253,19 @@ public class robotHardware {
             leftPitch.setAngle(robotConstants.transferPitch);
             rightPitch.setAngle(robotConstants.transferPitch);
             pivot.setAngle(robotConstants.pivotTransferAngle);
+            v4Bar.setPosition(1);
+            latch.setPosition(robotConstants.latchClose);
+            fingerLeft.setPosition(robotConstants.grabPos);
+            fingerRight.setPosition(robotConstants.grabPos);
         }
         else {
             leftPitch.setAngle(robotConstants.waitPitch);
             rightPitch.setAngle(robotConstants.waitPitch);
             pivot.setAngle(robotConstants.pivotWaitAngle);
+            intake.setV4BarAngle(1);
         }
         roll.setAngle(0);
         transferFlap.setAngle(90);
-        intake.setV4BarAngle(1);
     }
 
     public void periodic(){

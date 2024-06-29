@@ -23,10 +23,10 @@ public class depositSubsystem extends JSubsystem {
     robotHardware robot = robotHardware.getInstance();
     public int slideTargetPosition = 0;
     private int slideTargetRow = 0;
-    armState pivotState = armState.wait;
-    armState pitchState = armState.wait;
-    dropperState leftDropperState = dropperState.release;
-    dropperState rightDropperState = dropperState.release;
+    armState pivotState;
+    armState pitchState;
+    dropperState leftDropperState;
+    dropperState rightDropperState;
     private double pitchTargetAngle;
     private double pivotTargetAngle;
     private double leftFingerPos, rightFingerPos;
@@ -45,7 +45,21 @@ public class depositSubsystem extends JSubsystem {
         grab,
         release
     }
-    public depositSubsystem() {}
+    public depositSubsystem() {
+        if (CenterstageConstants.IS_AUTO){
+            pivotState = armState.transfer;
+            pitchState = armState.transfer;
+            leftDropperState = dropperState.grab;
+            rightDropperState = dropperState.grab;
+        }
+        else {
+            pivotState = armState.wait;
+            pitchState = armState.wait;
+            leftDropperState = dropperState.release;
+            rightDropperState = dropperState.release;
+        }
+
+    }
 
     @Override
     public void read(){

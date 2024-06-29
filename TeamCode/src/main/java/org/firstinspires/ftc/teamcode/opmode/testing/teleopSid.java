@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -40,7 +40,7 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 
 
 @TeleOp
-public class teleopRed extends CommandOpMode {
+public class teleopSid extends CommandOpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;
     private GamepadEx gamepadMechanism;
@@ -169,10 +169,10 @@ public class teleopRed extends CommandOpMode {
         robot.periodic();
         robot.write();
 
-        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getRightY());
+        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), gamepadDrivetrain.getLeftX());
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
-        headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))*0.625, robot.follower.getPose().getHeading());
+        headingVector.setComponents(-gamepadDrivetrain.getRightX(), robot.follower.getPose().getHeading());
         robot.follower.setMovementVectors(robot.follower.getCentripetalForceCorrection(), headingVector, driveVector);
 
         if (gamepadMechanism.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1) {CommandScheduler.getInstance().schedule(new releaseLeftPixel()); isLeftDropped = true;}
@@ -190,14 +190,14 @@ public class teleopRed extends CommandOpMode {
         if(robot.intake.getLeftPixel() && robot.intake.getRightPixel() && !transferred){
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                            new stopIntake()
-//                            new WaitCommand(200),
-//                            new pivotToTransferPosition(),
-//                            new WaitCommand(500),
-//                            new pitchToTransferPosition(),
-//                            new WaitCommand(500),
-//                            new grabLeftPixel(),
-//                            new grabRightPixel()
+                            new stopIntake(),
+                            new WaitCommand(200),
+                            new pivotToTransferPosition(),
+                            new WaitCommand(500),
+                            new pitchToTransferPosition(),
+                            new WaitCommand(500),
+                            new grabLeftPixel(),
+                            new grabRightPixel()
                     )
             );
             transferred = true;
