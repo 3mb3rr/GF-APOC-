@@ -24,7 +24,7 @@ public class CenterstageConstants {
      */
     public static boolean IS_AUTO = true;
     public static Location ALLIANCE = Location.RED;
-    public static Location RANDOMIZATION = Location.MIDDLE;
+    public static Location RANDOMIZATION = Location.CENTER;
     public static int realRandomization = 2;
     public static Location PRELOAD = Location.RIGHT;
     public static Location ROUTE = Location.STAGEDOOR;
@@ -39,11 +39,11 @@ public class CenterstageConstants {
             RANDOMIZATION=Location.CENTER;
             return middle;
         }
-        RANDOMIZATION=Location.RIGHT;
-        return right;
+        else {
+            RANDOMIZATION=Location.RIGHT;
+            return right;
+        }
     }
-
-
 
 }
 

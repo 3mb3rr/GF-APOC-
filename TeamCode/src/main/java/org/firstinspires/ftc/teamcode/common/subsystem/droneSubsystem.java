@@ -11,10 +11,12 @@ import java.util.ArrayList;
 public class droneSubsystem extends JSubsystem {
     robotHardware robot = robotHardware.getInstance();
     private double droneServoPosition = 0;
+    public double droneHeightPosition = 0;
     droneState state = droneState.wait;
     public enum droneState{
         wait,
-        launch
+        launch,
+        up
     }
     public droneSubsystem() {
     }
@@ -27,15 +29,25 @@ public class droneSubsystem extends JSubsystem {
         switch(state){
             case wait:
                 droneServoPosition = robotConstants.droneWaitPosition;
+                droneHeightPosition = robotConstants.droneHeightWaitPos;
                 break;
             case launch:
                 droneServoPosition = robotConstants.droneLaunchPosition;
+                droneHeightPosition = robotConstants.droneHeightUpPos;
+                break;
+            case up:
+                droneServoPosition = robotConstants.droneWaitPosition;
+                droneHeightPosition = robotConstants.droneHeightUpPos;
                 break;
         }
     }
     @Override
     public void write() {
-        if(robot.droneServo.getPosition() != droneServoPosition) robot.droneServo.setPosition(droneServoPosition);}
+        if(robot.droneServo.getPosition() != droneServoPosition) robot.droneServo.setPosition(droneServoPosition);
+        if(robot.droneHeight.getPosition() != droneHeightPosition) robot.droneHeight.setPosition(droneHeightPosition);
+    }
+
+
     @Override
     public void reset() {
         state = droneState.wait;

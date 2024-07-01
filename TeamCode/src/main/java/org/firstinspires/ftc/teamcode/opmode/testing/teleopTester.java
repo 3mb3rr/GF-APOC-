@@ -1,41 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.hangCommand;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToDropPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToRearrangePosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToTransferPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToWaitPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToDropPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToRearrangePosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToTransferPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToWaitPosition;
-import org.firstinspires.ftc.teamcode.common.commands.armCommands.setRollAngle;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.slideToRow;
-import org.firstinspires.ftc.teamcode.common.commands.droneLaunch;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseLeftPixel;
-import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseRightPixel;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeToHang;
-import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
-import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 
 
 @TeleOp

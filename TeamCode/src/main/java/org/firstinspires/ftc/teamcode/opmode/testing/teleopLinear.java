@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -22,7 +21,7 @@ import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToTransfe
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToWaitPosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.setRollAngle;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.slideToRow;
-import org.firstinspires.ftc.teamcode.common.commands.droneLaunch;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneLaunch;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseLeftPixel;
@@ -32,7 +31,6 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeComm
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeToHang;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
-import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.Sensors;
@@ -70,7 +68,7 @@ public class teleopLinear extends LinearOpMode {
             gamepadMechanism = new GamepadEx(gamepad2);
             robot.init(hardwareMap);
             robot.follower.setAuto(CenterstageConstants.IS_AUTO);
-            robot.follower.setStartingPose(new Pose(-39,-58,Math.toRadians(90)));
+//            robot.follower.setStartingPose(new Pose(-39,-58,Math.toRadians(90)));
 
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new InstantCommand(new Runnable() {
                 @Override

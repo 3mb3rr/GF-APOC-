@@ -93,13 +93,13 @@ public class AutoRedClose extends CommandOpMode {
         toSpikeRight = new Path(new BezierLine(new Point(0, 0,Point.CARTESIAN), new Point(21, -22,Point.CARTESIAN)));
         toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(90));
 
-        toBackboardMiddle = new Path(new BezierLine(new Point(21, 0, Point.CARTESIAN),new Point(24.5, -36.5,Point.CARTESIAN))); //new Point(21, 0, Point.CARTESIAN),
+        toBackboardMiddle = new Path(new BezierLine(new Point(21, 0, Point.CARTESIAN),new Point(24.5, -36.2,Point.CARTESIAN))); //new Point(21, 0, Point.CARTESIAN),
         toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(-90));
 
-        toBackboardLeft = new Path(new BezierLine((new Point(21.8, -2.7, Point.CARTESIAN)),(new Point(30, -36.5,Point.CARTESIAN))));
+        toBackboardLeft = new Path(new BezierLine((new Point(21.8, -2.7, Point.CARTESIAN)),(new Point(30, -36.2,Point.CARTESIAN))));
         toBackboardLeft.setConstantHeadingInterpolation(Math.toRadians(-90));
 
-        toBackboardRight = new Path(new BezierLine(new Point(22.3,-26.9,Point.CARTESIAN),new Point(21,-36.5,Point.CARTESIAN)));
+        toBackboardRight = new Path(new BezierLine(new Point(22.3,-26.9,Point.CARTESIAN),new Point(21,-36.2,Point.CARTESIAN)));
         toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(-90));
 
         toStackRight = new Path(new BezierCurve(new Point(23, -36.25, Point.CARTESIAN), new Point(56.6, -33,Point.CARTESIAN),new Point(65, 0,Point.CARTESIAN),(new Point(48.17, 68.7, Point.CARTESIAN))));
@@ -114,7 +114,7 @@ public class AutoRedClose extends CommandOpMode {
         toStrafeAtStackMiddle = new Path(new BezierLine((new Point(34,67.5,Point.CARTESIAN)),(new Point(30 ,67.5,Point.CARTESIAN))));
         toStrafeAtStackMiddle.setConstantHeadingInterpolation(Math.toRadians(-85));
 
-        toBackboardFromStack = new Path(new BezierCurve((new Point(39.3, 68.65, Point.CARTESIAN)),(new Point(65, 0,Point.CARTESIAN)),(new Point(56.6, -33,Point.CARTESIAN)),(new Point(23, -37.5,Point.CARTESIAN))));
+        toBackboardFromStack = new Path(new BezierCurve((new Point(39.3, 68.65, Point.CARTESIAN)),(new Point(65, 0,Point.CARTESIAN)),(new Point(56.6, -33,Point.CARTESIAN)),(new Point(23, -37,Point.CARTESIAN))));
         toBackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(-90));
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
@@ -273,12 +273,11 @@ public class AutoRedClose extends CommandOpMode {
 
     @Override
     public void run() {
+        stopCamera();
         CommandScheduler.getInstance().run();
         robot.read();
         robot.periodic();
         robot.write();
-
-
     }
 
     public void startCamera() {
@@ -291,6 +290,10 @@ public class AutoRedClose extends CommandOpMode {
                 .build();
 
         visionPortal.setProcessorEnabled(pipeline, true);
+    }
+
+    public void stopCamera(){
+        visionPortal.stopStreaming();
     }
 }
 

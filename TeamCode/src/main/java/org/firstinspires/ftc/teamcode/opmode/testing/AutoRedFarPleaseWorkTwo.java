@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import android.util.Size;
 
@@ -49,7 +49,7 @@ import java.util.function.BooleanSupplier;
 
 
 @Autonomous
-public class AutoRedFar extends CommandOpMode {
+public class AutoRedFarPleaseWorkTwo extends CommandOpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private double currentTime=0;
     private double lastTime = 0.0;
@@ -221,12 +221,20 @@ public class AutoRedFar extends CommandOpMode {
 
     @Override
     public void run() {
-        stopCamera();
         CommandScheduler.getInstance().run();
         robot.read();
         robot.periodic();
         robot.write();
 
+        currentTime=System.nanoTime();
+        loopTime=currentTime - lastTime;
+        lastTime = currentTime;
+
+        telemetry.addData("looptime",loopTime);
+        telemetry.addData("is it busy", busy.getAsBoolean());
+        telemetry.addData("zone", zone);
+        telemetry.addData("randomixation", CenterstageConstants.RANDOMIZATION.name());
+        telemetry.update();
     }
 
     public void startCamera() {
@@ -239,9 +247,5 @@ public class AutoRedFar extends CommandOpMode {
                 .build();
 
         visionPortal.setProcessorEnabled(pipeline, true);
-    }
-
-    public void stopCamera(){
-        visionPortal.stopStreaming();
     }
 }

@@ -21,7 +21,9 @@ import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToTransfe
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToWaitPosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.setRollAngle;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.slideToRow;
-import org.firstinspires.ftc.teamcode.common.commands.droneLaunch;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneLaunch;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneToHeightUp;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneToWait;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseLeftPixel;
@@ -119,7 +121,6 @@ public class teleopBlue extends CommandOpMode {
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
                 new pivotToRearrangePosition(), new pitchToRearrangePosition()
         ));
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
         gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
                 new InstantCommand(new Runnable() {
                     @Override
@@ -150,6 +151,8 @@ public class teleopBlue extends CommandOpMode {
                 fourBarHeight=(int) MathUtils.clamp(fourBarHeight,1,5);
             }
         }));
+
+
 
         robot.read();
         robot.periodic();
@@ -193,9 +196,9 @@ public class teleopBlue extends CommandOpMode {
                             new stopIntake()
 //                            new WaitCommand(200),
 //                            new pivotToTransferPosition(),
-//                            new WaitCommand(500),
+//                            new WaitCommand(250),
 //                            new pitchToTransferPosition(),
-//                            new WaitCommand(500),
+//                            new WaitCommand(250),
 //                            new grabLeftPixel(),
 //                            new grabRightPixel()
                     )
@@ -227,5 +230,20 @@ public class teleopBlue extends CommandOpMode {
         if (((robot.intake.getState() == intakeSubsystem.intakeState.outtake) || (robot.intake.getState() == intakeSubsystem.intakeState.intake)) && robot.intake.targetStackHeight!=fourBarHeight){
             CommandScheduler.getInstance().schedule(new v4BarToHeight(fourBarHeight));
         }
+
+        if (gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get() && gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).get())
+            CommandScheduler.getInstance().schedule(
+                    new SequentialCommandGroup(
+                            new droneToHeightUp(),
+                            new WaitCommand(1000),
+                            new droneLaunch(),
+                            new WaitCommand(200),
+                            new droneToHeightUp(),
+                            new WaitCommand(100),
+                            new droneLaunch(),
+                            new WaitCommand(100),
+                            new droneToWait()
+                    )
+            );
     }
 }

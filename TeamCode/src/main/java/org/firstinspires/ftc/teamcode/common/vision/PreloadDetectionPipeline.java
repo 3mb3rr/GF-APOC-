@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.common.vision;
 
 import android.graphics.Canvas;
-
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.robot.robotConstants;
@@ -21,6 +23,12 @@ public class PreloadDetectionPipeline implements VisionProcessor {
     private int targetAprilTagID = 0;
 
     private Location preloadedZone = Location.CENTER;
+    Rect leftInclusionZone;
+    Rect rightInclusionZone;
+
+    Rect leftExclusionZone;
+    Rect rightExclusionZone;
+
 
 //    private AprilTagProcessor aprilTag;
 //
@@ -64,18 +72,21 @@ public class PreloadDetectionPipeline implements VisionProcessor {
 
                         int exclusionZoneWidth = (int) (tagWidth * 0.28);
                         int exclusionZoneHeight = (int) (tagHeight * 0.28);
+                        leftInclusionZone = new Rect(tagCenterX - inclusionZoneWidth, tagCenterY - 150, inclusionZoneWidth, inclusionZoneHeight);
+                        rightInclusionZone = new Rect(tagCenterX, tagCenterY - 150, inclusionZoneWidth, inclusionZoneHeight);
 
-                        Rect leftInclusionZone = new Rect(tagCenterX - inclusionZoneWidth, tagCenterY - 110, inclusionZoneWidth, inclusionZoneHeight);
-                        Rect rightInclusionZone = new Rect(tagCenterX, tagCenterY - 110, inclusionZoneWidth, inclusionZoneHeight);
+                        leftExclusionZone = new Rect(tagCenterX - (int) (inclusionZoneWidth * 0.64), tagCenterY - 130, exclusionZoneWidth, exclusionZoneHeight);
+                        rightExclusionZone = new Rect(tagCenterX + (int) (inclusionZoneWidth * 0.28), tagCenterY - 130, exclusionZoneWidth, exclusionZoneHeight);
 
-                        Rect leftExclusionZone = new Rect(tagCenterX - (int) (inclusionZoneWidth * 0.64), tagCenterY - 90, exclusionZoneWidth, exclusionZoneHeight);
-                        Rect rightExclusionZone = new Rect(tagCenterX + (int) (inclusionZoneWidth * 0.28), tagCenterY - 90, exclusionZoneWidth, exclusionZoneHeight);
 
                         Imgproc.rectangle(frame, leftInclusionZone, new Scalar(0, 255, 0), 7);
                         Imgproc.rectangle(frame, rightInclusionZone, new Scalar(0, 255, 0), 7);
+                        Imgproc.rectangle(frame, leftExclusionZone,new Scalar(255,0,0),7);
+                        Imgproc.rectangle(frame, rightExclusionZone,new Scalar(255,0,0),7);
 
                         int leftZoneAverage = meanColor(frame, leftInclusionZone, leftExclusionZone);
                         int rightZoneAverage = meanColor(frame, rightInclusionZone, rightExclusionZone);
+
 
 //                        System.out.println("LEFTAVG " + leftZoneAverage);
 //                        System.out.println("RIGHTAVG " + rightZoneAverage);
@@ -83,18 +94,36 @@ public class PreloadDetectionPipeline implements VisionProcessor {
                         preloadedZone = (leftZoneAverage > rightZoneAverage) ? Location.LEFT : Location.RIGHT;
                         System.out.println("PRELOADED ZONE: " + preloadedZone);
                         CenterstageConstants.PRELOAD = preloadedZone;
+                        return frame;
                     }
                 }
             }
         }
-
-
         return null;
     }
 
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
 
+        Paint rectPaint = new Paint();
+        rectPaint.setColor(Color.GREEN);
+        rectPaint.setStyle(Paint.Style.STROKE);
+        rectPaint.setStrokeWidth(scaleCanvasDensity * 4);
+        if(leftExclusionZone != null) {
+            canvas.drawRect(makeGraphicsRect(leftInclusionZone, scaleBmpPxToCanvasPx), rectPaint);
+            canvas.drawRect(makeGraphicsRect(rightInclusionZone, scaleBmpPxToCanvasPx), rectPaint);
+            rectPaint.setColor(Color.RED);
+            canvas.drawRect(makeGraphicsRect(leftExclusionZone, scaleBmpPxToCanvasPx), rectPaint);
+            canvas.drawRect(makeGraphicsRect(rightExclusionZone, scaleBmpPxToCanvasPx), rectPaint);
+        }
+    }
+    private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
+        int left = Math.round(rect.x * scaleBmpPxToCanvasPx);
+        int top = Math.round(rect.y * scaleBmpPxToCanvasPx);
+        int right = left + Math.round(rect.width * scaleBmpPxToCanvasPx);
+        int bottom = top + Math.round(rect.height * scaleBmpPxToCanvasPx);
+
+        return new android.graphics.Rect(left, top, right, bottom);
     }
 
     public Location getPreloadedZone() {

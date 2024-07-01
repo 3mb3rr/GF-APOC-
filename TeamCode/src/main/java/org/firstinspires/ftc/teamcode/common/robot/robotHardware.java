@@ -40,6 +40,8 @@ import org.firstinspires.ftc.teamcode.common.subsystem.droneSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JActuator;
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
+import org.firstinspires.ftc.teamcode.common.vision.Location;
+import org.firstinspires.ftc.teamcode.common.vision.PreloadDetectionPipeline;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -60,7 +62,7 @@ public class robotHardware {
     private static robotHardware instance = null;
     private boolean enabled;
 
-    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo, latch;
+    public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo, latch,droneHeight;
     public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
     public Encoder par0, par1, perp;
@@ -82,6 +84,7 @@ public class robotHardware {
 
     //    public PreloadDetectionPipeline preloadDetectionPipeline;
     public PropDetectionPipeline propDetectionPipeline;
+    public PreloadDetectionPipeline preloadDetectionPipeline;
     public List<LynxModule> modules;
     public LynxModule CONTROL_HUB;
 
@@ -143,8 +146,9 @@ public class robotHardware {
         pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
         leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
         rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
-        droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
+        droneServo = new JServo(hardwareMap.get(Servo.class, "droneLaunchServo"));
         latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
+        droneHeight = new JServo(hardwareMap.get(Servo.class, "droneHeightServo"));
 
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -234,6 +238,7 @@ public class robotHardware {
         }
 
         propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
+        preloadDetectionPipeline = new PreloadDetectionPipeline();
         if (CenterstageConstants.IS_AUTO) {
 
             // TODO: Add start camera here
@@ -266,6 +271,9 @@ public class robotHardware {
         }
         roll.setAngle(0);
         transferFlap.setAngle(90);
+        droneHeight.setPosition(1);
+        droneServo.setPosition(1);
+
     }
 
     public void periodic(){
@@ -362,19 +370,21 @@ public class robotHardware {
         return (boolean) values.getOrDefault(topic, 0);
     }
     public void startCamera() {
+        preloadDetectionPipeline.setTargetAprilTagID(Location.CENTER);
         aprilTag = new AprilTagProcessor.Builder()
                 // calibrated using 3DF Zephyr 7.021
-                .setLensIntrinsics(549.651, 549.651, 317.108, 236.644)
+                .setLensIntrinsics(605.988, 605.988, 388.845, 214.577   )
                 .build();
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                 .setCameraResolution(new Size(800, 448))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessors(aprilTag, propDetectionPipeline)
+                .addProcessors(propDetectionPipeline) //aprilTag, preloadDetectionPipeline
                 .enableLiveView(true)
                 .build();
+//       - visionPortal.setProcessorEnabled(aprilTag, true);
+//        visionPortal.setProcessorEnabled(preloadDetectionPipeline, true);
 
-        visionPortal.setProcessorEnabled(propDetectionPipeline, true);
     }
     public List<AprilTagDetection> getAprilTagDetections() {
         if (aprilTag != null && localizer != null) return aprilTag.getDetections();
