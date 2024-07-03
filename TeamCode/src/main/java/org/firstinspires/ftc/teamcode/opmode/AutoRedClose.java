@@ -68,18 +68,10 @@ public class AutoRedClose extends CommandOpMode {
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
 
-    VisionPortal visionPortal;
-    public PropDetectionPipeline pipeline;
     private int zone;
-    private Location randomization;
 
     @Override
     public void initialize() {
-        FtcDashboard.getInstance().startCameraStream(visionPortal, 0);
-        pipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
-        startCamera();
-
-
 
 
         telemetry.setMsTransmissionInterval(50);
@@ -129,7 +121,7 @@ public class AutoRedClose extends CommandOpMode {
 
         while (opModeInInit()) {
 
-            zone= pipeline.detectZone();
+            zone= robot.propDetectionPipeline.detectZone();
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
@@ -146,7 +138,7 @@ public class AutoRedClose extends CommandOpMode {
                             new WaitCommand(300),
                             new WaitUntilCommand(busy),
                             new releaseRightPixel(),
-                            new WaitCommand(100),
+//                            new WaitCommand(100),
                             new followPath(CenterstageConstants.getPath(zone, toBackboardLeft,toBackboardMiddle,toBackboardRight)),
                             new pitchToDropPosition(),
                             new pivotToDropPosition(),
@@ -161,7 +153,6 @@ public class AutoRedClose extends CommandOpMode {
                             new v4BarToHeight(5),
                             new outtakeCommand(),
                             new WaitUntilCommand(busy),
-                            new WaitCommand(350),
                             new followPath(toStrafeAtStackRight),
                             new v4BarToHeight(4),
                             new WaitCommand(150),
@@ -257,7 +248,11 @@ public class AutoRedClose extends CommandOpMode {
                             new slideToRow(3),
                             new WaitCommand(600),
                             new releaseRightPixel(),
-                            new releaseLeftPixel()
+                            new releaseLeftPixel(),
+                            new WaitCommand(200),
+                            new pivotToWaitPosition(),
+                            new pitchToWaitPosition(),
+                            new slideToRow(1)
 
                     )
             );
@@ -273,27 +268,11 @@ public class AutoRedClose extends CommandOpMode {
 
     @Override
     public void run() {
-        stopCamera();
+        robot.stopCameraStream();
         CommandScheduler.getInstance().run();
         robot.read();
         robot.periodic();
         robot.write();
-    }
-
-    public void startCamera() {
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                .setCameraResolution(new Size(800, 448))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessor(pipeline)
-                .enableLiveView(true)
-                .build();
-
-        visionPortal.setProcessorEnabled(pipeline, true);
-    }
-
-    public void stopCamera(){
-        visionPortal.stopStreaming();
     }
 }
 

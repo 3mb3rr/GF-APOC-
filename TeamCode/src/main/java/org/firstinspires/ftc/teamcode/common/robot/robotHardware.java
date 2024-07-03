@@ -71,6 +71,7 @@ public class robotHardware {
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
     public JActuator lift;
     public LimitSwitch leftLimit, rightLimit;
+    public LEDIndicator LEDRightRed,LEDRightGreen,LEDRightFrontRed,LEDRightFrontGreen,LEDLeftGreen,LEDLeftRed,LEDLeftFrontGreen,LEDLeftFrontRed;
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -150,6 +151,15 @@ public class robotHardware {
         latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
         droneHeight = new JServo(hardwareMap.get(Servo.class, "droneHeightServo"));
 
+        LEDLeftRed = hardwareMap.get(LEDIndicator.class,"LEDLeftRed");
+        LEDLeftGreen = hardwareMap.get(LEDIndicator.class,"LEDLeftGreen");
+        LEDLeftFrontRed = hardwareMap.get(LEDIndicator.class,"LEDLeftFrontRed");
+        LEDLeftFrontGreen = hardwareMap.get(LEDIndicator.class,"LEDLeftFrontGreen");
+        LEDRightRed = hardwareMap.get(LEDIndicator.class,"LEDRightRed");
+        LEDRightGreen = hardwareMap.get(LEDIndicator.class,"LEDRightGreen");
+        LEDRightFrontRed = hardwareMap.get(LEDIndicator.class,"LEDRightFrontRed");
+        LEDRightFrontGreen = hardwareMap.get(LEDIndicator.class,"LEDRightFrontGreen");
+
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -193,7 +203,7 @@ public class robotHardware {
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
         lift = new JActuator(() -> leftSlideMotor.getCurrentPosition(), leftSlideMotor, rightSlideMotor);
-        lift.setPIDController(new PIDController(0.02, 0, 0.000475));
+        lift.setPIDController(robotConstants.slideController); //new PIDController(0.02, 0, 0.000475)
         lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         lift.setErrorTolerance(5);
 
@@ -240,6 +250,7 @@ public class robotHardware {
         propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
         preloadDetectionPipeline = new PreloadDetectionPipeline();
         if (CenterstageConstants.IS_AUTO) {
+            startCamera();
 
             // TODO: Add start camera here
             synchronized (imuLock) {
@@ -379,7 +390,7 @@ public class robotHardware {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                 .setCameraResolution(new Size(800, 448))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessors(propDetectionPipeline) //aprilTag, preloadDetectionPipeline
+                .addProcessors(aprilTag,propDetectionPipeline,preloadDetectionPipeline)
                 .enableLiveView(true)
                 .build();
 //       - visionPortal.setProcessorEnabled(aprilTag, true);
@@ -451,6 +462,9 @@ public class robotHardware {
 
     public void closeCamera() {
         if (visionPortal != null) visionPortal.close();
+    }
+    public void stopCameraStream() {
+        if (visionPortal != null) visionPortal.stopStreaming();
     }
     public void startTimer(){
         startTime = System.nanoTime();

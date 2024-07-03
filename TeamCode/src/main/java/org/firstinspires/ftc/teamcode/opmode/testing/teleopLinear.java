@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeComm
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeToHang;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
+import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.common.robot.Sensors;
@@ -68,7 +69,8 @@ public class teleopLinear extends LinearOpMode {
             gamepadMechanism = new GamepadEx(gamepad2);
             robot.init(hardwareMap);
             robot.follower.setAuto(CenterstageConstants.IS_AUTO);
-//            robot.follower.setStartingPose(new Pose(-39,-58,Math.toRadians(90)));
+
+            robot.follower.setStartingPose(new Pose(-39,58,Math.toRadians(-90)));
 
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new InstantCommand(new Runnable() {
                 @Override

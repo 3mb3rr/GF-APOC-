@@ -23,7 +23,7 @@ public class CenterstageConstants {
      * Match constants.
      */
     public static boolean IS_AUTO = true;
-    public static Location ALLIANCE = Location.RED;
+    public static Location ALLIANCE = Location.BLUE;
     public static Location RANDOMIZATION = Location.CENTER;
     public static int realRandomization = 2;
     public static Location PRELOAD = Location.RIGHT;

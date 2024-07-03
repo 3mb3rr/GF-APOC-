@@ -23,13 +23,13 @@ import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 public class  robotConstants {
 
     // Slide constants
-    public static PIDController slideController = new PIDController(0.018, 0, 0.000475);
+    public static PIDController slideController = new PIDController(0.015, 0, 0.000485);
     // ticks for slide to place in the first row
     public static int slideFirstRowTicks = 0;
     // how many ticks should be added for slides to reach the next row
-    public static int slideRowIncreaseTicks = 230;
+    public static int slideRowIncreaseTicks = 322;
     // how many ticks should be added if angle is changed from 0 to 30 degrees
-    public static int slideAngleIncreaseTicks = 100;
+    public static int slideAngleIncreaseTicks = 140;
 
     public static double slideFF = 0.1;
     public static double slideFFHang = -0.9;
@@ -37,7 +37,7 @@ public class  robotConstants {
     public static double slideAngle = Math.toRadians(60);
     // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(30);
-    public static double waitPitch = Math.toRadians(-97);
+    public static double waitPitch = Math.toRadians(-94);
     public static double transferPitch = Math.toRadians(-111); //-116
     public static double rearrangePitch = Math.toRadians(36);
     public static double spikePitch = Math.toRadians(75);
@@ -50,8 +50,8 @@ public class  robotConstants {
     public static double releasePos = 0.1;
     public static double grabPos = 0.95;
 
-    public static double droneLaunchPosition = 1;
-    public static double droneWaitPosition = 0;
+    public static double droneLaunchPosition = 0;
+    public static double droneWaitPosition = 1;
     public static double droneHeightWaitPos = 1;
     public static double droneHeightUpPos = 0.8;
 
@@ -68,8 +68,8 @@ public class  robotConstants {
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
     public static double rollerLength = MathUtils.mmToInches(57);
-    public static double latchClose = 0.03;
-    public static double latchOpen = 0.61;
+    public static double latchClose = 0.05;
+    public static double latchOpen = 0.62;
     // localization constants
     public static double par0YTicks = -10688; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 10688; // y position of the second parallel encoder (in tick units)

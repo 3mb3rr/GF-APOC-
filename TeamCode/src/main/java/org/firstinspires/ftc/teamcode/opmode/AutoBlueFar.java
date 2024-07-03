@@ -71,30 +71,26 @@ public class AutoBlueFar extends CommandOpMode {
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
 
-    VisionPortal visionPortal;
-    public PropDetectionPipeline pipeline;
     private int zone;
     double bbDropY=-36;
     double bbDropX=45;
     @Override
     public void initialize() {
-        FtcDashboard.getInstance().startCameraStream(visionPortal, 0);
-        pipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
-        startCamera();
 
 
         telemetry.setMsTransmissionInterval(50);
 
 
-        toSpikeMiddle = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-55, 21.5,Point.CARTESIAN)));
+        toSpikeMiddle = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57, 25,Point.CARTESIAN)));
         toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(-90),0);
-        toSpikeLeft = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57, 17,Point.CARTESIAN)));
-        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(44));
-        toSpikeRight = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-39.4, 34.6,Point.CARTESIAN)));
-        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
+        toSpikeRight = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57, 17,Point.CARTESIAN)));
+        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(44));
+        toSpikeLeft = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-39.4, 34.6,Point.CARTESIAN)));
+        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(0));
 
 //        toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-27,4,Point.CARTESIAN), new Point(30,2,Point.CARTESIAN),new Point(43,-35,Point.CARTESIAN),new Point(45, -36,Point.CARTESIAN)));
-//        toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
+//        toBackboard.setConstantHeadingI
+//        nterpolation(Math.toRadians(0));
 //
 //        toBackboardMiddle = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),new Point(45, -36,Point.CARTESIAN))); //new Point(21, 0, Point.CARTESIAN),
 //        toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -105,7 +101,7 @@ public class AutoBlueFar extends CommandOpMode {
 //        toBackboardRight = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),new Point(45,-38,Point.CARTESIAN)));
 //        toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        toStackMiddle = new Path(new BezierLine(new Point(-55,21.5,Point.CARTESIAN),new Point(-57, 19.5, Point.CARTESIAN)));
+        toStackMiddle = new Path(new BezierLine(new Point(-55,24,Point.CARTESIAN),new Point(-58, 21.5, Point.CARTESIAN)));
         toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
 
         toStackLeftFromBB = new Path(new BezierCurve((new Point(43,-35,Point.CARTESIAN)),(new Point(30,2,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-57, -19,Point.CARTESIAN))));
@@ -127,22 +123,22 @@ public class AutoBlueFar extends CommandOpMode {
 
         while (opModeInInit()) {
 
-            zone=pipeline.detectZone();
+            zone=robot.propDetectionPipeline.detectZone();
 
             if (zone==1){
-                bbDropX=48.5;
-                bbDropY=-29;
+                bbDropX=47.5;
+                bbDropY=38;
             }
             else if (zone==2) {
-                bbDropX=45;
-                bbDropY=-36;
+                bbDropX=47.5;
+                bbDropY=33;
             }
             else{
-                bbDropX=48.5;
-                bbDropY=-39;
+                bbDropX=47.6;
+                bbDropY=28;
             }
 
-            toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-27,4,Point.CARTESIAN), new Point(30,2,Point.CARTESIAN),new Point(43,-35,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+            toBackboard = new Path(new BezierCurve(new Point(-57, 14,Point.CARTESIAN), new Point(-44,-1,Point.CARTESIAN), new Point(30,0,Point.CARTESIAN),new Point(45,33,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
             toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
@@ -180,18 +176,22 @@ public class AutoBlueFar extends CommandOpMode {
                             new WaitCommand(400),
                             new grabLeftPixel(),
                             //below is new
-                            new grabRightPixel()
+                            new grabRightPixel(),
                             //above is new
-//                            new followPath(toBackboard),
-//                            new WaitUntilCommand(busy),
-//                            new pitchToDropPosition(),
-//                            new WaitCommand(250),
-//                            new pivotToDropPosition(),
-//                            new WaitCommand(1000),
-//                            new releaseLeftPixel(),
-//                            //below is new
-//                            new releaseRightPixel()
-//                            //above is new
+                            new followPath(toBackboard),
+                            new WaitUntilCommand(busy),
+                            new pitchToDropPosition(),
+                            new WaitCommand(250),
+                            new pivotToDropPosition(),
+                            new WaitCommand(1000),
+                            new releaseLeftPixel(),
+                            //below is new
+                            new releaseRightPixel(),
+                            new WaitCommand(200),
+                            new pivotToWaitPosition(),
+                            new pitchToWaitPosition(),
+                            new slideToRow(1)
+                            //above is new
 
 
 //                            new WaitUntilCommand(busy),
@@ -221,26 +221,10 @@ public class AutoBlueFar extends CommandOpMode {
 
     @Override
     public void run() {
-        stopCamera();
+        robot.stopCameraStream();
         CommandScheduler.getInstance().run();
         robot.read();
         robot.periodic();
         robot.write();
-    }
-
-    public void startCamera() {
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                .setCameraResolution(new Size(800, 448))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessor(pipeline)
-                .enableLiveView(true)
-                .build();
-
-        visionPortal.setProcessorEnabled(pipeline, true);
-    }
-
-    public void stopCamera(){
-        visionPortal.stopStreaming();
     }
 }

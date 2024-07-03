@@ -31,8 +31,10 @@ public class intakeSubsystem extends JSubsystem {
     public static double rollerDepth = 0.2;
     public int targetStackHeight = 1;
     public boolean isRechecked = true;
+    public boolean LL_R, LL_G, LLF_R, LLF_G, LR_R, LR_G, LRF_R, LRF_G;
 
     intakeState state;
+    LEDState ledState;
 
 
     public enum intakeState{
@@ -41,6 +43,13 @@ public class intakeSubsystem extends JSubsystem {
         stationary,
         hang,
         intakeInAuto
+    }
+
+    public enum LEDState{
+        left,
+        right,
+        none,
+        both
     }
     public intakeSubsystem() {
         issueColorSensorCheck = false;
@@ -87,6 +96,14 @@ public class intakeSubsystem extends JSubsystem {
 
         v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
+        if (isLeftPixel && isRightPixel)
+            ledState=LEDState.both;
+        else if (isRightPixel)
+            ledState=LEDState.right;
+        else if (isLeftPixel)
+            ledState=LEDState.left;
+        else
+            ledState=LEDState.none;
 
 
         switch(state){
@@ -113,6 +130,54 @@ public class intakeSubsystem extends JSubsystem {
                 break;
         }
 
+        //true false inverted becasue false lights it up and true turns it off
+        switch(ledState){
+            case left:
+                LL_G=false;
+                LLF_G=false;
+                LLF_R=true;
+                LL_R=true;
+
+                LR_G=true;
+                LRF_G=true;
+                LRF_R=false;
+                LR_R=false;
+                break;
+            case right:
+                LR_G=false;
+                LRF_G=false;
+                LRF_R=true;
+                LR_R=true;
+
+                LL_G=true;
+                LLF_G=true;
+                LLF_R=false;
+                LL_R=false;
+                break;
+            case none:
+                LR_G=true;
+                LRF_G=true;
+                LRF_R=false;
+                LR_R=false;
+
+                LL_G=true;
+                LLF_G=true;
+                LLF_R=false;
+                LL_R=false;
+                break;
+            case both:
+                LR_G=false;
+                LRF_G=false;
+                LRF_R=true;
+                LR_R=true;
+
+                LL_G=false;
+                LLF_G=false;
+                LLF_R=true;
+                LL_R=true;
+                break;
+        }
+
     }
     @Override
     public void write() {
@@ -120,6 +185,15 @@ public class intakeSubsystem extends JSubsystem {
         robot.v4Bar.setAngle(v4BarAngle);
         robot.transferFlap.setAngle(transferFlapAngle);
         robot.latch.setPosition(latchPos);
+
+        robot.LEDLeftRed.setState(LL_R);
+        robot.LEDLeftFrontRed.setState(LLF_R);
+        robot.LEDRightFrontRed.setState(LRF_R);
+        robot.LEDRightRed.setState(LR_R);
+        robot.LEDLeftGreen.setState(LL_G);
+        robot.LEDLeftFrontGreen.setState(LLF_G);
+        robot.LEDRightFrontGreen.setState(LRF_G);
+        robot.LEDRightGreen.setState(LR_G);
     }
     @Override
     public void reset() {

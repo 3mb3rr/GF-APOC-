@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.hangCommand;
+import org.firstinspires.ftc.teamcode.common.commands.armCommands.hangReleaseCommand;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToDropPosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToRearrangePosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToTransferPosition;
@@ -129,13 +130,29 @@ public class teleopRed extends CommandOpMode {
                     }
                 }), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
 //        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
-        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new SequentialCommandGroup(new hangCommand(),
-                new InstantCommand(new Runnable() {
-                    @Override
-                    public void run() {
-                        targetRow=2;
-                    }
-                })));
+        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                new SequentialCommandGroup(
+                        new hangCommand(),
+                        new InstantCommand(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        targetRow=2;
+                                    }
+                                }
+                        ),
+                        new WaitCommand(4000),
+                        new hangReleaseCommand(),
+                        new InstantCommand(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        targetRow=4;
+                                    }
+                                }
+                        )
+                )
+        );
 
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
             @Override
@@ -184,7 +201,7 @@ public class teleopRed extends CommandOpMode {
             transferred = false;
 //            rollIndex =0;
             CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                    new WaitCommand(400),new pitchToWaitPosition(), new pivotToWaitPosition(), new WaitCommand(400), new setRollAngle(0)
+                    new WaitCommand(400),new pitchToWaitPosition(), new pivotToWaitPosition(), new WaitCommand(400), new InstantCommand(new Runnable() {@Override public void run() {rollIndex=0;}}), new setRollAngle(0)
             ));
 
         }

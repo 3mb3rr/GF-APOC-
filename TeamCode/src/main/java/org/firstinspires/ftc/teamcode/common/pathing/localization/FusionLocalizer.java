@@ -44,8 +44,9 @@ import com.acmerobotics.roadrunner.Pose2d;
  *    \--------------/
  *      front (x pos)
  *
- * @author Anyi Lin - 10158 Scott's Bots
- * @version 1.0, 4/2/2024
+ * @author Jayveer Kochhar - 19013 G-Force
+ * @version 1.0, 4/7/2024
+ * dd/mm/yy
  */
 @Config
 public class FusionLocalizer extends Localizer {
@@ -155,9 +156,13 @@ public class FusionLocalizer extends Localizer {
 
     @Override
     public void update() {
-        PositionVelocityPair par0PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR0);
-        PositionVelocityPair par1PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR1);
-        PositionVelocityPair perpPosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PERP);
+//        PositionVelocityPair par0PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR0);
+//        PositionVelocityPair par1PosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PAR1);
+//        PositionVelocityPair perpPosVel = robot.encoderSubscriber(Sensors.SensorType.POD_PERP);
+
+        PositionVelocityPair par0PosVel = robot.par0.getPositionAndVelocity();
+        PositionVelocityPair par1PosVel = robot.par1.getPositionAndVelocity();
+        PositionVelocityPair perpPosVel = robot.perp.getPositionAndVelocity();
 
 
 

@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 public class vSlidePIDFtest extends OpMode {
     private PIDController controller;
     private double pos=0.5;
-    public static double p=0.02, i=0,d=0.000475;
+    public static double p=0.015, i=0,d=0.000485;
     public static double f=0.1;
     public static int target=0;
     private DcMotorEx slideLeft;
@@ -64,7 +64,7 @@ public class vSlidePIDFtest extends OpMode {
         slidePosRight= slideRight.getCurrentPosition();
 
         controller.setPID(p,i,d);
-        double pid=controller.calculate((slidePosLeft+slidePosRight)/2, target);
+        double pid=controller.calculate(slidePosLeft, target);
         double power = (pid +f);
         slideLeft.setPower(power);
         slideRight.setPower(power);

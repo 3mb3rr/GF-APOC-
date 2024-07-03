@@ -68,16 +68,9 @@ public class AutoBlueClose extends CommandOpMode {
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
 
-    public VisionPortal visionPortal;
-    public PropDetectionPipeline pipeline;
     private int zone;
     @Override
     public void initialize() {
-        FtcDashboard.getInstance().startCameraStream(visionPortal, 0);
-        pipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
-        startCamera();
-
-
 
 
         telemetry.setMsTransmissionInterval(50);
@@ -127,7 +120,7 @@ public class AutoBlueClose extends CommandOpMode {
 
         while (opModeInInit()) {
 
-            zone= pipeline.detectZone();
+            zone= robot.propDetectionPipeline.detectZone();
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
@@ -271,8 +264,7 @@ public class AutoBlueClose extends CommandOpMode {
 
     @Override
     public void run() {
-        stopCamera();
-
+        robot.stopCameraStream();
 
         CommandScheduler.getInstance().run();
         robot.read();
@@ -283,19 +275,4 @@ public class AutoBlueClose extends CommandOpMode {
 
     }
 
-    public void startCamera() {
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
-                .setCameraResolution(new Size(800, 448))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessor(pipeline)
-                .enableLiveView(true)
-                .build();
-
-        visionPortal.setProcessorEnabled(pipeline, true);
-    }
-
-    public void stopCamera(){
-        visionPortal.stopStreaming();
-    }
 }

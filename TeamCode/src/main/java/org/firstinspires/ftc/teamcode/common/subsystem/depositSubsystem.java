@@ -58,7 +58,6 @@ public class depositSubsystem extends JSubsystem {
             leftDropperState = dropperState.release;
             rightDropperState = dropperState.release;
         }
-
     }
 
     @Override
@@ -126,11 +125,11 @@ public class depositSubsystem extends JSubsystem {
                 break;
         }
         if(slideTargetRow!=0){
-        slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
+            slideTargetPosition = (slideTargetRow-1)*robotConstants.slideRowIncreaseTicks+robotConstants.slideFirstRowTicks;}
         else{
             slideTargetPosition = 0;
         }
-        if(rollAngle != 0 && rollAngle != 180) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
+        if(rollAngle != 0 && rollAngle != Math.toRadians(180)) slideTargetPosition+=robotConstants.slideAngleIncreaseTicks;
 
         robot.lift.setTargetPosition(slideTargetPosition);
         robot.lift.periodic();
