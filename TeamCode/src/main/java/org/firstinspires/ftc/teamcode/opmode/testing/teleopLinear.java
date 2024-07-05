@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.common.CenterstageConstants;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.hangCommand;
+import org.firstinspires.ftc.teamcode.common.commands.armCommands.hangReleaseCommand;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToDropPosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToRearrangePosition;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.pitchToTransferPosition;
@@ -22,6 +23,8 @@ import org.firstinspires.ftc.teamcode.common.commands.armCommands.pivotToWaitPos
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.setRollAngle;
 import org.firstinspires.ftc.teamcode.common.commands.armCommands.slideToRow;
 import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneLaunch;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneToHeightUp;
+import org.firstinspires.ftc.teamcode.common.commands.droneCommands.droneToWait;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabLeftPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.grabRightPixel;
 import org.firstinspires.ftc.teamcode.common.commands.dropperCommands.releaseLeftPixel;
@@ -69,8 +72,6 @@ public class teleopLinear extends LinearOpMode {
             gamepadMechanism = new GamepadEx(gamepad2);
             robot.init(hardwareMap);
             robot.follower.setAuto(CenterstageConstants.IS_AUTO);
-
-            robot.follower.setStartingPose(new Pose(-39,58,Math.toRadians(-90)));
 
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new InstantCommand(new Runnable() {
                 @Override
@@ -128,7 +129,6 @@ public class teleopLinear extends LinearOpMode {
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(new SequentialCommandGroup(
                     new pivotToRearrangePosition(), new pitchToRearrangePosition()
             ));
-            gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).whenPressed(new droneLaunch());
             gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new SequentialCommandGroup(
                     new InstantCommand(new Runnable() {
                         @Override
@@ -137,19 +137,35 @@ public class teleopLinear extends LinearOpMode {
                         }
                     }), new intakeToHang(), new pitchToDropPosition(), new pivotToDropPosition()));
 //        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new hangCommand());
-            gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(new SequentialCommandGroup(new hangCommand(),
-                    new InstantCommand(new Runnable() {
-                        @Override
-                        public void run() {
-                            targetRow=2;
-                        }
-                    })));
+            gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.B).whenPressed(
+                    new SequentialCommandGroup(
+                            new hangCommand(),
+                            new InstantCommand(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            targetRow=2;
+                                        }
+                                    }
+                            ),
+                            new WaitCommand(4000),
+                            new hangReleaseCommand(),
+                            new InstantCommand(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            targetRow=4;
+                                        }
+                                    }
+                            )
+                    )
+            );
 
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
                 @Override
                 public void run() {
                     fourBarHeight-=1;
-                    fourBarHeight= (int) MathUtils.clamp(fourBarHeight,1,5);
+                    fourBarHeight= (int)MathUtils.clamp(fourBarHeight,1,5);
                 }
             }));
             gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_STICK_BUTTON).whenPressed(new InstantCommand(new Runnable() {
@@ -159,6 +175,8 @@ public class teleopLinear extends LinearOpMode {
                     fourBarHeight=(int) MathUtils.clamp(fourBarHeight,1,5);
                 }
             }));
+
+
 
             robot.read();
             robot.periodic();
@@ -191,9 +209,9 @@ public class teleopLinear extends LinearOpMode {
                 isLeftDropped = false;
                 isRightDropped = false;
                 transferred = false;
-                rollIndex =0;
+//            rollIndex =0;
                 CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                        new WaitCommand(400),new pitchToWaitPosition(), new pivotToWaitPosition(), new setRollAngle(0)
+                        new WaitCommand(400),new pitchToWaitPosition(), new pivotToWaitPosition(), new WaitCommand(400), new InstantCommand(new Runnable() {@Override public void run() {rollIndex=0;}}), new setRollAngle(0)
                 ));
 
             }
@@ -203,9 +221,9 @@ public class teleopLinear extends LinearOpMode {
                                 new stopIntake()
 //                            new WaitCommand(200),
 //                            new pivotToTransferPosition(),
-//                            new WaitCommand(500),
+//                            new WaitCommand(250),
 //                            new pitchToTransferPosition(),
-//                            new WaitCommand(500),
+//                            new WaitCommand(250),
 //                            new grabLeftPixel(),
 //                            new grabRightPixel()
                         )
@@ -237,6 +255,21 @@ public class teleopLinear extends LinearOpMode {
             if (((robot.intake.getState() == intakeSubsystem.intakeState.outtake) || (robot.intake.getState() == intakeSubsystem.intakeState.intake)) && robot.intake.targetStackHeight!=fourBarHeight){
                 CommandScheduler.getInstance().schedule(new v4BarToHeight(fourBarHeight));
             }
+
+            if (gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).get() && gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.X).get())
+                CommandScheduler.getInstance().schedule(
+                        new SequentialCommandGroup(
+                                new droneToHeightUp(),
+                                new WaitCommand(1000),
+                                new droneLaunch(),
+                                new WaitCommand(200),
+                                new droneToHeightUp(),
+                                new WaitCommand(100),
+                                new droneLaunch(),
+                                new WaitCommand(100),
+                                new droneToWait()
+                        )
+                );
 
             currentTime=System.nanoTime();
             loopTime=currentTime - lastTime;

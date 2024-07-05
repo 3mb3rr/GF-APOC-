@@ -106,7 +106,10 @@ public class AutoRedClose extends CommandOpMode {
         toStrafeAtStackMiddle = new Path(new BezierLine((new Point(34,67.5,Point.CARTESIAN)),(new Point(30 ,67.5,Point.CARTESIAN))));
         toStrafeAtStackMiddle.setConstantHeadingInterpolation(Math.toRadians(-85));
 
-        toBackboardFromStack = new Path(new BezierCurve((new Point(39.3, 68.65, Point.CARTESIAN)),(new Point(65, 0,Point.CARTESIAN)),(new Point(56.6, -33,Point.CARTESIAN)),(new Point(23, -37,Point.CARTESIAN))));
+        toPark = new Path(new BezierLine(new Point(21,-35,Point.CARTESIAN),new Point(5,-35,Point.CARTESIAN)));
+        toPark.setConstantHeadingInterpolation(-90);
+
+        toBackboardFromStack = new Path(new BezierCurve((new Point(39.3, 68.65, Point.CARTESIAN)),(new Point(65, 0,Point.CARTESIAN)),(new Point(56.6, -33,Point.CARTESIAN)),(new Point(23, -36.5,Point.CARTESIAN))));
         toBackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(-90));
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
@@ -120,6 +123,7 @@ public class AutoRedClose extends CommandOpMode {
 
 
         while (opModeInInit()) {
+            CommandScheduler.getInstance().reset();
 
             zone= robot.propDetectionPipeline.detectZone();
 
@@ -198,7 +202,7 @@ public class AutoRedClose extends CommandOpMode {
                             new WaitCommand(600),
                             new releaseRightPixel(),
                             new releaseLeftPixel(),
-
+                            new WaitCommand(200),
                             new slideToRow(1),
                             new pivotToWaitPosition(),
                             new pitchToWaitPosition(),
@@ -252,7 +256,9 @@ public class AutoRedClose extends CommandOpMode {
                             new WaitCommand(200),
                             new pivotToWaitPosition(),
                             new pitchToWaitPosition(),
-                            new slideToRow(1)
+                            new slideToRow(1),
+
+                            new followPath(toPark)
 
                     )
             );

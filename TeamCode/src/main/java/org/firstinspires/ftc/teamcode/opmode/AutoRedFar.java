@@ -33,6 +33,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeComma
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
+import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarUp;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierLine;
@@ -61,6 +62,7 @@ public class AutoRedFar extends CommandOpMode {
     private Path toStackLeftFromBB;
     private Path toStrafeAtLeftStack;
     private Path toBackboard;
+    private Path toDrop;
     private Path toBackboardRight;
     private Path toBackboardMiddle;
     private Path toBackboardLeft;
@@ -109,6 +111,9 @@ public class AutoRedFar extends CommandOpMode {
 
         toStrafeAtLeftStack = new Path(new BezierLine((new Point(-58, 35, Point.CARTESIAN)),(new Point(-55,35,Point.CARTESIAN))));
 
+        toPark = new Path(new BezierLine(new Point(48.5,-33,Point.CARTESIAN),new Point(45,-20,Point.CARTESIAN)));
+        toPark.setConstantHeadingInterpolation(0);
+
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
         CenterstageConstants.ALLIANCE = Location.RED;
@@ -121,92 +126,144 @@ public class AutoRedFar extends CommandOpMode {
 
 
         while (opModeInInit()) {
+            CommandScheduler.getInstance().reset();
 
             zone=robot.propDetectionPipeline.detectZone();
 
             if (zone==1){
                 bbDropX=48.5;
-                bbDropY=-29;
+                bbDropY=-30;
             }
             else if (zone==2) {
-                bbDropX=45;
+                bbDropX=48.5;
                 bbDropY=-36;
             }
             else{
                 bbDropX=48.5;
-                bbDropY=-39;
+                bbDropY=-43;
             }
 
-            toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-27,4,Point.CARTESIAN), new Point(30,2,Point.CARTESIAN),new Point(43,-35,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+            toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-27,4,Point.CARTESIAN), new Point(30,2,Point.CARTESIAN),new Point(43,-35,Point.CARTESIAN)));
             toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toDrop = new Path(new BezierLine(new Point(43,-35,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+            toDrop.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
                             new followPath(CenterstageConstants.getPath(zone, toSpikeLeft,toSpikeMiddle,toSpikeRight)),
-                            new pitchToTransferPosition(),
-                            new pivotToTransferPosition(),
-                            new WaitCommand(200),
-                            new grabRightPixel(),
-                            new releaseLeftPixel(),
-                            new WaitCommand(300),
+                            new releaseRightPixel(),
                             new pitchToSpikePosition(),
                             new WaitCommand(100),
                             new pivotToSpikePosition(),
                             new WaitCommand(300),
                             new WaitUntilCommand(busy),
-                            new releaseRightPixel(),
+                            new releaseLeftPixel(),
                             new WaitCommand(100),
                             //below is new
                             new v4BarToHeight(5),
                             new outtakeCommand(),
                             new followPath(toStackMiddle),
+                            new WaitUntilCommand(busy),
                             new ParallelRaceGroup(
                                     new WaitCommand(1000),
                                     new WaitUntilCommand(pixels)
                             ),
                             new stopIntake(),
                             new intakeCommand(),
-                            new WaitCommand(250),
+                            new WaitCommand(400),
+                            new v4BarToHeight(4),
+                            new intakeCommand(),
+                            new WaitCommand(400),
                             new stopIntake(),
                             //above is new
                             new pivotToTransferPosition(),
                             new pitchToTransferPosition(),
-                            new WaitCommand(400),
+                            new WaitCommand(1000),
                             new grabLeftPixel(),
                             //below is new
                             new grabRightPixel(),
-                            //above is new
                             new followPath(toBackboard),
+                            new outtakeCommand(),
+                            new WaitCommand(300),
+                            new stopIntake(),
+                            new v4BarUp(),
                             new WaitUntilCommand(busy),
-                            new pitchToDropPosition(),
+//                            new ConditionalCommand(new setRollAngle(0),new setRollAngle(Math.toRadians(180)),preload),
                             new slideToRow(2),
+                            new pitchToDropPosition(),
                             new WaitCommand(250),
                             new pivotToDropPosition(),
-                            new WaitCommand(1000),
+                            new WaitCommand(500),
+                            new followPath(toDrop),
+                            //above is new
+                            new WaitUntilCommand(busy),
+                            new WaitCommand(150),
                             new releaseLeftPixel(),
                             //below is new
                             new releaseRightPixel(),
-                            new WaitCommand(200),
-                            new pivotToWaitPosition(),
-                            new pitchToWaitPosition(),
-                            new slideToRow(1)
+                            new slideToRow(1),
                             //above is new
 
 
-//                            new WaitUntilCommand(busy),
-//                            new WaitCommand(500),
-//                            new releaseLeftPixel(),
-//                            new pivotToWaitPosition(),
-//                            new pitchToWaitPosition(),
-//
-////                            new WaitCommand(100),
-//
-////                            new WaitCommand(100),
-//                            new followPath(toBackboardMiddle),
-//                            new WaitUntilCommand(busy),
-//                            new followPath(toStackLeftFromBB),
-//                            new WaitUntilCommand(busy)
+
+
+                            new WaitCommand(500),
+                            new pivotToWaitPosition(),
+                            new pitchToWaitPosition(),
+
+//                            new WaitCommand(100),
+
+//                            new WaitCommand(100),
+//                            new followPath(toStackLeft),
+                            new WaitUntilCommand(busy),
+                            new outtakeCommand(),
+                            new v4BarToHeight(3),
+                            new followPath(toStrafeAtLeftStack),
+                            new ParallelRaceGroup(
+                                    new WaitCommand(1000),
+                                    new WaitUntilCommand(pixels)
+                            ),
+                            new stopIntake(),
+                            new intakeCommand(),
+                            new WaitCommand(400),
+                            new v4BarToHeight(1),
+                            new outtakeCommand(),
+                            new WaitCommand(400),
+                            new stopIntake(),
+                            //above is new
+                            new pivotToTransferPosition(),
+                            new pitchToTransferPosition(),
+                            new WaitCommand(1000),
+                            new grabLeftPixel(),
+                            //below is new
+                            new grabRightPixel(),
+                            new followPath(toBackboard),
+                            new intakeCommand(),
+                            new WaitCommand(300),
+                            new stopIntake(),
+                            new v4BarUp(),
+                            new WaitUntilCommand(busy),
+                            //                            new ConditionalCommand(new setRollAngle(0),new setRollAngle(Math.toRadians(180)),preload),
+                            new slideToRow(3),
+                            new pitchToDropPosition(),
+                            new WaitCommand(250),
+                            new pivotToDropPosition(),
+                            new WaitCommand(500),
+                            new followPath(toDrop),
+                            //above is new
+                            new WaitUntilCommand(busy),
+                            new WaitCommand(150),
+                            new releaseLeftPixel(),
+                            //below is new
+                            new releaseRightPixel(),
+                            //above is new
+                            new WaitCommand(150),
+                            new slideToRow(1),
+                            new pitchToWaitPosition(),
+                            new pivotToWaitPosition(),
+                            new v4BarUp()
                     )
             );
 

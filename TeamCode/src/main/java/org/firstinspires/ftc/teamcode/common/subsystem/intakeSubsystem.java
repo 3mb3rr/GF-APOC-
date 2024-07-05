@@ -109,23 +109,25 @@ public class intakeSubsystem extends JSubsystem {
         switch(state){
             case intake:
                 rollerPower = robotConstants.maxRollerPower;
-                transferFlapAngle = 0;
+                transferFlapAngle = robotConstants.flapDown;
                 break;
             case stationary:
                 rollerPower = 0;
-                transferFlapAngle = 90;
+                transferFlapAngle = robotConstants.flapUp;
+                v4BarAngle = Math.toRadians(75);
                 break;
             case outtake:
                 rollerPower = -robotConstants.maxRollerPower;
-                transferFlapAngle = 0;
+                transferFlapAngle = robotConstants.flapDown;
                 break;
             case hang:
                 rollerPower = 0;
-                transferFlapAngle = 0;
+                transferFlapAngle = robotConstants.flapDown;
+                v4BarAngle = Math.toRadians(75);
                 break;
             case intakeInAuto:
-                transferFlapAngle = 90;
-                v4BarAngle = 75; //servo position 1
+                transferFlapAngle = robotConstants.flapUp;
+                v4BarAngle = Math.toRadians(75);
                 latchPos = robotConstants.latchClose;
                 break;
         }
@@ -133,39 +135,28 @@ public class intakeSubsystem extends JSubsystem {
         //true false inverted becasue false lights it up and true turns it off
         switch(ledState){
             case left:
-                LL_G=false;
-                LLF_G=false;
-                LLF_R=true;
-                LL_R=true;
+                LL_G=true;
+                LLF_G=true;
+                LLF_R=false;
+                LL_R=false;
 
-                LR_G=true;
-                LRF_G=true;
-                LRF_R=false;
-                LR_R=false;
+                LR_G=false;
+                LRF_G=false;
+                LRF_R=true;
+                LR_R=true;
                 break;
             case right:
-                LR_G=false;
-                LRF_G=false;
-                LRF_R=true;
-                LR_R=true;
-
-                LL_G=true;
-                LLF_G=true;
-                LLF_R=false;
-                LL_R=false;
-                break;
-            case none:
                 LR_G=true;
                 LRF_G=true;
                 LRF_R=false;
                 LR_R=false;
 
-                LL_G=true;
-                LLF_G=true;
-                LLF_R=false;
-                LL_R=false;
+                LL_G=false;
+                LLF_G=false;
+                LLF_R=true;
+                LL_R=true;
                 break;
-            case both:
+            case none:
                 LR_G=false;
                 LRF_G=false;
                 LRF_R=true;
@@ -175,6 +166,17 @@ public class intakeSubsystem extends JSubsystem {
                 LLF_G=false;
                 LLF_R=true;
                 LL_R=true;
+                break;
+            case both:
+                LR_G=true;
+                LRF_G=true;
+                LRF_R=false;
+                LR_R=false;
+
+                LL_G=true;
+                LLF_G=true;
+                LLF_R=false;
+                LL_R=false;
                 break;
         }
 
@@ -186,14 +188,14 @@ public class intakeSubsystem extends JSubsystem {
         robot.transferFlap.setAngle(transferFlapAngle);
         robot.latch.setPosition(latchPos);
 
-        robot.LEDLeftRed.setState(LL_R);
-        robot.LEDLeftFrontRed.setState(LLF_R);
-        robot.LEDRightFrontRed.setState(LRF_R);
-        robot.LEDRightRed.setState(LR_R);
-        robot.LEDLeftGreen.setState(LL_G);
-        robot.LEDLeftFrontGreen.setState(LLF_G);
-        robot.LEDRightFrontGreen.setState(LRF_G);
-        robot.LEDRightGreen.setState(LR_G);
+//        robot.LEDLeftRed.enable(LL_R);
+//        robot.LEDLeftFrontRed.enable(LLF_R);
+//        robot.LEDRightFrontRed.enable(LRF_R);
+//        robot.LEDRightRed.enable(LR_R);
+//        robot.LEDLeftGreen.enable(LL_G);
+//        robot.LEDLeftFrontGreen.enable(LLF_G);
+//        robot.LEDRightFrontGreen.enable(LRF_G);
+//        robot.LEDRightGreen.enable(LR_G);
     }
     @Override
     public void reset() {

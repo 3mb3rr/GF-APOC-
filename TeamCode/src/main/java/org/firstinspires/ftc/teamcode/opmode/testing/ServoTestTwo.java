@@ -12,10 +12,11 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 @Config
 @Autonomous
 public class ServoTestTwo extends LinearOpMode {
-    public JServo  leftPitch, rightPitch, pivot,fingL,fingR, latch;
+    public JServo  leftPitch, rightPitch, pivot,fingL,fingR, latch,flap;
     public static int pitch=0;
     public static int pivott=90;
     public static double latchPos=0.5;
+    public static int flapangle=90;
     @Override
     public void runOpMode() throws InterruptedException {
         while (!isStarted() && !isStopRequested()) {
@@ -27,11 +28,13 @@ public class ServoTestTwo extends LinearOpMode {
             fingL = new JServo(hardwareMap.get(Servo.class, "fingerServoLeft"));
             fingR = new JServo(hardwareMap.get(Servo.class, "fingerServoRight"));
             latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
+            flap = new JServo(hardwareMap.get(Servo.class, "flapServo"));
 
 
             leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
             rightPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
             pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
+            flap.setAngularRange(0,0,1,Math.toRadians(90));
 
             leftPitch.setAngle(Math.toRadians(pitch));
             rightPitch.setAngle(Math.toRadians(pitch));
@@ -70,11 +73,15 @@ public class ServoTestTwo extends LinearOpMode {
                 fingL.setPosition(0.95);
                 fingR.setPosition(0.95);
             }
-            if (gamepad1.y){
-                pivot.setPosition(0.56);
+            if(gamepad1.x) {
+                flapangle++;
+                flap.setAngle(Math.toRadians(flapangle));
+                sleep(100);
             }
-            if (gamepad1.x){
-                pivot.setPosition(0.86);
+            if (gamepad1.y) {
+                flapangle--;
+                flap.setAngle(Math.toRadians(flapangle));
+                sleep(100);
             }
             if (gamepad1.dpad_right){
                 latchPos+=0.01;
@@ -91,6 +98,7 @@ public class ServoTestTwo extends LinearOpMode {
             telemetry.addData("pivot",pivott);
             telemetry.addData("pitch",pitch);
             telemetry.addData("latchpos",latchPos);
+            telemetry.addData("flapos",flapangle);
             telemetry.update();
 //
 //            telemetry.addData("target pitch left",leftPitch.getPosition());

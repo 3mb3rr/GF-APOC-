@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 @Autonomous
 public class ServoTestFour extends LinearOpMode {
     public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
-    double pivotpos,pitchpos;
+    double pivotpos,pitchpos,dronepos,fourbarangle;
     @Override
     public void runOpMode() throws InterruptedException {
         transferFlap = new JServo(hardwareMap.get(Servo.class, "flapServo"));
@@ -20,10 +20,18 @@ public class ServoTestFour extends LinearOpMode {
         pivot = new JServo(hardwareMap.get(Servo.class, "pivotServo"));
         leftPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoLeft"));
         rightPitch = new JServo(hardwareMap.get(Servo.class, "pitchServoRight"));
-        droneServo = new JServo(hardwareMap.get(Servo.class, "droneServo"));
+        droneServo = new JServo(hardwareMap.get(Servo.class, "droneLaunchServo"));
+
+        roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
+        leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+        rightPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
+        pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
+
+        transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
+        v4Bar.setAngularRange(1,Math.toRadians(80),0.34,Math.toRadians(0));
 
         transferFlap.setPosition(0.5);
-        v4Bar.setPosition(0.5);
+        v4Bar.setAngle(0);
         fingerLeft.setPosition(0.5);
         fingerRight.setPosition(0.5);
         roll.setPosition(0);
@@ -34,18 +42,19 @@ public class ServoTestFour extends LinearOpMode {
 
         pivotpos=0.5;
         pitchpos=0.5;
+        dronepos=1;
         waitForStart();
 
         while (!isStopRequested()){
 
             if (gamepad1.dpad_left){
-                pivotpos=pivotpos-0.01;
-                pivot.setPosition(pivotpos);
+                fourbarangle++;
+                v4Bar.setAngle(Math.toRadians(fourbarangle));
                 sleep(100);
             }
             if (gamepad1.dpad_right){
-                pivotpos=pivotpos+0.01;
-                pivot.setPosition(pivotpos);
+                fourbarangle--;
+                v4Bar.setAngle(Math.toRadians(fourbarangle));
                 sleep(100);
             }
             if (gamepad1.y){
@@ -61,8 +70,21 @@ public class ServoTestFour extends LinearOpMode {
                 sleep(100);
             }
 
+            if (gamepad1.x){
+                dronepos=dronepos-0.01;
+                droneServo.setPosition(dronepos);
+                sleep(100);
+            }
+            if (gamepad1.b){
+                dronepos=dronepos+0.01;
+                droneServo.setPosition(dronepos);
+                sleep(100);
+            }
+
             telemetry.addData("pitch",pitchpos);
             telemetry.addData("pivbot", pivotpos);
+            telemetry.addData("doponew",dronepos);
+            telemetry.addData("4bar",fourbarangle);
             telemetry.update();
         }
     }

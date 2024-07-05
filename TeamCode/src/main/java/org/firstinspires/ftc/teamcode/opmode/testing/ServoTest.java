@@ -16,7 +16,7 @@ public class ServoTest extends LinearOpMode {
             fourbar = hardwareMap.get(Servo.class, "fourBarServo");
             intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
             wrist = hardwareMap.get(Servo.class,"wristServo");
-            pos=1;
+            pos=0.5;
             fourbar.setPosition(pos);
             wrist.setPosition(0);
         }

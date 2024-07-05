@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
@@ -71,7 +72,7 @@ public class robotHardware {
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
     public JActuator lift;
     public LimitSwitch leftLimit, rightLimit;
-    public LEDIndicator LEDRightRed,LEDRightGreen,LEDRightFrontRed,LEDRightFrontGreen,LEDLeftGreen,LEDLeftRed,LEDLeftFrontGreen,LEDLeftFrontRed;
+    public LED LEDRightRed,LEDRightGreen,LEDRightFrontRed,LEDRightFrontGreen,LEDLeftGreen,LEDLeftRed,LEDLeftFrontGreen,LEDLeftFrontRed;
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -151,14 +152,14 @@ public class robotHardware {
         latch = new JServo(hardwareMap.get(Servo.class, "latchServo"));
         droneHeight = new JServo(hardwareMap.get(Servo.class, "droneHeightServo"));
 
-        LEDLeftRed = hardwareMap.get(LEDIndicator.class,"LEDLeftRed");
-        LEDLeftGreen = hardwareMap.get(LEDIndicator.class,"LEDLeftGreen");
-        LEDLeftFrontRed = hardwareMap.get(LEDIndicator.class,"LEDLeftFrontRed");
-        LEDLeftFrontGreen = hardwareMap.get(LEDIndicator.class,"LEDLeftFrontGreen");
-        LEDRightRed = hardwareMap.get(LEDIndicator.class,"LEDRightRed");
-        LEDRightGreen = hardwareMap.get(LEDIndicator.class,"LEDRightGreen");
-        LEDRightFrontRed = hardwareMap.get(LEDIndicator.class,"LEDRightFrontRed");
-        LEDRightFrontGreen = hardwareMap.get(LEDIndicator.class,"LEDRightFrontGreen");
+        LEDLeftRed = hardwareMap.get(LED.class,"LEDLeftRed");
+        LEDLeftGreen = hardwareMap.get(LED.class,"LEDLeftGreen");
+        LEDLeftFrontRed = hardwareMap.get(LED.class,"LEDLeftFrontRed");
+        LEDLeftFrontGreen = hardwareMap.get(LED.class,"LEDLeftFrontGreen");
+        LEDRightRed = hardwareMap.get(LED.class,"LEDRightRed");
+        LEDRightGreen = hardwareMap.get(LED.class,"LEDRightGreen");
+        LEDRightFrontRed = hardwareMap.get(LED.class,"LEDRightFrontRed");
+        LEDRightFrontGreen = hardwareMap.get(LED.class,"LEDRightFrontGreen");
 
         // TODO: reverse MOTOR directions if needed
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -213,7 +214,7 @@ public class robotHardware {
         pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
 
         transferFlap.setAngularRange(0,0,1,Math.toRadians(90));
-        v4Bar.setAngularRange(1,Math.toRadians(75),0.34,Math.toRadians(0));
+        v4Bar.setAngularRange(1,Math.toRadians(80),0.34,Math.toRadians(0));
 
         intake = new intakeSubsystem();
         deposit = new depositSubsystem();
@@ -247,7 +248,7 @@ public class robotHardware {
             if (m.isParent() && LynxConstants.isEmbeddedSerialNumber(m.getSerialNumber())) CONTROL_HUB = m;
         }
 
-        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.65);
+        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.55);
         preloadDetectionPipeline = new PreloadDetectionPipeline();
         if (CenterstageConstants.IS_AUTO) {
             startCamera();
@@ -269,7 +270,7 @@ public class robotHardware {
             leftPitch.setAngle(robotConstants.transferPitch);
             rightPitch.setAngle(robotConstants.transferPitch);
             pivot.setAngle(robotConstants.pivotTransferAngle);
-            v4Bar.setPosition(1);
+            v4Bar.setAngle(Math.toRadians(75));
             latch.setPosition(robotConstants.latchClose);
             fingerLeft.setPosition(robotConstants.grabPos);
             fingerRight.setPosition(robotConstants.grabPos);
@@ -278,12 +279,12 @@ public class robotHardware {
             leftPitch.setAngle(robotConstants.waitPitch);
             rightPitch.setAngle(robotConstants.waitPitch);
             pivot.setAngle(robotConstants.pivotWaitAngle);
-            intake.setV4BarAngle(1);
+            v4Bar.setAngle(1);
         }
         roll.setAngle(0);
         transferFlap.setAngle(90);
-        droneHeight.setPosition(1);
-        droneServo.setPosition(1);
+        droneHeight.setPosition(robotConstants.droneHeightWaitPos);
+        droneServo.setPosition(robotConstants.droneWaitPosition);
 
     }
 

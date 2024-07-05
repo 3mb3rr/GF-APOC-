@@ -26,6 +26,7 @@ public class ServoTestThree extends LinearOpMode {
     private int targetRow = 1;
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
+    int fourbarposangle=0;
     @Override
     public void runOpMode() throws InterruptedException {
         int i=1;
@@ -49,7 +50,7 @@ public class ServoTestThree extends LinearOpMode {
                 robot.leftPitch.setAngle(Math.toRadians(4));
                 robot.roll.setAngle(0);
                 robot.pivot.setAngle(Math.toRadians(-105));
-                robot.v4Bar.setPosition(1);
+                robot.v4Bar.setAngle(fourbarposangle);
                 robot.transferFlap.setPosition(0);
             }
 
@@ -74,8 +75,19 @@ public class ServoTestThree extends LinearOpMode {
                 robot.leftPitch.setAngle(Math.toRadians(34));
                 robot.pivot.setAngle(56);
             }
-            telemetry.addData("fourbar angle",robot.intake.v4BarAngle);
+            if (gamepad1.dpad_right){
+                fourbarposangle++;
+               robot.v4Bar.setAngle(Math.toRadians(fourbarposangle));
+                sleep(100);
+            }
+            if (gamepad1.dpad_left){
+                fourbarposangle--;
+                robot.v4Bar.setAngle(Math.toRadians(fourbarposangle));
+                sleep(100);
+            }
+            telemetry.addData("fourbar angle",Math.toRadians(robot.v4Bar.getAngle()));
             telemetry.addData("fourbar position",robot.v4Bar.getPosition());
+            telemetry.addData("varaible angle",fourbarposangle);
             telemetry.update();
         }
     }

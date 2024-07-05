@@ -41,6 +41,8 @@ import org.firstinspires.ftc.teamcode.common.subsystem.depositSubsystem;
 import org.firstinspires.ftc.teamcode.common.subsystem.intakeSubsystem;
 import org.firstinspires.ftc.teamcode.common.util.MathUtils;
 
+import java.util.function.BooleanSupplier;
+
 
 @TeleOp
 public class teleopRed extends CommandOpMode {
@@ -50,13 +52,15 @@ public class teleopRed extends CommandOpMode {
     private Vector driveVector;
     private Vector headingVector;
 
-    private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(300)};
+    private double[] rollAngles = {0, Math.toRadians(60), Math.toRadians(90),Math.toRadians(120), Math.toRadians(180), Math.toRadians(210), Math.toRadians(270),Math.toRadians(300)};
     private int rollIndex = 0;
     private int targetRow = 1;
     private int fourBarHeight=1;
     private boolean isLeftDropped = false;
     private boolean isRightDropped = false;
     private boolean transferred = false;
+    private BooleanSupplier dropMultiplier = () -> robot.deposit.getPitchState()== depositSubsystem.armState.drop || robot.deposit.getPitchState()== depositSubsystem.armState.rearrange;
+    private double multiplier;
     @Override
     public void initialize(){
         CommandScheduler.getInstance().reset();
@@ -78,23 +82,17 @@ public class teleopRed extends CommandOpMode {
                 if(targetRow!=0)targetRow-=1;
             }
         }));
-//        gamepadDrivetrain.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(new Runnable() {
-//            @Override
-//            public void run() {
-//                targetRow=8;
-//            }
-//        }));
-        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
-            @Override
-            public void run() {
-                if(rollIndex != 0) rollIndex-=1;
-                else rollIndex = 5;
-            }
-        }));
         gamepadMechanism.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
             @Override
             public void run() {
-                if(rollIndex != 5) rollIndex+=1;
+                if(rollIndex != 0) rollIndex-=1;
+                else rollIndex = 7;
+            }
+        }));
+        gamepadMechanism.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(new Runnable() {
+            @Override
+            public void run() {
+                if(rollIndex != 7) rollIndex+=1;
                 else rollIndex = 0;
             }
         }));
@@ -187,7 +185,9 @@ public class teleopRed extends CommandOpMode {
         robot.periodic();
         robot.write();
 
-        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY(), -gamepadDrivetrain.getRightY());
+        multiplier = dropMultiplier.getAsBoolean() ? 0.5 : 1;
+
+        driveVector.setOrthogonalComponents(-gamepadDrivetrain.getLeftY()*multiplier, -gamepadDrivetrain.getRightY()*multiplier);
         driveVector.setMagnitude(MathFunctions.clamp(driveVector.getMagnitude(), 0, 1));
         driveVector.rotateVector(robot.follower.getPose().getHeading());
         headingVector.setComponents((gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)-gamepadDrivetrain.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))*0.625, robot.follower.getPose().getHeading());

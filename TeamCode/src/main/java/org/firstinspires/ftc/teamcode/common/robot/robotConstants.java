@@ -38,7 +38,7 @@ public class  robotConstants {
     // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(30);
     public static double waitPitch = Math.toRadians(-94);
-    public static double transferPitch = Math.toRadians(-111); //-116
+    public static double transferPitch = Math.toRadians(-114); //-116
     public static double rearrangePitch = Math.toRadians(36);
     public static double spikePitch = Math.toRadians(75);
     public static double pivotSpikeAngle = Math.toRadians(66);
@@ -50,26 +50,28 @@ public class  robotConstants {
     public static double releasePos = 0.1;
     public static double grabPos = 0.95;
 
-    public static double droneLaunchPosition = 0;
-    public static double droneWaitPosition = 1;
+    public static double droneLaunchPosition = 1;
+    public static double droneWaitPosition = 0;
     public static double droneHeightWaitPos = 1;
     public static double droneHeightUpPos = 0.8;
 
 
     //intake constants
     // limits to check if pixel is in intake
-    public static double currentLimit = 2.5;
-    public static double velocityLimit = 1500;
+    public static double currentLimit = 1.75; //2.5 old val
+    public static double velocityLimit = 2300; //1500 old val
     // roller power
-    public static double maxRollerPower = 0.8;
+    public static double maxRollerPower = 1; //0.8 old shitty val
     // height of pivot point of v4bar from ground
     public static double v4BarHeight = MathUtils.mmToInches(122);
     // length of v4bar
     public static double v4BarRadius = MathUtils.mmToInches(104);
     // length of one spoke of the rollers in intake
-    public static double rollerLength = MathUtils.mmToInches(57);
-    public static double latchClose = 0.05;
-    public static double latchOpen = 0.62;
+    public static double rollerLength = MathUtils.mmToInches(50);
+    public static double latchClose = 0.08;
+    public static double latchOpen = 0.64;
+    public static double flapDown = 0;
+    public static double flapUp = Math.toRadians(75);
     // localization constants
     public static double par0YTicks = -10688; // y position of the first parallel encoder (in tick units)
     public static double par1YTicks = 10688; // y position of the second parallel encoder (in tick units)

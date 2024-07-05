@@ -16,8 +16,8 @@ public class CenterstageConstants {
 
     public static Pose redStackIntakingPosition= new Pose(0, 0, 0);
     public static Pose blueStackIntakingPosition= new Pose(0, 0, 0);
-    public static final Pose BLUE_BACKDROP_POSITION = new Pose(-35.5, 61.25, 0);
-    public static final Pose RED_BACKDROP_POSITION = new Pose(35.5, 61.25, 0);
+    public static final Pose BLUE_BACKDROP_POSITION = new Pose(48, 36, Math.toRadians(-90));
+    public static final Pose RED_BACKDROP_POSITION = new Pose(48, 36, Math.toRadians(-90));
     public static Location SIDE = Location.FAR;
     /**
      * Match constants.
