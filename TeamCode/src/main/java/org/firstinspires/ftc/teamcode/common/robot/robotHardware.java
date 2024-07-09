@@ -208,7 +208,7 @@ public class robotHardware {
         lift.setFeedforward(JActuator.FeedforwardMode.CONSTANT, robotConstants.slideFF);
         lift.setErrorTolerance(5);
 
-        roll.setAngularRange(0,Math.toRadians(0),0.56,Math.toRadians(180));
+        roll.setAngularRange(0,Math.toRadians(1),0.56,Math.toRadians(180));
         leftPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
         rightPitch.setAngularRange(0.5,Math.toRadians(0),0.16,Math.toRadians(-96));
         pivot.setAngularRange(0.53,0,0.87,Math.toRadians(90));
@@ -272,14 +272,15 @@ public class robotHardware {
             pivot.setAngle(robotConstants.pivotTransferAngle);
             v4Bar.setAngle(Math.toRadians(75));
             latch.setPosition(robotConstants.latchClose);
-            fingerLeft.setPosition(robotConstants.grabPos);
-            fingerRight.setPosition(robotConstants.grabPos);
+            fingerLeft.setPosition(robotConstants.grabPosL);
+            fingerRight.setPosition(robotConstants.grabPosR);
         }
         else {
             leftPitch.setAngle(robotConstants.waitPitch);
             rightPitch.setAngle(robotConstants.waitPitch);
             pivot.setAngle(robotConstants.pivotWaitAngle);
             v4Bar.setAngle(1);
+            lift.resetThisBitch();
         }
         roll.setAngle(0);
         transferFlap.setAngle(90);
@@ -471,7 +472,7 @@ public class robotHardware {
         startTime = System.nanoTime();
     }
     public double getTimeSec(){
-        return ((System.nanoTime()-startTime)/100000000);
+        return ((System.nanoTime()-startTime)/1000000000);
     }
     public double getTimeMs(){
         return ((System.nanoTime()-startTime)/1000000);

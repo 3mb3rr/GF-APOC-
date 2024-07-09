@@ -86,13 +86,9 @@ public class intakeSubsystem extends JSubsystem {
             issueColorSensorCheck = true;
             isRechecked = true;
         }
-        if (isLeftPixel && isRightPixel)
-            latchPos=robotConstants.latchClose;
-        else
-            if (state==intakeState.stationary)
-                latchPos=robotConstants.latchClose;
-            else
-                 latchPos=robotConstants.latchOpen;
+        if (state==intakeState.intake || state==intakeState.outtake) latchPos=robotConstants.latchOpen;
+        else if (isLeftPixel && isRightPixel || state==intakeState.stationary) latchPos=robotConstants.latchClose;
+        else latchPos=robotConstants.latchOpen;
 
         v4BarAngle = v4BarInverseKinematics(targetStackHeight);
 
@@ -110,11 +106,12 @@ public class intakeSubsystem extends JSubsystem {
             case intake:
                 rollerPower = robotConstants.maxRollerPower;
                 transferFlapAngle = robotConstants.flapDown;
+                v4BarAngle = v4BarInverseKinematics(4);
                 break;
             case stationary:
                 rollerPower = 0;
                 transferFlapAngle = robotConstants.flapUp;
-                v4BarAngle = Math.toRadians(75);
+                if (!CenterstageConstants.IS_AUTO) v4BarAngle= Math.toRadians(75);
                 break;
             case outtake:
                 rollerPower = -robotConstants.maxRollerPower;

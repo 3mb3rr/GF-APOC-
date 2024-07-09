@@ -111,13 +111,13 @@ public class AutoBlueFar extends CommandOpMode {
 //        toBackboardRight = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),new Point(45,-38,Point.CARTESIAN)));
 //        toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        toStackMiddle = new Path(new BezierLine(new Point(-55,24,Point.CARTESIAN),new Point(-58.3, 20, Point.CARTESIAN)));
+        toStackMiddle = new Path(new BezierLine(new Point(-55,24,Point.CARTESIAN),new Point(-58.3, 19, Point.CARTESIAN)));
         toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        toStackMFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-57.4, 13,Point.CARTESIAN))));
+        toStackMFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-56.4, 13,Point.CARTESIAN))));
         toStackMFromBB.setConstantHeadingInterpolation(0);
 
-        toStrafeAtMStack = new Path(new BezierLine((new Point(-58.8, 13, Point.CARTESIAN)),(new Point(-58.8,19,Point.CARTESIAN))));
+        toStrafeAtMStack = new Path(new BezierLine((new Point(-57.8, 13, Point.CARTESIAN)),(new Point(-58.8,19,Point.CARTESIAN))));
         toStrafeAtMStack.setConstantHeadingInterpolation(0);
 
         toStackRFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-56.6, 0,Point.CARTESIAN))));
@@ -193,7 +193,8 @@ public class AutoBlueFar extends CommandOpMode {
                             //above is new
                             new pivotToTransferPosition(),
                             new pitchToTransferPosition(),
-                            new WaitCommand(550),
+                            new WaitCommand(400
+                            ),
                             new grabLeftPixel(),
                             //below is new
                             new grabRightPixel(),
@@ -293,9 +294,8 @@ public class AutoBlueFar extends CommandOpMode {
                             new followPath(toStackRFromBB),
                             new WaitUntilCommand(busy),
                             new outtakeCommand(),
-                            new v4BarToHeight(3),
+                            new v4BarToHeight(5),
                             new followPath(toStrafeAtRStack),
-                            new WaitUntilCommand(busy),
                             new v4BarToHeight(5),
                             new WaitCommand(200),
                             new v4BarToHeight(3),

@@ -69,6 +69,7 @@ public class AutoBlueClose extends CommandOpMode {
     private BooleanSupplier busy = () -> !robot.follower.isBusy();
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
+    private BooleanSupplier pastCenter = () -> robot.follower.getPose().getY()>5;
 
     private int zone;
     @Override
@@ -80,7 +81,7 @@ public class AutoBlueClose extends CommandOpMode {
         toSpikeMiddle = new Path(new BezierLine(new Point(0, 0,Point.CARTESIAN),new Point(33.5, 17.5,Point.CARTESIAN)));
         toSpikeMiddle.setLinearHeadingInterpolation(0,Math.toRadians(-90));
 
-        toSpikeLeft = new Path(new BezierCurve(new Point(0, 0,Point.CARTESIAN), new Point(13,13,Point.CARTESIAN), new Point(28.5,24,Point.CARTESIAN)));
+        toSpikeLeft = new Path(new BezierCurve(new Point(0, 0,Point.CARTESIAN), new Point(13,13,Point.CARTESIAN), new Point(28.5,23,Point.CARTESIAN)));
         toSpikeLeft.setLinearHeadingInterpolation(0,Math.toRadians(-90));
 
         toSpikeRight = new Path(new BezierCurve(new Point(0, 0,Point.CARTESIAN), new Point(16,6,Point.CARTESIAN),new Point(22, 3,Point.CARTESIAN)));
@@ -95,14 +96,14 @@ public class AutoBlueClose extends CommandOpMode {
         toBackboardRight = new Path(new BezierLine(new Point(22.3,3,Point.CARTESIAN),new Point(31,38,Point.CARTESIAN)));
         toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(90));
 
-        toStackLeft = new Path(new BezierCurve(new Point(20, 36.5, Point.CARTESIAN), new Point(-2, 7,Point.CARTESIAN),new Point(-2, -15,Point.CARTESIAN),new Point(-2, -33,Point.CARTESIAN),(new Point(-2, -50, Point.CARTESIAN)),(new Point(22,-67,Point.CARTESIAN))));
+        toStackLeft = new Path(new BezierCurve(new Point(20, 36.5, Point.CARTESIAN), new Point(-2, 7,Point.CARTESIAN),new Point(-2, -15,Point.CARTESIAN),new Point(-2, -33,Point.CARTESIAN),(new Point(-3, -60, Point.CARTESIAN)),(new Point(18,-67.5,Point.CARTESIAN))));
         toStackLeft.setConstantHeadingInterpolation(Math.toRadians(90));
-        toStackLeft2 = new Path(new BezierCurve(new Point(20, 36.5, Point.CARTESIAN), new Point(-2, 7,Point.CARTESIAN),new Point(-2, -15,Point.CARTESIAN),new Point(-2, -33,Point.CARTESIAN),(new Point(-2, -58, Point.CARTESIAN)),(new Point(19,-67,Point.CARTESIAN))));
+        toStackLeft2 = new Path(new BezierCurve(new Point(20, 36.5, Point.CARTESIAN), new Point(-2, 7,Point.CARTESIAN),new Point(-2, -15,Point.CARTESIAN),new Point(-2, -33,Point.CARTESIAN),(new Point(-2, -60, Point.CARTESIAN)),(new Point(18,-67.5,Point.CARTESIAN))));
         toStackLeft2.setConstantHeadingInterpolation(Math.toRadians(90));
 //        toStackLeft.setReversed(true);
-        toStrafeAtStackLeft = new Path(new BezierLine((new Point(22,-68,Point.CARTESIAN)),(new Point(26.5 ,-69,Point.CARTESIAN))));
+        toStrafeAtStackLeft = new Path(new BezierLine((new Point(18,-68,Point.CARTESIAN)),(new Point(24.5 ,-69,Point.CARTESIAN))));
         toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(90));
-        toStrafeAtStackLeft2 = new Path(new BezierLine((new Point(22,-68,Point.CARTESIAN)),(new Point(24.5,-69,Point.CARTESIAN))));
+        toStrafeAtStackLeft2 = new Path(new BezierLine((new Point(18,-68,Point.CARTESIAN)),(new Point(24.5,-69,Point.CARTESIAN))));
         toStrafeAtStackLeft2.setConstantHeadingInterpolation(Math.toRadians(90));
 
 //        toStackMiddle = new Path(new BezierCurve(new Point(23, 36, Point.CARTESIAN), new Point(56.6, 33,Point.CARTESIAN),new Point(65, 0,Point.CARTESIAN),(new Point(34, -68, Point.CARTESIAN))));
@@ -158,18 +159,17 @@ public class AutoBlueClose extends CommandOpMode {
                             new v4BarToHeight(5),
                             new WaitUntilCommand(busy),
                             new outtakeCommand(),
-                            new WaitCommand(900),
-                            new intakeCommand(),
-                            new WaitCommand(250),
+                            new WaitCommand(700),
                             new outtakeCommand(),
                             new followPath(toStrafeAtStackLeft),
-                            new v4BarToHeight(4),
                             new WaitCommand(150),
-                            new v4BarToHeight(3),
-                            new WaitCommand(250),
+                            new intakeCommand(),
+                            new WaitCommand(80),
+                            new outtakeCommand(),
                             new v4BarToHeight(4),
-                            new WaitCommand(150),
+                            new WaitCommand(400),
                             new v4BarToHeight(3),
+                            new WaitCommand(300),
 
                             new WaitUntilCommand(busy),
                             new ParallelRaceGroup(
@@ -182,17 +182,19 @@ public class AutoBlueClose extends CommandOpMode {
                             new pivotToTransferPosition(),
                             new WaitCommand(200),
                             new pitchToTransferPosition(),
-                            new intakeCommand(),
-                            new WaitCommand(500),
-                            new stopIntake(),
+                            new WaitCommand(400),
                             new grabLeftPixel(),
                             new grabRightPixel(),
-                            new WaitUntilCommand(busy),
+                            new intakeCommand(),
+                            new WaitCommand(400),
+                            new stopIntake(),
+                            new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new WaitCommand(80),
                             new pivotToDropPosition(),
                             new slideToRow(3),
-                            new WaitCommand(200),
+                            new WaitUntilCommand(busy),
+                            new WaitCommand(100),
                             new releaseRightPixel(),
                             new releaseLeftPixel(),
                             new WaitCommand(150),
@@ -205,12 +207,13 @@ public class AutoBlueClose extends CommandOpMode {
                             new v4BarToHeight(3),
                             new WaitUntilCommand(busy),
                             new outtakeCommand(),
-                            new WaitCommand(900),
-                            new intakeCommand(),
-                            new WaitCommand(250),
-                            new outtakeCommand(),
-                            new followPath(toStrafeAtStackLeft2),
+                            new WaitCommand(700),
                             new v4BarToHeight(2),
+                            new followPath(toStrafeAtStackLeft2),
+                            new WaitCommand(150),
+                            new intakeCommand(),
+                            new WaitCommand(80),
+                            new outtakeCommand(),
                             new WaitCommand(100),
                             new v4BarToHeight(1),
 //
@@ -233,18 +236,19 @@ public class AutoBlueClose extends CommandOpMode {
                             new pitchToTransferPosition(),
 
                             new followPath(toBackboardFromStack),
-                            new WaitCommand(500),
+                            new WaitCommand(400),
                             new grabLeftPixel(),
                             new grabRightPixel(),
                             new intakeCommand(),
                             new WaitCommand(200),
                             new stopIntake(),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new WaitCommand(80),
                             new pivotToDropPosition(),
                             new slideToRow(3),
-                            new WaitCommand(400),
+                            new WaitUntilCommand(busy),
+                            new WaitCommand(100),
                             new releaseRightPixel(),
                             new releaseLeftPixel(),
                             new WaitCommand(150),
@@ -254,7 +258,8 @@ public class AutoBlueClose extends CommandOpMode {
                             new pivotToWaitPosition(),
                             new pitchToWaitPosition(),
 
-                            new followPath(toPark)
+                            new followPath(toPark),
+                            new intakeAutoState()
 
 
                     )

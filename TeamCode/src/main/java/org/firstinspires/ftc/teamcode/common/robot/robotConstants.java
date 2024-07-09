@@ -38,7 +38,7 @@ public class  robotConstants {
     // pitch of arm at different functions
     public static double dropPitch = Math.toRadians(30);
     public static double waitPitch = Math.toRadians(-94);
-    public static double transferPitch = Math.toRadians(-114); //-116
+    public static double transferPitch = Math.toRadians(-116);
     public static double rearrangePitch = Math.toRadians(36);
     public static double spikePitch = Math.toRadians(75);
     public static double pivotSpikeAngle = Math.toRadians(66);
@@ -48,12 +48,13 @@ public class  robotConstants {
 
     // values for finger servoes
     public static double releasePos = 0.1;
-    public static double grabPos = 0.95;
+    public static double grabPosL = 0.98;
+    public static double grabPosR = 0.93;
 
     public static double droneLaunchPosition = 1;
     public static double droneWaitPosition = 0;
     public static double droneHeightWaitPos = 1;
-    public static double droneHeightUpPos = 0.8;
+    public static double droneHeightUpPos = 0.66;
 
 
     //intake constants

@@ -113,7 +113,7 @@ public class depositSubsystem extends JSubsystem {
                 leftFingerPos = robotConstants.releasePos;
                 break;
             case grab:
-                leftFingerPos = robotConstants.grabPos;
+                leftFingerPos = robotConstants.grabPosL;
                 break;
         }
         switch(rightDropperState){
@@ -121,7 +121,7 @@ public class depositSubsystem extends JSubsystem {
                 rightFingerPos = robotConstants.releasePos;
                 break;
             case grab:
-                rightFingerPos = robotConstants.grabPos;
+                rightFingerPos = robotConstants.grabPosR;
                 break;
         }
         if(slideTargetRow!=0){
