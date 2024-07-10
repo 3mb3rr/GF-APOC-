@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 
 @Config
 @Autonomous
+@Disabled
 public class ServoTestSix extends LinearOpMode {
     public JServo  droneServo,droneHeight;
     public static int pitch=0;

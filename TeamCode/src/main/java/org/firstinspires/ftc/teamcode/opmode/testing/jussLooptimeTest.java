@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Autonomous
+@Disabled
 public class jussLooptimeTest extends OpMode {
     private double currentTime=0;
     private double lastTime = 0.0;

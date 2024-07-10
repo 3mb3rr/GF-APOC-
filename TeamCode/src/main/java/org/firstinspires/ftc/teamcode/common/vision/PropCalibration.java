@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.vision;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import android.util.Size;
 
 @TeleOp
+@Disabled
 public class PropCalibration extends LinearOpMode {
     VisionPortal visionPortal;
     public PropColorCalibrationPipeline pipeline;

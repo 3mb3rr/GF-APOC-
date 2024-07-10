@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.testing;
 import com.outoftheboxrobotics.photoncore.hardware.PhotonLynxVoltageSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Photon
 @Autonomous
+@Disabled
 public class LoopTimeWithColorSensor extends LinearOpMode {
     private RevColorSensorV3 csLeft;
     private RevColorSensorV3 csRight;

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.Robot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
@@ -26,6 +27,7 @@ import android.util.Size;
 import java.util.List;
 
 @TeleOp
+@Disabled
 public class PreloadDetectionTest extends LinearOpMode {
     private final robotHardware robot = robotHardware.getInstance();
 //    VisionPortal visionPortal;

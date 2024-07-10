@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.testing;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 
 @TeleOp
+@Disabled
 public class teleopTester extends LinearOpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private GamepadEx gamepadDrivetrain;

@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 
 @Config
 @Autonomous
+@Disabled
 public class AutonFirstTest extends OpMode {
     private final robotHardware robot = robotHardware.getInstance();
     private Telemetry telemetryA;

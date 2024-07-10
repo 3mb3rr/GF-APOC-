@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmode.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.common.util.wrappers.JServo;
 
 @Autonomous
+@Disabled
 public class ServoTestFour extends LinearOpMode {
     public JServo v4Bar, transferFlap, leftPitch, rightPitch, pivot, roll, fingerLeft, fingerRight, droneServo;
     double pivotpos,pitchpos,dronepos,fourbarangle;

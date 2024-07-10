@@ -11,6 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
@@ -28,6 +30,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * IMU or not this is SO SLOW that its disgusting.
  */
 @TeleOp
+@Disabled
 
 public class teleopIMU extends LinearOpMode {
     BNO055IMU imu;

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.common.pathing.examples;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
  * @version 1.0, 3/21/2024
  */
 @TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
+@Disabled
 public class TeleOpEnhancements extends OpMode {
     private final robotHardware robot = robotHardware.getInstance();
 
