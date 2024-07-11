@@ -60,8 +60,8 @@ public class AutoRedFar extends CommandOpMode {
     private Path toSpikeMiddle;
     private Path toSpikeRight;
     private Path toStackMiddle;
-    private Path toStackRFromBB;
-    private Path toStrafeAtRStack;
+    private Path toStackMFromBB;
+    private Path toStrafeAtMStack;
     private Path toBackboard;
     private Path toBackBoardTest;
     private Path toBackFromMid;
@@ -80,18 +80,34 @@ public class AutoRedFar extends CommandOpMode {
     private BooleanSupplier time = () -> robot.getTimeSec() >29;
     private BooleanSupplier preload = () -> robot.preloadDetectionPipeline.getPreloadedZone() == CenterstageConstants.PRELOAD;
     private BooleanSupplier pastCenter = () -> robot.follower.getPose().getX()>25;
-    private BooleanSupplier closeToStack = () -> robot.follower.getPose().getX()<-37;
     private int zone;
     double bbDropY=-36;
-    double bbDropX=45;
+    double bbDropX=42;
     long wait = 0;
     int wrist = 0;
     @Override
     public void initialize() {
+
+
         telemetry.setMsTransmissionInterval(50);
 
 
+        toSpikeMiddle = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-55, -21.5,Point.CARTESIAN)));
+        toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(90),0);
+        toSpikeLeft = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-57, -17,Point.CARTESIAN)));
+        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-44));
+        toSpikeRight = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-39, -31.6,Point.CARTESIAN)));
+        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
+        toStackMiddle = new Path(new BezierLine(new Point(-55,-17,Point.CARTESIAN),new Point(-58.3, -19, Point.CARTESIAN)));
+        toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
+
+        toStackMFromBB = new Path(new BezierCurve((new Point(43,-35,Point.CARTESIAN)),(new Point(30,-4,Point.CARTESIAN)),(new Point(-27,-4,Point.CARTESIAN)),(new Point(-57, -15,Point.CARTESIAN))));
+        toStackMFromBB.setConstantHeadingInterpolation(0);
+//        toStackMFromBB.setReversed(true);
+
+        toStrafeAtMStack = new Path(new BezierLine((new Point(-58, -15, Point.CARTESIAN)),(new Point(-59,-25,Point.CARTESIAN))));
+        toStrafeAtMStack.setConstantHeadingInterpolation(0);
 
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
@@ -106,7 +122,7 @@ public class AutoRedFar extends CommandOpMode {
 
             if (zone==1){
                 bbDropX=42;
-                bbDropY=-27;
+                bbDropY=-28;
                 wait = 1000;
                 wrist=0;
             }
@@ -122,75 +138,19 @@ public class AutoRedFar extends CommandOpMode {
                 wait = 750;
                 wrist=120;
             }
-            toSpikeMiddle = new Path(new BezierLine(
-                    new Point(-39, -56,Point.CARTESIAN),
-                    new Point(-55, -21.5,Point.CARTESIAN)));
-            toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(90),0);
-            toSpikeLeft = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-57, -17,Point.CARTESIAN)));
-            toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-44));
-            toSpikeRight = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-39, -31.6,Point.CARTESIAN)));
-            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
-            toStackMiddle = new Path(new BezierLine(new Point(-55,-17,Point.CARTESIAN),new Point(-58.3, -18, Point.CARTESIAN)));
-            toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
+            toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
 
-            toStackRFromBB = new Path(new BezierCurve(
-                    (new Point(46.5,-35,Point.CARTESIAN)),
-                    (new Point(34,-35,Point.CARTESIAN)),
-                    (new Point(34,-11,Point.CARTESIAN)),
-                    (new Point(12,-11,Point.CARTESIAN)),
-                    (new Point(-24,-11,Point.CARTESIAN)),
-                    (new Point(-24,-5,Point.CARTESIAN)),
-                    (new Point(-40,-5,Point.CARTESIAN)),
-                    (new Point(-57, -5,Point.CARTESIAN))));
-            toStackRFromBB.setConstantHeadingInterpolation(0);
-
-            toStrafeAtRStack = new Path(new BezierLine((new Point(-58, -5, Point.CARTESIAN)),(new Point(-61,-15,Point.CARTESIAN))));
-            toStrafeAtRStack.setConstantHeadingInterpolation(0);
-
-            toBackboard = new Path(new BezierCurve(
-                    new Point(-57, -14,Point.CARTESIAN),
-                    new Point(-45, -14,Point.CARTESIAN),
-                    new Point(-45, -9,Point.CARTESIAN),
-                    new Point(-36,-10,Point.CARTESIAN),
-                    new Point(-24,-10,Point.CARTESIAN),
-                    new Point(12,-10,Point.CARTESIAN),
-                    new Point(34,-10,Point.CARTESIAN),
-                    new Point(34,-35 ,Point.CARTESIAN),
-                    new Point(bbDropX, bbDropY,Point.CARTESIAN)));
-
-            toBackboardfromstack = new Path(new BezierCurve(
-                    new Point(-60, -14,Point.CARTESIAN),
-                    new Point(-45, -14,Point.CARTESIAN),
-                    new Point(-45, -9,Point.CARTESIAN),
-                    new Point(-24, -11,Point.CARTESIAN),
-                    new Point(12, -11 ,Point.CARTESIAN),
-                    new Point(34, -11,Point.CARTESIAN),
-                    new Point(34, -35 ,Point.CARTESIAN),
-                    new Point(42, -35 , Point.CARTESIAN)));
+            toBackboardfromstack = new Path(new BezierCurve(new Point(-59 , -25,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN), new Point(-27,-4,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(47 ,-35 , Point.CARTESIAN)));
             //tp stack again
-            toBackboardSecondTime =  new Path(new BezierCurve(
-                    new Point(-57, -14,Point.CARTESIAN),
-                    new Point(-51,-8,Point.CARTESIAN),
-                    new Point(-27,-8,Point.CARTESIAN),
-                    new Point(30,-8,Point.CARTESIAN),
-                    new Point(43,-14 ,Point.CARTESIAN),
-                    new Point(42 ,-35 , Point.CARTESIAN)));
+            toBackboardSecondTime =  new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-8,Point.CARTESIAN),new Point(-27,-8,Point.CARTESIAN), new Point(30,-8,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(47.1 ,-35 , Point.CARTESIAN)));
             toBackboardSecondTime.setConstantHeadingInterpolation(0);
             toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
             toBackboardfromstack.setConstantHeadingInterpolation(Math.toRadians(-2));
-            TostackSecondTime = new Path(new BezierCurve(
-                    (new Point(46.5,-35,Point.CARTESIAN)),
-                    (new Point(34,-35,Point.CARTESIAN)),
-                    (new Point(34,-11,Point.CARTESIAN)),
-                    (new Point(12,-11,Point.CARTESIAN)),
-                    (new Point(-24,-11,Point.CARTESIAN)),
-                    (new Point(-24,-5,Point.CARTESIAN)),
-                    (new Point(-40,-5,Point.CARTESIAN)),
-                    (new Point(-57, -5,Point.CARTESIAN))));
+            TostackSecondTime = new Path(new BezierCurve((new Point(43,-35,Point.CARTESIAN)),(new Point(30,-8,Point.CARTESIAN)),(new Point(-27,-8,Point.CARTESIAN)),(new Point(-57 , -7,Point.CARTESIAN))));
             TostackSecondTime.setConstantHeadingInterpolation(0);
 
-            TostrafeSecondTime = new Path(new BezierLine((new Point(-58, -5, Point.CARTESIAN)),(new Point(-60,-15,Point.CARTESIAN))));
+            TostrafeSecondTime = new Path(new BezierLine((new Point(-58, -5, Point.CARTESIAN)),(new Point(-59,-15,Point.CARTESIAN))));
             TostrafeSecondTime.setConstantHeadingInterpolation(0);
 
             toBackBoardTest = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
@@ -229,7 +189,7 @@ public class AutoRedFar extends CommandOpMode {
                             new ParallelCommandGroup(
                                     new followPath(toStackMiddle),
                                     new ParallelRaceGroup(
-                                            new WaitCommand(1500),
+                                            new WaitCommand(1000),
                                             new WaitUntilCommand(pixels)
                                     )
                             ),
@@ -273,17 +233,14 @@ public class AutoRedFar extends CommandOpMode {
                             new pivotToWaitPosition(),
                             new setRollAngle(Math.toRadians(0)),
 
-
-
-                            new followPath(toStackRFromBB),
-                            new WaitUntilCommand(closeToStack),
-                            new outtakeCommand(),
+                            new followPath(toStackMFromBB),
                             new v4BarToHeight(3),
                             new WaitUntilCommand(busy),
-                            new followPath(toStrafeAtRStack),
+                            new followPath(toStrafeAtMStack),
                             new v4BarToHeight(1),
                             new WaitUntilCommand(busy),
                             new v4BarToHeight(4),
+                            new outtakeCommand(),
                             new WaitCommand(100),
                             new v4BarToHeight(2),
                             new WaitCommand(200),
@@ -318,8 +275,6 @@ public class AutoRedFar extends CommandOpMode {
                             new pivotToWaitPosition(),
                             new intakeAutoState(),
                             new followPath(TostackSecondTime),
-                            new WaitUntilCommand(closeToStack),
-                            new outtakeCommand(),
                             new WaitUntilCommand(busy),
                             new outtakeCommand(),
                             new v4BarToHeight(2),
