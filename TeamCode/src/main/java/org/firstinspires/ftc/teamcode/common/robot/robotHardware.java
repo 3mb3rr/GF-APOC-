@@ -248,7 +248,7 @@ public class robotHardware {
             if (m.isParent() && LynxConstants.isEmbeddedSerialNumber(m.getSerialNumber())) CONTROL_HUB = m;
         }
 
-        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.55);
+        propDetectionPipeline = new PropDetectionPipeline(0.3, 0.7, 0.5);
         preloadDetectionPipeline = new PreloadDetectionPipeline();
         if (CenterstageConstants.IS_AUTO) {
             startCamera();

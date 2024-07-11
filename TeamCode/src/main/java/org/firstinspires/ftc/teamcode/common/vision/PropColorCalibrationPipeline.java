@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.common.vision;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -18,13 +20,14 @@ public class PropColorCalibrationPipeline implements VisionProcessor {
     private Mat inputHSV = new Mat();
     private Mat centerMat = new Mat();
     private Scalar averageHSV = new Scalar(0, 0, 0);
+    Rect centerRegion;
 
     @Override
     public void init(int width, int height, CameraCalibration calibration) {}
 
     @Override
     public Mat processFrame(Mat input, long captureTimeNanos) {
-        Rect centerRegion = new Rect(new Point(420, 260), new Point(380, 240));
+        centerRegion = new Rect(new Point(420, 320), new Point(350, 250));
         input.copyTo(output);
 
         // Convert the input frame from RGB to HSV
@@ -45,7 +48,21 @@ public class PropColorCalibrationPipeline implements VisionProcessor {
     }
 
     @Override
-    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {}
+    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+        Paint rectPaint = new Paint();
+        rectPaint.setColor(Color.GREEN);
+        rectPaint.setStyle(Paint.Style.STROKE);
+        rectPaint.setStrokeWidth(scaleCanvasDensity * 15);
+        canvas.drawRect(makeGraphicsRect(centerRegion, scaleBmpPxToCanvasPx), rectPaint);
+    }
+    private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
+        int left = Math.round(rect.x * scaleBmpPxToCanvasPx);
+        int top = Math.round(rect.y * scaleBmpPxToCanvasPx);
+        int right = left + Math.round(rect.width * scaleBmpPxToCanvasPx);
+        int bottom = top + Math.round(rect.height * scaleBmpPxToCanvasPx);
+
+        return new android.graphics.Rect(left, top, right, bottom);
+    }
 
     private Scalar calculateAverageHSV(Mat input) {
         // Split the HSV image into individual channels
