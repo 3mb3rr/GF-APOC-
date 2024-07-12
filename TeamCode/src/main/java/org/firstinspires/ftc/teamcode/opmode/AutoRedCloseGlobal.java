@@ -66,8 +66,9 @@ public class AutoRedCloseGlobal extends CommandOpMode {
 //    private Path toBackboardRight;
 //    private Path toBackboardMiddle;
 //    private Path toBackboardLeft;
-    private Path toStrafeAtStackLeft;
     private Path fromBBtoStackfullcurve;
+    private Path fromBBtoStackConstant;
+    private Path toStrafeAtStackLeft;
     private Path tobackboardFromStack;
     private Path tocurvetostackBack;
     public boolean closed = false;
@@ -79,13 +80,14 @@ public class AutoRedCloseGlobal extends CommandOpMode {
     private BooleanSupplier closeToStack = () -> robot.follower.getPose().getX()<-40;
     private BooleanSupplier backtoBBcurvedone = () -> robot.follower.getPose().getX()>7;
     private BooleanSupplier ultrasonic = () -> robot.doubleSubscriber(Sensors.SensorType.LEFT_DISTANCE)>60;
-    private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
     private int zone;
     private Location randomization;
     double spikeDropX;
     double spikeDropY;
     double bbDropY;
     double bbDropX;
+    double whiteDropX=42.5;
+    double whiteDropY=-35;
 
     @Override
     public void initialize() {
@@ -170,6 +172,19 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                     new Point(-57, -44, Point.CARTESIAN)));
             fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(3)); // -90 + 90 = 0 degrees
 
+            fromBBtoStackConstant = new Path(new BezierCurve(
+                    new Point(whiteDropX, whiteDropY, Point.CARTESIAN),
+                    new Point(34, whiteDropY, Point.CARTESIAN),
+                    new Point(34, -60, Point.CARTESIAN),
+                    new Point(22, -60, Point.CARTESIAN),
+                    new Point(10, -60, Point.CARTESIAN),
+                    new Point(-26, -60, Point.CARTESIAN),
+                    new Point(-46, -60, Point.CARTESIAN),
+                    new Point(-50, -60, Point.CARTESIAN),
+                    new Point(-50, -44, Point.CARTESIAN),
+                    new Point(-57, -44, Point.CARTESIAN)));
+            fromBBtoStackConstant.setConstantHeadingInterpolation(Math.toRadians(3)); // -90 + 90 = 0 degrees
+
             toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, -44, Point.CARTESIAN), new Point(-59, -35, Point.CARTESIAN)));
             toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // -93 + 90 = -3 degrees
 
@@ -183,7 +198,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                     new Point(10, -57, Point.CARTESIAN)));
             tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
 
-            tobackboardFromStack = new Path(new BezierLine(new Point(10, -57, Point.CARTESIAN), new Point(42.5, -35, Point.CARTESIAN)));
+            tobackboardFromStack = new Path(new BezierLine(new Point(10, -57, Point.CARTESIAN), new Point(whiteDropX, whiteDropY, Point.CARTESIAN)));
             tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(0)); // -95 + 90 = -5 degrees
 
             CommandScheduler.getInstance().schedule(
@@ -212,8 +227,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                             new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new pivotToDropPosition(),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new WaitCommand(200),
                             new releaseLeftPixel(),
                             new WaitCommand(120),
@@ -255,8 +269,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),
@@ -265,7 +278,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                             new pivotToWaitPosition(),
                             new WaitCommand(200),
                             new intakeToHang(),
-                            new followPath(fromBBtoStackfullcurve),
+                            new followPath(fromBBtoStackConstant),
                             new WaitUntilCommand(closeToStack),
                             new outtakeCommand(),
                             new v4BarToHeight(3),
@@ -300,8 +313,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),

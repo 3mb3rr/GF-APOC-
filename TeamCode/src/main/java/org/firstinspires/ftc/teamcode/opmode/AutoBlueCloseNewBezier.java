@@ -79,7 +79,6 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
     private BooleanSupplier closeToStack = () -> robot.follower.getPose().getX()<-40;
     private BooleanSupplier backtoBBcurvedone = () -> robot.follower.getPose().getX()>7;
     private BooleanSupplier ultrasonic = () -> robot.doubleSubscriber(Sensors.SensorType.LEFT_DISTANCE)>60;
-    private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
     private int zone;
     double spikeDropX;
     double spikeDropY;
@@ -207,8 +206,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new pivotToDropPosition(),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new WaitCommand(200),
                             new releaseRightPixel(),
                             new WaitCommand(120),
@@ -250,8 +248,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),
@@ -295,8 +292,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(dropDistance), //was wait until busy
-                            new interruptFollower(),
+                            new WaitUntilCommand(busy),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),
