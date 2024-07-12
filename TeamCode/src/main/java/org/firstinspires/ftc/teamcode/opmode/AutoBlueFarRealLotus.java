@@ -89,7 +89,7 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
     double spikeDropY;
     long wait = 0;
     int wrist = 0;
-    double whiteDropX=43;
+    double whiteDropX=44;
     double whiteDropY=35;
     @Override
     public void initialize() {
@@ -220,8 +220,8 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
                                             new pitchToTransferPosition(),
                                             new pivotToTransferPosition(),
                                             new WaitCommand(100),
-                                            new grabRightPixel(),
-                                            new releaseLeftPixel(),
+                                            new releaseRightPixel(),
+                                            new grabLeftPixel(),
                                             new WaitCommand(wait),
                                             new pitchToSpikePosition(),
                                             new WaitCommand(100),
@@ -231,7 +231,7 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
                                     new WaitUntilCommand(busy)
                             ),
                             new WaitCommand(200),
-                            new releaseRightPixel(),
+                            new releaseLeftPixel(),
                             new WaitCommand(100),
                             //below is new
                             new v4BarToHeight(5),

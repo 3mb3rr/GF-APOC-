@@ -111,7 +111,7 @@ public class autoredfarold extends CommandOpMode {
             zone=robot.propDetectionPipeline.detectZone();
 
             if (zone==1){
-                spikeDropX=-57;
+                spikeDropX=-57.5;
                 spikeDropY=-17;
                 bbDropX=44;
                 bbDropY=-28;

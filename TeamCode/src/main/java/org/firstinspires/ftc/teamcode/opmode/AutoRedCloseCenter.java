@@ -92,7 +92,7 @@ public class AutoRedCloseCenter extends CommandOpMode {
     double spikeDropY;
     double bbDropY;
     double bbDropX;
-    double whiteDropX=42.5;
+    double whiteDropX=44;
     double whiteDropY=-35;
 
     @Override
@@ -152,6 +152,7 @@ public class AutoRedCloseCenter extends CommandOpMode {
 
             toStackMFromBB = new Path(new BezierCurve(
                     (new Point(bbDropX,bbDropY,Point.CARTESIAN)),
+                    (new Point(43,-14,Point.CARTESIAN)),
                     (new Point(30,-4,Point.CARTESIAN)),
                     (new Point(-27,-4,Point.CARTESIAN)),
                     (new Point(-57, -15,Point.CARTESIAN))));
@@ -171,6 +172,7 @@ public class AutoRedCloseCenter extends CommandOpMode {
 
             TostackSecondTime = new Path(new BezierCurve(
                     (new Point(43,-35,Point.CARTESIAN)),
+                    (new Point(43,-14,Point.CARTESIAN)),
                     (new Point(30,-4,Point.CARTESIAN)),
                     //(new Point(10,-4,Point.CARTESIAN)),
                     (new Point(-27,-4,Point.CARTESIAN)),

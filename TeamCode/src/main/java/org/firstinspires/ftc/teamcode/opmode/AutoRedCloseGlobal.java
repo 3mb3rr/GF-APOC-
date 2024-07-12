@@ -86,7 +86,7 @@ public class AutoRedCloseGlobal extends CommandOpMode {
     double spikeDropY;
     double bbDropY;
     double bbDropX;
-    double whiteDropX=42.5;
+    double whiteDropX=44;
     double whiteDropY=-35;
 
     @Override

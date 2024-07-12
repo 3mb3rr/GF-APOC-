@@ -51,7 +51,7 @@ public class telemetryAll extends LinearOpMode {
             telemetry.addData("par0",robot.encoderSubscriber(Sensors.SensorType.POD_PAR0));
             telemetry.addData("par1",robot.encoderSubscriber(Sensors.SensorType.POD_PAR1));
             telemetry.addData("perp",robot.encoderSubscriber(Sensors.SensorType.POD_PERP));
-            telemetry.addData("usback",robot.doubleSubscriber(Sensors.SensorType.BACK_DISTANCE));
+            telemetry.addData("usback",robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE));
             telemetry.addData("usright",robot.doubleSubscriber(Sensors.SensorType.RIGHT_DISTANCE));
             telemetry.addData("usleft",robot.doubleSubscriber(Sensors.SensorType.LEFT_DISTANCE));
 
