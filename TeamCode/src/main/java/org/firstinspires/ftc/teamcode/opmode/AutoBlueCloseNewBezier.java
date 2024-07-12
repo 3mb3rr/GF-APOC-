@@ -62,9 +62,10 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
     private Path toSpikeLeft;
     private Path toSpikeMiddle;
     private Path toSpikeRight;
-    private Path toBackboardRight;
-    private Path toBackboardMiddle;
-    private Path toBackboardLeft;
+    private Path toBackboard;
+//    private Path toBackboardRight;
+//    private Path toBackboardMiddle;
+//    private Path toBackboardLeft;
     private Path toStrafeAtStackLeft;
     private Path fromBBtoStackfullcurve;
     private Path tobackboardFromStack;
@@ -80,7 +81,10 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
     private BooleanSupplier ultrasonic = () -> robot.doubleSubscriber(Sensors.SensorType.LEFT_DISTANCE)>60;
     private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
     private int zone;
-    private Location randomization;
+    double spikeDropX;
+    double spikeDropY;
+    double bbDropY;
+    double bbDropX;
 
     @Override
     public void initialize() {
@@ -88,47 +92,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
 
 
 
-        toPark = new Path(new BezierLine(new Point(46, 39.5, Point.CARTESIAN), new Point(46, 55, Point.CARTESIAN)));
-        toPark.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
-        toSpikeMiddle = new Path(new BezierLine(new Point(9, 54, Point.CARTESIAN), new Point(26, 23, Point.CARTESIAN)));
-        toSpikeMiddle.setConstantHeadingInterpolation(Math.toRadians(180)); // -180 * -1 = 180 degrees
-
-        toSpikeLeft = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(22, 45, Point.CARTESIAN), new Point(32, 29.5, Point.CARTESIAN)));
-        toSpikeLeft.setLinearHeadingInterpolation(0, Math.toRadians(180));
-
-        toSpikeRight = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(15, 42, Point.CARTESIAN), new Point(12, 36, Point.CARTESIAN)));
-        toSpikeRight.setLinearHeadingInterpolation(0, Math.toRadians(180));
-
-        toBackboardMiddle = new Path(new BezierLine(new Point(26, 25, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
-        toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
-
-        toBackboardLeft = new Path(new BezierLine(new Point(11.7, 35.5, Point.CARTESIAN), new Point(43.5, 27, Point.CARTESIAN)));
-        toBackboardLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
-
-        toBackboardRight = new Path(new BezierLine(new Point(31, 35, Point.CARTESIAN), new Point(43.5, 39, Point.CARTESIAN)));
-        toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
-
-        fromBBtoStackfullcurve = new Path(new BezierCurve(
-                new Point(43.5, 35, Point.CARTESIAN),
-                new Point(34, 35, Point.CARTESIAN),
-                new Point(34, 60, Point.CARTESIAN),
-                new Point(10, 60, Point.CARTESIAN),
-                new Point(-26, 60, Point.CARTESIAN),
-                new Point(-46, 60, Point.CARTESIAN),
-                new Point(-50, 60, Point.CARTESIAN),
-                new Point(-50, 44, Point.CARTESIAN),
-                new Point(-57, 44, Point.CARTESIAN)));
-        fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(-3)); // 3 * -1 = -3 degrees
-
-        toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, 44, Point.CARTESIAN), new Point(-59, 35, Point.CARTESIAN)));
-        toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
-
-        tocurvetostackBack = new Path(new BezierCurve(new Point(-59, 35, Point.CARTESIAN), new Point(-50, 35, Point.CARTESIAN), new Point(-50, 58, Point.CARTESIAN), new Point(-46, 58, Point.CARTESIAN), new Point(-26, 58, Point.CARTESIAN), new Point(10, 58, Point.CARTESIAN)));
-        tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
-
-        tobackboardFromStack = new Path(new BezierLine(new Point(10, 59, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
-        tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(5)); // -5 * -1 = 5 degrees
 
 
 
@@ -145,6 +109,77 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
 
             zone= robot.propDetectionPipeline.detectZone();
             CommandScheduler.getInstance().reset();
+
+            if (zone==1){
+                spikeDropX=32;
+                spikeDropY=29.5;
+                bbDropY=27;
+                bbDropX=44;
+            }
+            else if (zone==2) {
+                spikeDropX=26;
+                spikeDropY=23;
+                bbDropY=33;
+                bbDropX=44;
+            }
+            else{
+                spikeDropX=12;
+                spikeDropY=36;
+                bbDropY=39;
+                bbDropX=44;
+            }
+
+            toPark = new Path(new BezierLine(new Point(43.5, 35, Point.CARTESIAN), new Point(43.5, 55, Point.CARTESIAN)));
+            toPark.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+
+            toSpikeMiddle = new Path(new BezierLine(new Point(9, 54, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeMiddle.setConstantHeadingInterpolation(Math.toRadians(180)); // -180 * -1 = 180 degrees
+
+            toSpikeLeft = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(22, 45, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeLeft.setLinearHeadingInterpolation(0, Math.toRadians(180));
+
+            toSpikeRight = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(15, 42, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeRight.setLinearHeadingInterpolation(0, Math.toRadians(180));
+
+            toBackboard = new Path(new BezierCurve(new Point(spikeDropX,spikeDropY,Point.CARTESIAN),new Point(bbDropX,bbDropY,Point.CARTESIAN)));
+
+//            toBackboardMiddle = new Path(new BezierLine(new Point(26, 25, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
+//            toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+//
+//            toBackboardLeft = new Path(new BezierLine(new Point(11.7, 35.5, Point.CARTESIAN), new Point(43.5, 27, Point.CARTESIAN)));
+//            toBackboardLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+//
+//            toBackboardRight = new Path(new BezierLine(new Point(31, 35, Point.CARTESIAN), new Point(43.5, 39, Point.CARTESIAN)));
+//            toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+
+            fromBBtoStackfullcurve = new Path(new BezierCurve(
+                    new Point(43.5, bbDropY, Point.CARTESIAN),
+                    new Point(34, bbDropY, Point.CARTESIAN),
+                    new Point(34, 60, Point.CARTESIAN),
+                    new Point(22,60,Point.CARTESIAN),
+                    new Point(10, 60, Point.CARTESIAN),
+                    new Point(-26, 60, Point.CARTESIAN),
+                    new Point(-46, 60, Point.CARTESIAN),
+                    new Point(-50, 60, Point.CARTESIAN),
+                    new Point(-50, 44, Point.CARTESIAN),
+                    new Point(-57, 44, Point.CARTESIAN)));
+            fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(-3)); // 3 * -1 = -3 degrees
+
+            toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, 44, Point.CARTESIAN), new Point(-59, 35, Point.CARTESIAN)));
+            toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+
+            tocurvetostackBack = new Path(new BezierCurve(
+                    new Point(-59, 35, Point.CARTESIAN),
+                    new Point(-51, 35, Point.CARTESIAN),
+                    new Point(-51, 61.5, Point.CARTESIAN),
+                    new Point(-46, 59, Point.CARTESIAN),
+                    new Point(-26, 59, Point.CARTESIAN),
+                    new Point(-5, 59, Point.CARTESIAN),
+                    new Point(10, 57, Point.CARTESIAN)));
+            tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
+
+            tobackboardFromStack = new Path(new BezierLine(new Point(10, 58, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
+            tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(5)); // -5 * -1 = 5 degrees
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
@@ -168,7 +203,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new releaseLeftPixel(),
                             new WaitCommand(200),
                             new stopIntake(),
-                            new followPath(CenterstageConstants.getPath(zone,toBackboardLeft,toBackboardMiddle,toBackboardRight)),
+                            new followPath(toBackboard),
                             new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new pivotToDropPosition(),

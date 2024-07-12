@@ -91,42 +91,56 @@ public class AutoRedCloseGlobal extends CommandOpMode {
     public void initialize() {
         telemetry.setMsTransmissionInterval(50);
 
-        if (zone==1){
-            spikeDropX=11.7;
-            spikeDropY=-34.5;
-            bbDropY=-27;
-            bbDropX=44;
-        }
-        else if (zone==2) {
-            spikeDropX=26;
-            spikeDropY=-23;
-            bbDropY=-33;
-            bbDropX=44;
-        }
-        else{
-            spikeDropX=31;
-            spikeDropY=-34.5;
-            bbDropY=-39;
-            bbDropX=44;
-        }
 
-        toPark = new Path(new BezierLine(new Point(42.5, -35, Point.CARTESIAN), new Point(46, -55, Point.CARTESIAN)));
-        toPark.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
-
-        toSpikeMiddle = new Path(new BezierLine(new Point(9, -54, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
-        toSpikeMiddle.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
-
-        toSpikeLeft = new Path(new BezierCurve(new Point(9, -54, Point.CARTESIAN), new Point(22, -45, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
-        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
-
-        toSpikeRight = new Path(new BezierLine(new Point(9, -54, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
-        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
+        CommandScheduler.getInstance().reset();
+        CenterstageConstants.IS_AUTO = true;
+        CenterstageConstants.ALLIANCE = Location.RED;
+        robot.init(hardwareMap);
+        robot.follower.setAuto(CenterstageConstants.IS_AUTO);
 
 
-        toBackboard = new Path(new BezierLine(
-                new Point(spikeDropX, spikeDropY, Point.CARTESIAN),
-                new Point(bbDropX, bbDropY, Point.CARTESIAN)));
-        toBackboard.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
+        robot.follower.setStartingPose(new Pose(9,-58,Math.toRadians(90)));
+        while (opModeInInit()) {
+
+            zone= robot.propDetectionPipeline.detectZone();
+            CommandScheduler.getInstance().reset();
+
+            if (zone==1){
+                spikeDropX=11.7;
+                spikeDropY=-34.5;
+                bbDropY=-27;
+                bbDropX=44;
+            }
+            else if (zone==2) {
+                spikeDropX=26;
+                spikeDropY=-23;
+                bbDropY=-33;
+                bbDropX=44;
+            }
+            else{
+                spikeDropX=31;
+                spikeDropY=-34.5;
+                bbDropY=-39;
+                bbDropX=44;
+            }
+
+            toPark = new Path(new BezierLine(new Point(42.5, -35, Point.CARTESIAN), new Point(46, -55, Point.CARTESIAN)));
+            toPark.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
+
+            toSpikeMiddle = new Path(new BezierLine(new Point(9, -54, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeMiddle.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
+
+            toSpikeLeft = new Path(new BezierCurve(new Point(9, -54, Point.CARTESIAN), new Point(22, -45, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
+
+            toSpikeRight = new Path(new BezierLine(new Point(9, -54, Point.CARTESIAN), new Point(spikeDropX, spikeDropY, Point.CARTESIAN)));
+            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(-180)); // 90 + 90 = 180 degrees
+
+
+            toBackboard = new Path(new BezierLine(
+                    new Point(spikeDropX, spikeDropY, Point.CARTESIAN),
+                    new Point(bbDropX, bbDropY, Point.CARTESIAN)));
+            toBackboard.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
 
 //        toBackboardMiddle = new Path(new BezierLine(
 //                new Point(26, -25, Point.CARTESIAN),
@@ -143,48 +157,34 @@ public class AutoRedCloseGlobal extends CommandOpMode {
 //                new Point(44, -39, Point.CARTESIAN)));
 //        toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
 
-        fromBBtoStackfullcurve = new Path(new BezierCurve(
-                new Point(44, bbDropY, Point.CARTESIAN),
-                new Point(34, bbDropY, Point.CARTESIAN),
-                new Point(34, -60, Point.CARTESIAN),
-                new Point(10, -60, Point.CARTESIAN),
-                new Point(-26, -60, Point.CARTESIAN),
-                new Point(-46, -60, Point.CARTESIAN),
-                new Point(-50, -60, Point.CARTESIAN),
-                new Point(-50, -44, Point.CARTESIAN),
-                new Point(-57, -44, Point.CARTESIAN)));
-        fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(3)); // -90 + 90 = 0 degrees
+            fromBBtoStackfullcurve = new Path(new BezierCurve(
+                    new Point(44, bbDropY, Point.CARTESIAN),
+                    new Point(34, bbDropY, Point.CARTESIAN),
+                    new Point(34, -60, Point.CARTESIAN),
+                    new Point(22, -60, Point.CARTESIAN),
+                    new Point(10, -60, Point.CARTESIAN),
+                    new Point(-26, -60, Point.CARTESIAN),
+                    new Point(-46, -60, Point.CARTESIAN),
+                    new Point(-50, -60, Point.CARTESIAN),
+                    new Point(-50, -44, Point.CARTESIAN),
+                    new Point(-57, -44, Point.CARTESIAN)));
+            fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(3)); // -90 + 90 = 0 degrees
 
-        toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, -44, Point.CARTESIAN), new Point(-59, -35, Point.CARTESIAN)));
-        toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // -93 + 90 = -3 degrees
+            toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, -44, Point.CARTESIAN), new Point(-59, -35, Point.CARTESIAN)));
+            toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // -93 + 90 = -3 degrees
 
-        tocurvetostackBack = new Path(new BezierCurve(
-                new Point(-59, -35, Point.CARTESIAN),
-                new Point(-51, -35, Point.CARTESIAN),
-                new Point(-51, -61.5, Point.CARTESIAN),
-                new Point(-46, -59, Point.CARTESIAN),
-                new Point(-26, -59, Point.CARTESIAN),
-                new Point(-5, -59, Point.CARTESIAN),
-                new Point(10, -57, Point.CARTESIAN)));
-        tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
+            tocurvetostackBack = new Path(new BezierCurve(
+                    new Point(-59, -35, Point.CARTESIAN),
+                    new Point(-51, -35, Point.CARTESIAN),
+                    new Point(-51, -61.5, Point.CARTESIAN),
+                    new Point(-46, -59, Point.CARTESIAN),
+                    new Point(-26, -59, Point.CARTESIAN),
+                    new Point(-5, -59, Point.CARTESIAN),
+                    new Point(10, -57, Point.CARTESIAN)));
+            tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // -90 + 90 = 0 degrees
 
-        tobackboardFromStack = new Path(new BezierLine(new Point(10, -57, Point.CARTESIAN), new Point(42.5, -35, Point.CARTESIAN)));
-        tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(0)); // -95 + 90 = -5 degrees
-
-
-
-        CommandScheduler.getInstance().reset();
-        CenterstageConstants.IS_AUTO = true;
-        CenterstageConstants.ALLIANCE = Location.RED;
-        robot.init(hardwareMap);
-        robot.follower.setAuto(CenterstageConstants.IS_AUTO);
-
-
-        robot.follower.setStartingPose(new Pose(9,-58,Math.toRadians(90)));
-        while (opModeInInit()) {
-
-            zone= robot.propDetectionPipeline.detectZone();
-            CommandScheduler.getInstance().reset();
+            tobackboardFromStack = new Path(new BezierLine(new Point(10, -57, Point.CARTESIAN), new Point(42.5, -35, Point.CARTESIAN)));
+            tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(0)); // -95 + 90 = -5 degrees
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
