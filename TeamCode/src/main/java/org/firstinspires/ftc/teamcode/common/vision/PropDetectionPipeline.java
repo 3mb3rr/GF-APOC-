@@ -24,6 +24,8 @@ public class PropDetectionPipeline implements VisionProcessor {
     Mat output = new Mat();
     Scalar middle = new Scalar(0, 0, 0);
     Mat redDetection = new Mat();
+    Mat redDetection1 = new Mat();
+    Mat redDetection2 = new Mat();
     Mat inputHSV = new Mat();
     Mat deNoised = new Mat();
     Mat leftMat, centerMat, rightMat = new Mat();
@@ -57,9 +59,11 @@ public class PropDetectionPipeline implements VisionProcessor {
         Imgproc.cvtColor(input, inputHSV, Imgproc.COLOR_RGB2HSV);
 
         // HSV filtering limits
-        // yo these new values are CRAZY GOOD
-        Scalar lowHSVRed = new Scalar(0, 130, 80);
-        Scalar highHSVRed = new Scalar(10 ,255, 255);
+        // jayveer tuned at comp v perfect
+        Scalar lowHSVRed1 = new Scalar(170, 130, 80);
+        Scalar highHSVRed1 = new Scalar(180 ,255, 255);
+        Scalar lowHSVRed2 = new Scalar(0, 130, 80);
+        Scalar highHSVRed2 = new Scalar(10 ,255, 255);
 
         Scalar lowHSVBlue = new Scalar(105, 100, 100);
         Scalar highHSVBlue = new Scalar(115 ,255, 255);
@@ -72,7 +76,11 @@ public class PropDetectionPipeline implements VisionProcessor {
 //        Scalar highHSVBlue = new Scalar(110 ,255, 255);
 
         // filter for red
-        if(CenterstageConstants.ALLIANCE == Location.RED) Core.inRange(inputHSV, lowHSVRed, highHSVRed, redDetection);
+        if(CenterstageConstants.ALLIANCE == Location.RED){
+            Core.inRange(inputHSV, lowHSVRed1, highHSVRed1, redDetection1);
+            Core.inRange(inputHSV, lowHSVRed2, highHSVRed2, redDetection2);
+            Core.bitwise_or(redDetection1, redDetection2, redDetection);
+        }
         else Core.inRange(inputHSV, lowHSVBlue, highHSVBlue, redDetection);
         noiseReduction(redDetection, deNoised);
         leftMat = deNoised.submat(leftRegion);
@@ -83,7 +91,7 @@ public class PropDetectionPipeline implements VisionProcessor {
         centerPixels = countWhitePixels(centerMat);
 
 
-        redDetection.release();
+//        redDetection.release();
         centerMat.release();
         rightMat.release();
         leftMat.release();
@@ -94,7 +102,7 @@ public class PropDetectionPipeline implements VisionProcessor {
         Imgproc.line(output, new Point(rightLimit, 0), new Point(rightLimit, 448), new Scalar(0, 0, 255), 5);
         Imgproc.line(output, new Point(0, topLimit), new Point(800, topLimit), new Scalar(0, 0, 255), 5);
 
-        return output;
+        return redDetection;
 
     }
     @Override

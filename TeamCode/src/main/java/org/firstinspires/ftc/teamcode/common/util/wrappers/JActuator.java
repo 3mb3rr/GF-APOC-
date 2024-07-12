@@ -156,19 +156,18 @@ public class JActuator {
                 issueEncoderReset = false;
             }
         }}
-        if (!(targetPosition==-1)) {
-            if (Math.abs(power - pPower) > 0.005) {
-                for (HardwareDevice device : devices.values()) {
-                    if (device instanceof DcMotor) {
-                        double correction = 1.0;
-                        if (voltage != null) correction = 12.0 / voltage.getAsDouble();
-                        if (!floating) ((DcMotor) device).setPower(power * correction);
-                        else ((DcMotor) device).setPower(0);
-                        pPower = power;
-                    }
+        if (Math.abs(power - pPower) > 0.005) {
+            for (HardwareDevice device : devices.values()) {
+                if (device instanceof DcMotor) {
+                    double correction = 1.0;
+                    if (voltage != null) correction = 12.0 / voltage.getAsDouble();
+                    if (!floating) ((DcMotor) device).setPower(power * correction);
+                    else ((DcMotor) device).setPower(0);
+                    pPower = power;
                 }
             }
         }
+
         else {
             this.power = -0.7;
             if (robot.boolSubscriber(Sensors.SensorType.SLIDE_LIMIT)) {
@@ -309,10 +308,6 @@ public class JActuator {
      */
     public boolean hasReached() {
         return this.reached;
-    }
-
-    public void resetThisBitch(){
-        targetPosition=-1;
     }
 
 }

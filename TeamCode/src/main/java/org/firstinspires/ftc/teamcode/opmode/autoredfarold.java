@@ -35,12 +35,14 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.intakeToHan
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeCommand;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
+import org.firstinspires.ftc.teamcode.common.commands.interruptFollower;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
+import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 import org.firstinspires.ftc.teamcode.common.vision.Location;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
@@ -80,9 +82,12 @@ public class autoredfarold extends CommandOpMode {
     private BooleanSupplier time = () -> robot.getTimeSec() >29;
     private BooleanSupplier preload = () -> robot.preloadDetectionPipeline.getPreloadedZone() == CenterstageConstants.PRELOAD;
     private BooleanSupplier pastCenter = () -> robot.follower.getPose().getX()>25;
+    private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
     private int zone;
     double bbDropY=-36;
     double bbDropX=42;
+    double spikeDropX;
+    double spikeDropY;
     long wait = 0;
     int wrist = 0;
     @Override
@@ -92,22 +97,7 @@ public class autoredfarold extends CommandOpMode {
         telemetry.setMsTransmissionInterval(50);
 
 
-        toSpikeMiddle = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-55, -21.5,Point.CARTESIAN)));
-        toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(90),0);
-        toSpikeLeft = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-57, -17,Point.CARTESIAN)));
-        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-44));
-        toSpikeRight = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(-39, -31.6,Point.CARTESIAN)));
-        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
-        toStackMiddle = new Path(new BezierLine(new Point(-55,-17,Point.CARTESIAN),new Point(-58.3, -19, Point.CARTESIAN)));
-        toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
-
-        toStackMFromBB = new Path(new BezierCurve((new Point(43,-35,Point.CARTESIAN)),(new Point(30,-4,Point.CARTESIAN)),(new Point(-27,-4,Point.CARTESIAN)),(new Point(-57, -15,Point.CARTESIAN))));
-        toStackMFromBB.setConstantHeadingInterpolation(0);
-//        toStackMFromBB.setReversed(true);
-
-        toStrafeAtMStack = new Path(new BezierLine((new Point(-58, -15, Point.CARTESIAN)),(new Point(-59,-25,Point.CARTESIAN))));
-        toStrafeAtMStack.setConstantHeadingInterpolation(0);
 
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
@@ -116,47 +106,86 @@ public class autoredfarold extends CommandOpMode {
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
 
         robot.follower.setStartingPose(new Pose(-39,-58,Math.toRadians(90)));
+
         while (opModeInInit()) {
 
             zone=robot.propDetectionPipeline.detectZone();
 
             if (zone==1){
-                bbDropX=42;
+                spikeDropX=-57;
+                spikeDropY=-17;
+                bbDropX=44;
                 bbDropY=-28;
                 wait = 1000;
                 wrist=0;
             }
             else if (zone==2) {
-                bbDropX=42;
+                spikeDropX=-55;
+                spikeDropY=-21.5;
+                bbDropX=44;
                 bbDropY=-35;
                 wait = 250;
                 wrist=0;
             }
             else{
-                bbDropX=42;
+                spikeDropX=-41;
+                spikeDropY=-31.6;
+                bbDropX=44;
                 bbDropY=-39;
                 wait = 750;
                 wrist=120;
             }
 
-            toBackboard = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+            toSpikeMiddle = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
+            toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(90),0);
+            toSpikeLeft = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
+            toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-44));
+            toSpikeRight = new Path(new BezierLine(new Point(-39, -56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
+            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
 
-            toBackboardfromstack = new Path(new BezierCurve(new Point(-59 , -25,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN), new Point(-27,-4,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(47 ,-35 , Point.CARTESIAN)));
-            //tp stack again
-            toBackboardSecondTime =  new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-8,Point.CARTESIAN),new Point(-27,-8,Point.CARTESIAN), new Point(30,-8,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(47.1 ,-35 , Point.CARTESIAN)));
-            toBackboardSecondTime.setConstantHeadingInterpolation(0);
+            toStackMiddle = new Path(new BezierLine(new Point(spikeDropX,spikeDropY,Point.CARTESIAN),new Point(-58.3, -19, Point.CARTESIAN)));
+            toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toBackboard = new Path(new BezierCurve(new Point(-58.3, -19,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
             toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
-            toBackboardfromstack.setConstantHeadingInterpolation(Math.toRadians(-2 ));
-            TostackSecondTime = new Path(new BezierCurve((new Point(43,-35,Point.CARTESIAN)),(new Point(30,-8,Point.CARTESIAN)),(new Point(-27,-8,Point.CARTESIAN)),(new Point(-57 , -7,Point.CARTESIAN))));
+
+            toStackMFromBB = new Path(new BezierCurve((new Point(bbDropX,bbDropY,Point.CARTESIAN)),(new Point(30,-4,Point.CARTESIAN)),(new Point(-27,-4,Point.CARTESIAN)),(new Point(-57, -15,Point.CARTESIAN))));
+            toStackMFromBB.setConstantHeadingInterpolation(0);
+//        toStackMFromBB.setReversed(true);
+
+            toStrafeAtMStack = new Path(new BezierLine((new Point(-57, -15, Point.CARTESIAN)),(new Point(-59,-24,Point.CARTESIAN))));
+            toStrafeAtMStack.setConstantHeadingInterpolation(0);
+
+
+            toBackboardfromstack = new Path(new BezierCurve(
+                    new Point(-59 , -24,Point.CARTESIAN),
+                    new Point(-51,-6,Point.CARTESIAN),
+                    new Point(-27,-4,Point.CARTESIAN),
+                    new Point(30,-5,Point.CARTESIAN),
+                    new Point(43,-14 ,Point.CARTESIAN),
+                    new Point(47 ,-35 , Point.CARTESIAN)));
+            toBackboardfromstack.setConstantHeadingInterpolation(Math.toRadians(-2));
+
+            TostackSecondTime = new Path(new BezierCurve((new Point(47,-35,Point.CARTESIAN)),(new Point(30,-8,Point.CARTESIAN)),(new Point(-27,-8,Point.CARTESIAN)),(new Point(-57 , -7,Point.CARTESIAN))));
             TostackSecondTime.setConstantHeadingInterpolation(0);
 
-            TostrafeSecondTime = new Path(new BezierLine((new Point(-58, -5, Point.CARTESIAN)),(new Point(-59,-15,Point.CARTESIAN))));
+            TostrafeSecondTime = new Path(new BezierLine((new Point(-57, -7, Point.CARTESIAN)),(new Point(-59,-15,Point.CARTESIAN))));
             TostrafeSecondTime.setConstantHeadingInterpolation(0);
 
-            toBackBoardTest = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
-            toBackBoardTest.setConstantHeadingInterpolation(Math.toRadians(0));
-            toBackFromMid = new Path(new BezierLine(new Point(30,-5,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
-            toBackFromMid.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toBackboardSecondTime =  new Path(new BezierCurve(
+                    new Point(-59, -15,Point.CARTESIAN),
+                    new Point(-51,-6,Point.CARTESIAN),
+                    new Point(-27,-6,Point.CARTESIAN),
+                    new Point(32,-4,Point.CARTESIAN),
+                    new Point(43,-14 ,Point.CARTESIAN),
+                    new Point(47.1 ,-35 , Point.CARTESIAN)));
+            toBackboardSecondTime.setConstantHeadingInterpolation(0);
+
+//            toBackBoardTest = new Path(new BezierCurve(new Point(-57, -14,Point.CARTESIAN), new Point(-51,-6,Point.CARTESIAN),new Point(-27,-2,Point.CARTESIAN), new Point(30,-5,Point.CARTESIAN),new Point(43,-14 ,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+//            toBackBoardTest.setConstantHeadingInterpolation(Math.toRadians(0));
+//            toBackFromMid = new Path(new BezierLine(new Point(30,-5,Point.CARTESIAN),new Point(bbDropX, bbDropY,Point.CARTESIAN)));
+//            toBackFromMid.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
             CommandScheduler.getInstance().reset();
@@ -223,7 +252,8 @@ public class autoredfarold extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new setRollAngle(Math.toRadians(wrist)),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(100),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
@@ -265,7 +295,8 @@ public class autoredfarold extends CommandOpMode {
                             new pitchToDropPosition(),
                             new WaitCommand(100),
                             new pivotToDropPosition(),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(100),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
@@ -306,7 +337,8 @@ public class autoredfarold extends CommandOpMode {
                             new pitchToDropPosition(),
                             new WaitCommand(100),
                             new pivotToDropPosition(),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(100),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),

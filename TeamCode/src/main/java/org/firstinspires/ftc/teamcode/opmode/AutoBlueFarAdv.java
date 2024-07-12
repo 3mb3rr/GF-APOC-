@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.testing;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import android.util.Size;
 
@@ -39,12 +39,14 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeComm
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarUp;
+import org.firstinspires.ftc.teamcode.common.commands.interruptFollower;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierPoint;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.Point;
+import org.firstinspires.ftc.teamcode.common.robot.Sensors;
 import org.firstinspires.ftc.teamcode.common.robot.robotHardware;
 import org.firstinspires.ftc.teamcode.common.vision.Location;
 import org.firstinspires.ftc.teamcode.common.vision.PropDetectionPipeline;
@@ -81,10 +83,16 @@ public class AutoBlueFarAdv extends CommandOpMode {
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier preload = () -> robot.preloadDetectionPipeline.getPreloadedZone()==Location.LEFT;
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
+    private BooleanSupplier pastCenter = () -> robot.follower.getPose().getX()>25;
+    private BooleanSupplier closeToStack = () -> robot.follower.getPose().getX()<-40;
+    private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
 
     private int zone;
+    double spikeDropY;
+    double spikeDropX;
     double bbDropY=35;
     double bbDropX=45;
+    double backdropEndPoint=40;
     @Override
     public void initialize() {
 
@@ -92,42 +100,7 @@ public class AutoBlueFarAdv extends CommandOpMode {
         telemetry.setMsTransmissionInterval(50);
 
 
-        toSpikeMiddle = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57.5, 23.5,Point.CARTESIAN)));
-        toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(-90),0);
-        toSpikeRight = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57, 17,Point.CARTESIAN)));
-        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(44));
-        toSpikeLeft = new Path(new BezierCurve(new Point(-39, 58,Point.CARTESIAN), new Point(-50,40,Point.CARTESIAN),new Point(-42, 33,Point.CARTESIAN)));
-        toSpikeLeft.setLinearHeadingInterpolation(Math.toRadians(-90),Math.toRadians(0));
 
-        toBackboard = new Path(new BezierCurve(new Point(-57, 14,Point.CARTESIAN), new Point(-44,1,Point.CARTESIAN), new Point(30,3,Point.CARTESIAN),new Point(44,35.6,Point.CARTESIAN)));
-        toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
-
-//        toBackboardMiddle = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),new Point(45, -36,Point.CARTESIAN))); //new Point(21, 0, Point.CARTESIAN),
-//        toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
-//
-//        toBackboardLeft = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),(new Point(45, -29,Point.CARTESIAN))));
-//        toBackboardLeft.setConstantHeadingInterpolation(Math.toRadians(0));
-//
-//        toBackboardRight = new Path(new BezierLine(new Point(43, -35, Point.CARTESIAN),new Point(45,-38,Point.CARTESIAN)));
-//        toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0));
-
-        toStackMiddle = new Path(new BezierLine(new Point(-55,24,Point.CARTESIAN),new Point(-58.3, 20, Point.CARTESIAN)));
-        toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
-
-        toStackMFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-57.4, 13,Point.CARTESIAN))));
-        toStackMFromBB.setConstantHeadingInterpolation(0);
-
-        toStrafeAtMStack = new Path(new BezierLine((new Point(-58.8, 13, Point.CARTESIAN)),(new Point(-58.8,19,Point.CARTESIAN))));
-        toStrafeAtMStack.setConstantHeadingInterpolation(0);
-
-        toStackRFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-56.6, 0,Point.CARTESIAN))));
-        toStackRFromBB.setConstantHeadingInterpolation(0);
-
-        toStrafeAtRStack = new Path(new BezierLine((new Point(-58.1, 0, Point.CARTESIAN)),(new Point(-58.7,9,Point.CARTESIAN))));
-        toStrafeAtRStack.setConstantHeadingInterpolation(0);
-
-        toDropWhites = new Path(new BezierLine(new Point(45,33,Point.CARTESIAN),new Point(45.25,34,Point.CARTESIAN)));
-        toDropWhites.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
         CommandScheduler.getInstance().reset();
@@ -147,21 +120,48 @@ public class AutoBlueFarAdv extends CommandOpMode {
             zone=robot.propDetectionPipeline.detectZone();
 
             if (zone==1){
-                bbDropX=46.5;
+                bbDropX=44.5;
                 bbDropY=39;
             }
             else if (zone==2) {
-                bbDropX=46.5;
+                bbDropX=44.5;
                 bbDropY=34.5;
             }
             else{
-                bbDropX=46.5;
+                bbDropX=44.5;
                 bbDropY=32;
             }
 
 
+            toSpikeMiddle = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57.5, 23.5,Point.CARTESIAN)));
+            toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(-90),0);
+            toSpikeRight = new Path(new BezierLine(new Point(-39, 58,Point.CARTESIAN), new Point(-57, 17,Point.CARTESIAN)));
+            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(44));
+            toSpikeLeft = new Path(new BezierCurve(new Point(-39, 58,Point.CARTESIAN), new Point(-50,40,Point.CARTESIAN),new Point(-42, 33,Point.CARTESIAN)));
+            toSpikeLeft.setLinearHeadingInterpolation(Math.toRadians(-90),Math.toRadians(0));
 
-            toDrop = new Path(new BezierLine(new Point(45,33,Point.CARTESIAN),new Point(bbDropX,bbDropY,Point.CARTESIAN)));
+            toBackboard = new Path(new BezierCurve(new Point(-57, 14,Point.CARTESIAN), new Point(-44,1,Point.CARTESIAN), new Point(30,3,Point.CARTESIAN),new Point(backdropEndPoint,35.6,Point.CARTESIAN)));
+            toBackboard.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toStackMiddle = new Path(new BezierLine(new Point(-55,24,Point.CARTESIAN),new Point(-58.3, 20, Point.CARTESIAN)));
+            toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toStackMFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-57.4, 13,Point.CARTESIAN))));
+            toStackMFromBB.setConstantHeadingInterpolation(0);
+
+            toStrafeAtMStack = new Path(new BezierLine((new Point(-57.4, 13, Point.CARTESIAN)),(new Point(-58.4,19,Point.CARTESIAN))));
+            toStrafeAtMStack.setConstantHeadingInterpolation(0);
+
+            toStackRFromBB = new Path(new BezierCurve((new Point(43,36,Point.CARTESIAN)),(new Point(30,1,Point.CARTESIAN)),(new Point(-27,4,Point.CARTESIAN)),(new Point(-56.6, 0,Point.CARTESIAN))));
+            toStackRFromBB.setConstantHeadingInterpolation(0);
+
+            toStrafeAtRStack = new Path(new BezierLine((new Point(-56.6, 0, Point.CARTESIAN)),(new Point(-58,9,Point.CARTESIAN))));
+            toStrafeAtRStack.setConstantHeadingInterpolation(0);
+
+            toDropWhites = new Path(new BezierLine(new Point(backdropEndPoint,35.1,Point.CARTESIAN),new Point(44,34,Point.CARTESIAN)));
+            toDropWhites.setConstantHeadingInterpolation(Math.toRadians(0));
+
+            toDrop = new Path(new BezierLine(new Point(backdropEndPoint,35.6,Point.CARTESIAN),new Point(bbDropX,bbDropY,Point.CARTESIAN)));
             toDrop.setConstantHeadingInterpolation(Math.toRadians(0));
 
 
@@ -197,12 +197,12 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new grabLeftPixel(),
                             //below is new
                             new grabRightPixel(),
-                            new WaitCommand(500),
+                            new WaitCommand(100),
                             new intakeCommand(),
-                            new WaitCommand(600),
+                            new WaitCommand(300),
                             new stopIntake(),
                             new intakeAutoState(),
-                            new WaitCommand(1000), //was wait until busy
+                            new WaitUntilCommand(pastCenter), //was wait until busy
 //                            new ConditionalCommand(new setRollAngle(0),new setRollAngle(Math.toRadians(180)),preload),
                             new slideToRow(1),
                             new pitchToDropPosition(),
@@ -211,7 +211,8 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new WaitCommand(100),
                             new followPath(toDrop),
                             //above is new
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(50),
                             new releaseLeftPixel(),
                             //below is new
@@ -231,9 +232,10 @@ public class AutoBlueFarAdv extends CommandOpMode {
 
 //                            new WaitCommand(100),
                             new followPath(toStackMFromBB),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(closeToStack),
                             new outtakeCommand(),
                             new v4BarToHeight(1),
+                            new WaitUntilCommand(busy),
                             new followPath(toStrafeAtMStack),
                             new WaitUntilCommand(busy),
                             new v4BarToHeight(5),
@@ -265,8 +267,11 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new WaitCommand(300),
                             new grabLeftPixel(),
                             new grabRightPixel(),
+                            new intakeCommand(),
+                            new WaitCommand(200),
+                            new stopIntake(),
                             new intakeAutoState(),
-                            new WaitCommand(1200), //was wait until busy
+                            new WaitUntilCommand(pastCenter), //was wait until busy
         //                            new ConditionalCommand(new setRollAngle(0),new setRollAngle(Math.toRadians(180)),preload),
                             new slideToRow(3),
                             new pitchToDropPosition(),
@@ -275,7 +280,8 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new WaitCommand(100),
                             new followPath(toDropWhites),
                             //above is new
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(50),
                             new releaseLeftPixel(),
                             //below is new
@@ -291,9 +297,10 @@ public class AutoBlueFarAdv extends CommandOpMode {
 
 
                             new followPath(toStackRFromBB),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(closeToStack),
                             new outtakeCommand(),
                             new v4BarToHeight(3),
+                            new WaitUntilCommand(busy),
                             new followPath(toStrafeAtRStack),
                             new WaitUntilCommand(busy),
                             new v4BarToHeight(5),
@@ -328,7 +335,7 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new grabLeftPixel(),
                             new grabRightPixel(),
                             new intakeAutoState(),
-                            new WaitCommand(1000), //was wait until busy
+                            new WaitUntilCommand(pastCenter), //was wait until busy
                             //                            new ConditionalCommand(new setRollAngle(0),new setRollAngle(Math.toRadians(180)),preload),
                             new slideToRow(3),
                             new pitchToDropPosition(),
@@ -336,7 +343,8 @@ public class AutoBlueFarAdv extends CommandOpMode {
                             new pivotToDropPosition(),
                             new followPath(toDropWhites),
                             //above is new
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(50),
                             new releaseLeftPixel(),
                             //below is new

@@ -165,14 +165,14 @@ public class  robotConstants {
     public static CustomPIDFCoefficients smallDrivePIDFCoefficients = new CustomPIDFCoefficients(
             0.03,
             0,
-            0.000006,
+            0.000007,
             0.1);
 
     // Feed forward constant added on to the small drive PIDF
     public static double smallDrivePIDFFeedForward = 0.01;
 
     // Mass of robot in kilograms
-    public static double mass = 14.5;
+    public static double mass = 15.3;
 
     // Centripetal force to power scaling
     public static double centripetalScaling = 0.0005;

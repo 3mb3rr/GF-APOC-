@@ -16,7 +16,7 @@ public class Sensors {
         INTAKE_VELOCITY,
         LEFT_DISTANCE,
         RIGHT_DISTANCE,
-        BACK_DISTANCE,
+        FRONT_DISTANCE,
         BATTERY
     }
 }

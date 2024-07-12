@@ -67,7 +67,7 @@ public class robotHardware {
     public DcMotorEx leftFront, leftRear, rightFront, rightRear;
     public RevColorSensorV3 leftColorSensor, rightColorSensor;
     public Encoder par0, par1, perp;
-    public AnalogDistanceSensor USLeft, USRight, USBack;
+    public AnalogDistanceSensor USLeft, USRight, USFront;
     public List<DcMotorEx> driveMotors;
     public DcMotorEx intakeRoller, leftSlideMotor, rightSlideMotor;
     public JActuator lift;
@@ -124,7 +124,7 @@ public class robotHardware {
         battery = hardwareMap.voltageSensor.get("Control Hub");
         USLeft = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USLeft"));
         USRight = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USRight"));
-        USBack = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USBack"));
+        USFront = new AnalogDistanceSensor(hardwareMap.get(AnalogInput.class, "USBack"));
 
         leftLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseLeft"));
         rightLimit = new LimitSwitch(hardwareMap.get(DigitalChannel.class, "slideCloseRight"));
@@ -197,10 +197,7 @@ public class robotHardware {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         intakeRoller.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         intakeRoller.setCurrentAlert(robotConstants.currentLimit, CurrentUnit.AMPS);
 
         lift = new JActuator(() -> leftSlideMotor.getCurrentPosition(), leftSlideMotor, rightSlideMotor);
@@ -234,7 +231,7 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_VELOCITY, Math.abs(intakeRoller.getVelocity()));
         values.put(Sensors.SensorType.LEFT_DISTANCE, USLeft.getDistance());
         values.put(Sensors.SensorType.RIGHT_DISTANCE, USRight.getDistance());
-        values.put(Sensors.SensorType.BACK_DISTANCE, USBack.getDistance());
+        values.put(Sensors.SensorType.FRONT_DISTANCE, USFront.getDistance());
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read
@@ -252,6 +249,10 @@ public class robotHardware {
         preloadDetectionPipeline = new PreloadDetectionPipeline();
         if (CenterstageConstants.IS_AUTO) {
             startCamera();
+            leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             // TODO: Add start camera here
             synchronized (imuLock) {
@@ -280,7 +281,6 @@ public class robotHardware {
             rightPitch.setAngle(robotConstants.waitPitch);
             pivot.setAngle(robotConstants.pivotWaitAngle);
             v4Bar.setAngle(1);
-            lift.resetThisBitch();
         }
         roll.setAngle(0);
         transferFlap.setAngle(90);
@@ -312,7 +312,7 @@ public class robotHardware {
         values.put(Sensors.SensorType.INTAKE_VELOCITY, Math.abs(intakeRoller.getVelocity()));
         values.put(Sensors.SensorType.LEFT_DISTANCE, USLeft.getDistance());
         values.put(Sensors.SensorType.RIGHT_DISTANCE, USRight.getDistance());
-        values.put(Sensors.SensorType.BACK_DISTANCE, USBack.getDistance());
+        values.put(Sensors.SensorType.FRONT_DISTANCE, USFront.getDistance());
         values.put(Sensors.SensorType.INTAKE_CURRENT, intakeRoller.isOverCurrent());
 
         // non bulk read

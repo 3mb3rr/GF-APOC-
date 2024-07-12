@@ -39,6 +39,7 @@ import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.outtakeComm
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.stopIntake;
 import org.firstinspires.ftc.teamcode.common.commands.intakeCommands.v4BarToHeight;
 
+import org.firstinspires.ftc.teamcode.common.commands.interruptFollower;
 import org.firstinspires.ftc.teamcode.common.pathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.common.pathing.pathGeneration.BezierLine;
@@ -73,10 +74,11 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
     private BooleanSupplier busy = () -> !robot.follower.isBusy();
     private BooleanSupplier pixels = () -> robot.intake.getLeftPixel() && robot.intake.getRightPixel();
     private BooleanSupplier time = () -> robot.getTimeSec() >26;
-    private BooleanSupplier pastCenter = () -> robot.follower.getPose().getX()>30;
+    private BooleanSupplier pastCenter = () -> robot.follower.getPose().getX()>25;
     private BooleanSupplier closeToStack = () -> robot.follower.getPose().getX()<-40;
     private BooleanSupplier backtoBBcurvedone = () -> robot.follower.getPose().getX()>7;
     private BooleanSupplier ultrasonic = () -> robot.doubleSubscriber(Sensors.SensorType.LEFT_DISTANCE)>60;
+    private BooleanSupplier dropDistance = () -> robot.doubleSubscriber(Sensors.SensorType.FRONT_DISTANCE)<10;
     private int zone;
     private Location randomization;
 
@@ -92,23 +94,23 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
         toSpikeMiddle = new Path(new BezierLine(new Point(9, 54, Point.CARTESIAN), new Point(26, 23, Point.CARTESIAN)));
         toSpikeMiddle.setConstantHeadingInterpolation(Math.toRadians(180)); // -180 * -1 = 180 degrees
 
-        toSpikeLeft = new Path(new BezierCurve(new Point(9, 54, Point.CARTESIAN), new Point(22, 45, Point.CARTESIAN), new Point(11.7, 34.5, Point.CARTESIAN)));
-        toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(180)); // -180 * -1 = 180 degrees
+        toSpikeLeft = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(22, 45, Point.CARTESIAN), new Point(32, 29.5, Point.CARTESIAN)));
+        toSpikeLeft.setLinearHeadingInterpolation(0, Math.toRadians(180));
 
-        toSpikeRight = new Path(new BezierLine(new Point(9, 54, Point.CARTESIAN), new Point(31, 34.5, Point.CARTESIAN)));
-        toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(180)); // -180 * -1 = 180 degrees
+        toSpikeRight = new Path(new BezierCurve(new Point(9, 58, Point.CARTESIAN), new Point(15, 42, Point.CARTESIAN), new Point(12, 36, Point.CARTESIAN)));
+        toSpikeRight.setLinearHeadingInterpolation(0, Math.toRadians(180));
 
-        toBackboardMiddle = new Path(new BezierLine(new Point(26, 25, Point.CARTESIAN), new Point(42, 35, Point.CARTESIAN)));
+        toBackboardMiddle = new Path(new BezierLine(new Point(26, 25, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
         toBackboardMiddle.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
-        toBackboardLeft = new Path(new BezierLine(new Point(11.7, 35.5, Point.CARTESIAN), new Point(42, 27, Point.CARTESIAN)));
+        toBackboardLeft = new Path(new BezierLine(new Point(11.7, 35.5, Point.CARTESIAN), new Point(43.5, 27, Point.CARTESIAN)));
         toBackboardLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
-        toBackboardRight = new Path(new BezierLine(new Point(31, 35, Point.CARTESIAN), new Point(42, 39, Point.CARTESIAN)));
+        toBackboardRight = new Path(new BezierLine(new Point(31, 35, Point.CARTESIAN), new Point(43.5, 39, Point.CARTESIAN)));
         toBackboardRight.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
         fromBBtoStackfullcurve = new Path(new BezierCurve(
-                new Point(46, 35, Point.CARTESIAN),
+                new Point(43.5, 35, Point.CARTESIAN),
                 new Point(34, 35, Point.CARTESIAN),
                 new Point(34, 60, Point.CARTESIAN),
                 new Point(10, 60, Point.CARTESIAN),
@@ -119,13 +121,13 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                 new Point(-57, 44, Point.CARTESIAN)));
         fromBBtoStackfullcurve.setConstantHeadingInterpolation(Math.toRadians(-3)); // 3 * -1 = -3 degrees
 
-        toStrafeAtStackLeft = new Path(new BezierLine(new Point(-59, 44, Point.CARTESIAN), new Point(-60, 35, Point.CARTESIAN)));
+        toStrafeAtStackLeft = new Path(new BezierLine(new Point(-57, 44, Point.CARTESIAN), new Point(-59, 35, Point.CARTESIAN)));
         toStrafeAtStackLeft.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
-        tocurvetostackBack = new Path(new BezierCurve(new Point(-60, 35, Point.CARTESIAN), new Point(-50, 35, Point.CARTESIAN), new Point(-50, 58, Point.CARTESIAN), new Point(-46, 58, Point.CARTESIAN), new Point(-26, 58, Point.CARTESIAN), new Point(10, 58, Point.CARTESIAN)));
+        tocurvetostackBack = new Path(new BezierCurve(new Point(-59, 35, Point.CARTESIAN), new Point(-50, 35, Point.CARTESIAN), new Point(-50, 58, Point.CARTESIAN), new Point(-46, 58, Point.CARTESIAN), new Point(-26, 58, Point.CARTESIAN), new Point(10, 58, Point.CARTESIAN)));
         tocurvetostackBack.setConstantHeadingInterpolation(Math.toRadians(0)); // 0 * -1 = 0 degrees
 
-        tobackboardFromStack = new Path(new BezierLine(new Point(10, 59, Point.CARTESIAN), new Point(44.5, 35, Point.CARTESIAN)));
+        tobackboardFromStack = new Path(new BezierLine(new Point(10, 59, Point.CARTESIAN), new Point(43.5, 35, Point.CARTESIAN)));
         tobackboardFromStack.setConstantHeadingInterpolation(Math.toRadians(5)); // -5 * -1 = 5 degrees
 
 
@@ -138,7 +140,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
 
 
-        robot.follower.setStartingPose(new Pose(9,-58,Math.toRadians(90)));
+        robot.follower.setStartingPose(new Pose(9,58,Math.toRadians(-90)));
         while (opModeInInit()) {
 
             zone= robot.propDetectionPipeline.detectZone();
@@ -163,16 +165,17 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                                     new WaitUntilCommand(busy)
                             ),
                             new WaitCommand(200),
-                            new releaseRightPixel(),
+                            new releaseLeftPixel(),
                             new WaitCommand(200),
                             new stopIntake(),
                             new followPath(CenterstageConstants.getPath(zone,toBackboardLeft,toBackboardMiddle,toBackboardRight)),
                             new WaitUntilCommand(pastCenter),
                             new pitchToDropPosition(),
                             new pivotToDropPosition(),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new WaitCommand(200),
-                            new releaseLeftPixel(),
+                            new releaseRightPixel(),
                             new WaitCommand(120),
                             new pitchToWaitPosition(),
                             new pivotToWaitPosition(),
@@ -212,7 +215,8 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),
@@ -256,7 +260,8 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
                             new WaitCommand(100),
                             new pivotToDropPosition(),
                             new WaitCommand(300),
-                            new WaitUntilCommand(busy),
+                            new WaitUntilCommand(dropDistance), //was wait until busy
+                            new interruptFollower(),
                             new releaseLeftPixel(),
                             new releaseRightPixel(),
                             new WaitCommand(200),
