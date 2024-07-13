@@ -1,5 +1,5 @@
 ## Basic Ideas
-Pedro Pathing is a reactive vector based follower. What this means is that the robot dynamically
+Jayveer Pathing is a reactive vector based follower. What this means is that the robot dynamically
 calculates a set of vectors that are required to correct error as well as to move forward and applies them.
 
 The robot calculates:
@@ -12,18 +12,18 @@ The robot calculates:
 These are then applied to the robot in this order until either the robot's power is maxed out or all
 the vectors are applied.
 
-## Why Pedro Pathing?
-Why use Pedro Pathing? Why not something else like Road Runner or Pure Pursuit?
+## Why Jayveer Pathing?
+Why use Jayveer Pathing? Why not something else like Road Runner or Pure Pursuit?
 
 * Why not Pure Pursuit?
   * Pure Pursuit searches for the farthest point on the path that's within a certain radius from the robot. Pure Pursuit will then go in a straight line to that point. This poses several problems, as a small search radius will cause some oscillations on corners, and a large search radius will cut corners on paths, which makes the paths inaccurate to real life.
-  * Pedro Pathing instead corrects to the closest point on the path while still following the path. This ensures that the follower will stay on the path while still being able to move forward along the path without cutting corners or encountering oscillation issues.
+  * Jayveer Pathing instead corrects to the closest point on the path while still following the path. This ensures that the follower will stay on the path while still being able to move forward along the path without cutting corners or encountering oscillation issues.
 * Why not Road Runner?
   * Road Runner is a motion profile based follower, which means that a set of instructions for motor powers are calculated for each path beforehand and then run. After reaching the end of this motion profile, Road Runner corrects. This can be sufficient for most situations, but if the robot encounters an obstacle or wheel slippage, it may be unable to correct in time.
-  * Pedro Pathing instead dynamically corrects throughout the path. The movement vectors are calculated at every point along the path, and because of this, the path can even be changed midway through and Pedro Pathing will still be able to correct. Since correction occurs throughout the path, the error correction isn't concentrated on the end of the path and therefore the robot is able to better minimize error.
+  * Jayveer Pathing instead dynamically corrects throughout the path. The movement vectors are calculated at every point along the path, and because of this, the path can even be changed midway through and Jayveer Pathing will still be able to correct. Since correction occurs throughout the path, the error correction isn't concentrated on the end of the path and therefore the robot is able to better minimize error.
 
-## How Does Pedro Path?
-As mentioned in the *Basic Ideas* section, Pedro Pathing calculates a set of vectors to move the
+## How Does Jayveer Path?
+As mentioned in the *Basic Ideas* section, Jayveer Pathing calculates a set of vectors to move the
 robot along a path, which is defined with Bezier curves. Here, we'll go more in-depth on how these
 vectors are calculated and used in path following.
 
@@ -95,19 +95,19 @@ robot under 0 power, we can compensate for that with another kinematics equation
 two lets us control our velocity to both move along the path quickly and brake without overshooting.
 
 ## Additional Capabilities
-In addition to following paths, Pedro Pathing can be used for a few other purposes.
+In addition to following paths, Jayveer Pathing can be used for a few other purposes.
 
 ### Holding Points
-Pedro Pathing is also capable of holding a specified position and direction. This can be useful for
+Jayveer Pathing is also capable of holding a specified position and direction. This can be useful for
 improving on the end accuracy of paths, providing additional correction time if possible. It can
 also be useful in cases where contact with other robots might occur. For instance, in the 2022-2023
 FTC season challenge, Power Play, robots might come into contact when scoring on a contested middle
-junction. Pedro Pathing would be able to recover and correct from a robot collision, allowing for
+junction. Jayveer Pathing would be able to recover and correct from a robot collision, allowing for
 more consistent scoring.
 
 ### TeleOp Enhancements
-Finally, Pedro Pathing can be used in TeleOp to enhance driving. With regular mecanum drive, robots
-will tend to swing out when taking corners. Pedro Pathing can account for that, allowing the robot
+Finally, Jayveer Pathing can be used in TeleOp to enhance driving. With regular mecanum drive, robots
+will tend to swing out when taking corners. Jayveer Pathing can account for that, allowing the robot
 to take corners more smoothly and efficiently. Using the same localizer as is used in autonomous, a
 first and second derivative can be estimated from previous positions. Then, with a modified version
 of the curvature formula, we can estimate a centripetal force correction and apply it under driver

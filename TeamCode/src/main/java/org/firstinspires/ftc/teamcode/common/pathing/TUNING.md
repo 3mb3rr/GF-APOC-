@@ -1,12 +1,12 @@
 ## Prerequisites
-Obviously, you have to have a robot to use Pedro Pathing. Also, Pedro Pathing is only able to work
+Obviously, you have to have a robot to use Jayveer Pathing. Also, Jayveer Pathing is only able to work
 with omnidirectional drives, like mecanum drive. There is currently no support for swerve drives.
-You must also have a localizer of some sort. Pedro Pathing has a drive encoder, a two tracking wheel,
+You must also have a localizer of some sort. Jayveer Pathing has a drive encoder, a two tracking wheel,
 and a three tracking wheel localizer. You will need to have your localizer tuned before starting to
-tune PedroPathing. Check out the tuning guide under the localization tab if you're planning on using one of the
-localizers available in Pedro Pathing. Additionally, using [FTC Dashboard](http://192.168.43.1:8080/dash)
+tune JayveerPathing. Check out the tuning guide under the localization tab if you're planning on using one of the
+localizers available in Jayveer Pathing. Additionally, using [FTC Dashboard](http://192.168.43.1:8080/dash)
 will help a lot in tuning, and we have a slightly scuffed Desmos path visualizer [here](https://www.desmos.com/calculator/3so1zx0hcd).
-One last thing to note is that Pedro Pathing operates in inches and radians.
+One last thing to note is that Jayveer Pathing operates in inches and radians.
 
 ## Tuning
 * To start with, we need the mass of the robot in kg. This is used for the centripetal force

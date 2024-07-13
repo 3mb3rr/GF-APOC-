@@ -17,14 +17,12 @@ import org.firstinspires.ftc.teamcode.common.subsystem.followerSubsystem;
 
 /**
  * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
- * Pedro Pathing is capable of.
+ * Jayveer Pathing is capable of.
  *
- * @author Anyi Lin - 10158 Scott's Bots
- * @author Aaron Yang - 10158 Scott's Bots
- * @author Harrison Womack - 10158 Scott's Bots
+ * @author Jayveer Kocchar - 19013 G-Force
  * @version 1.0, 3/21/2024
  */
-@TeleOp(name = "Pedro Pathing TeleOp Enhancements", group = "Test")
+@TeleOp(name = "Jayveer Pathing TeleOp Enhancements", group = "Test")
 @Disabled
 public class TeleOpEnhancements extends OpMode {
     private final robotHardware robot = robotHardware.getInstance();
@@ -68,7 +66,7 @@ public class TeleOpEnhancements extends OpMode {
     }
 
     /**
-     * This runs the OpMode. This is only drive control with Pedro Pathing live centripetal force
+     * This runs the OpMode. This is only drive control with Jayveer Pathing live centripetal force
      * correction.
      */
     @Override

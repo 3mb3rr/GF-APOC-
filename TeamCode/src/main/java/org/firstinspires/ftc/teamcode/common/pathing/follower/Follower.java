@@ -44,9 +44,7 @@ import java.util.List;
  * This is the Follower class. It handles the actual following of the paths and all the on-the-fly
  * calculations that are relevant for movement.
  *
- * @author Anyi Lin - 10158 Scott's Bots
- * @author Aaron Yang - 10158 Scott's Bots
- * @author Harrison Womack - 10158 Scott's Bots
+ * @author Jayveer Kocchar - 19013 G-Force
  * @version 1.0, 3/4/2024
  */
 @Config
