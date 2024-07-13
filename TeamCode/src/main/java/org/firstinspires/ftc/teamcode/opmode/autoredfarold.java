@@ -130,7 +130,7 @@ public class autoredfarold extends CommandOpMode {
                 spikeDropX=-41;
                 spikeDropY=-31.6;
                 bbDropX=44.5;
-                bbDropY=-39;
+                bbDropY=-40;
                 wait = 750;
                 wrist=120;
             }
