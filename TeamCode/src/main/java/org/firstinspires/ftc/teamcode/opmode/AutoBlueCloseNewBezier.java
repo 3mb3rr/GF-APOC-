@@ -98,7 +98,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
-        CenterstageConstants.ALLIANCE = Location.RED;
+        CenterstageConstants.ALLIANCE = Location.BLUE;
         robot.init(hardwareMap);
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
 
@@ -117,7 +117,7 @@ public class AutoBlueCloseNewBezier extends CommandOpMode {
             }
             else if (zone==2) {
                 spikeDropX=26;
-                spikeDropY=23;
+                spikeDropY=33;
                 bbDropY=33;
                 bbDropX=44;
             }

@@ -60,13 +60,13 @@ public class PropDetectionPipeline implements VisionProcessor {
 
         // HSV filtering limits
         // jayveer tuned at comp v perfect
-        Scalar lowHSVRed1 = new Scalar(170, 130, 80);
+        Scalar lowHSVRed1 = new Scalar(168, 130, 80);
         Scalar highHSVRed1 = new Scalar(180 ,255, 255);
         Scalar lowHSVRed2 = new Scalar(0, 130, 80);
-        Scalar highHSVRed2 = new Scalar(10 ,255, 255);
+        Scalar highHSVRed2 = new Scalar(7 ,255, 255);
 
-        Scalar lowHSVBlue = new Scalar(105, 100, 100);
-        Scalar highHSVBlue = new Scalar(115 ,255, 255);
+        Scalar lowHSVBlue = new Scalar(90, 100, 80);
+        Scalar highHSVBlue = new Scalar(105 ,255, 255);
 
         // Avneet's Tuned Values
 //        Scalar lowHSVRed = new Scalar(170, 100, 100);

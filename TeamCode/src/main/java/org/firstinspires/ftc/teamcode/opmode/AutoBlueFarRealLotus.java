@@ -102,7 +102,7 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
         CenterstageConstants.IS_AUTO = true;
-        CenterstageConstants.ALLIANCE = Location.RED;
+        CenterstageConstants.ALLIANCE = Location.BLUE;
         robot.init(hardwareMap);
         robot.follower.setAuto(CenterstageConstants.IS_AUTO);
 
@@ -114,9 +114,9 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
 
             if (zone==1){
                 spikeDropX=-41;
-                spikeDropY=31.6;
+                spikeDropY=33;
                 bbDropX=44;
-                bbDropY=28;
+                bbDropY=42;
                 wait = 1000;
                 wrist=0;
             }
@@ -124,7 +124,7 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
                 spikeDropX=-55;
                 spikeDropY=21.5;
                 bbDropX=44;
-                bbDropY=35;
+                bbDropY=37;
                 wait = 250;
                 wrist=0;
             }
@@ -132,17 +132,17 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
                 spikeDropX=-57;
                 spikeDropY=17;
                 bbDropX=44;
-                bbDropY=39;
+                bbDropY=32; //48
                 wait = 750;
-                wrist=120;
+                wrist=0;
             }
 
             toSpikeMiddle = new Path(new BezierLine(new Point(-39, 56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
             toSpikeMiddle.setLinearHeadingInterpolation(Math.toRadians(90),0);
             toSpikeLeft = new Path(new BezierLine(new Point(-39, 56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
-            toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(-44));
+            toSpikeLeft.setConstantHeadingInterpolation(Math.toRadians(0));
             toSpikeRight = new Path(new BezierLine(new Point(-39, 56,Point.CARTESIAN), new Point(spikeDropX, spikeDropY,Point.CARTESIAN)));
-            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(0));
+            toSpikeRight.setConstantHeadingInterpolation(Math.toRadians(44));
 
             toStackMiddle = new Path(new BezierLine(new Point(spikeDropX,spikeDropY,Point.CARTESIAN),new Point(-58.3, 19, Point.CARTESIAN)));
             toStackMiddle.setConstantHeadingInterpolation(Math.toRadians(0));
@@ -255,6 +255,7 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
 //                            new grabLeftPixel(),
 //                            //below is new
 //                            new grabRightPixel()
+                            new WaitCommand(3000),
                             new ParallelCommandGroup(
                                     new followPath(toBackboard),
                                     new SequentialCommandGroup(
@@ -323,48 +324,48 @@ public class AutoBlueFarRealLotus extends CommandOpMode {
                             new slideToRow(1),
                             new pitchToWaitPosition(),
                             new pivotToWaitPosition(),
-                            new intakeAutoState(),
-                            new followPath(TostackSecondTime),
-                            new WaitUntilCommand(busy),
-                            new outtakeCommand(),
-                            new v4BarToHeight(2),
-                            new followPath(TostrafeSecondTime),
-                            new WaitCommand(200),
-                            new v4BarToHeight(4),
-                            new WaitCommand(200),
-                            new v4BarToHeight(3),
-                            new WaitCommand(100),
-                            new v4BarToHeight(1),
-                            new WaitCommand(200),
-                            new WaitUntilCommand(busy),
-                            new followPath(toBackboardSecondTime),
-                            new intakeCommand(),
-                            new WaitCommand(200),
-                            new outtakeCommand(),
-                            new WaitCommand(300),
-                            new intakeCommand(),
-                            new WaitCommand(300),
-                            new stopIntake(),
-                            new WaitCommand(400),
-                            new pivotToTransferPosition(),
-                            new pitchToTransferPosition(),
-                            new WaitCommand(700),
-                            new grabLeftPixel(),
-                            new grabRightPixel(),
-                            new WaitUntilCommand(pastCenter),
-                            new slideToRow(3),
-                            new pitchToDropPosition(),
-                            new WaitCommand(100),
-                            new pivotToDropPosition(),
-                            new WaitUntilCommand(busy),
-                            new WaitCommand(100),
-                            new releaseLeftPixel(),
-                            new releaseRightPixel(),
-                            new WaitCommand(200),
-                            new slideToRow(1),
-                            new pitchToWaitPosition(),
-                            new pivotToWaitPosition(),
-                            new WaitCommand(200),
+//                            new intakeAutoState(),
+//                            new followPath(TostackSecondTime),
+//                            new WaitUntilCommand(busy),
+//                            new outtakeCommand(),
+//                            new v4BarToHeight(1),
+//                            new followPath(TostrafeSecondTime),
+//                            new WaitCommand(200),
+//                            new v4BarToHeight(3),
+//                            new WaitCommand(200),
+//                            new v4BarToHeight(2),
+//                            new WaitCommand(100),
+//                            new v4BarToHeight(1),
+//                            new WaitCommand(200),
+//                            new WaitUntilCommand(busy),
+//                            new followPath(toBackboardSecondTime),
+//                            new intakeCommand(),
+//                            new WaitCommand(200),
+//                            new outtakeCommand(),
+//                            new WaitCommand(300),
+//                            new intakeCommand(),
+//                            new WaitCommand(300),
+//                            new stopIntake(),
+//                            new WaitCommand(400),
+//                            new pivotToTransferPosition(),
+//                            new pitchToTransferPosition(),
+//                            new WaitCommand(700),
+//                            new grabLeftPixel(),
+//                            new grabRightPixel(),
+//                            new WaitUntilCommand(pastCenter),
+//                            new slideToRow(3),
+//                            new pitchToDropPosition(),
+//                            new WaitCommand(100),
+//                            new pivotToDropPosition(),
+//                            new WaitUntilCommand(busy),
+//                            new WaitCommand(100),
+//                            new releaseLeftPixel(),
+//                            new releaseRightPixel(),
+//                            new WaitCommand(200),
+//                            new slideToRow(1),
+//                            new pitchToWaitPosition(),
+//                            new pivotToWaitPosition(),
+//                            new WaitCommand(200),
                             new intakeAutoState()
                     )
             );

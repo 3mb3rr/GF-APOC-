@@ -113,7 +113,7 @@ public class autoredfarold extends CommandOpMode {
             if (zone==1){
                 spikeDropX=-57.5;
                 spikeDropY=-17;
-                bbDropX=44;
+                bbDropX=44.5;
                 bbDropY=-28;
                 wait = 1000;
                 wrist=0;
@@ -121,7 +121,7 @@ public class autoredfarold extends CommandOpMode {
             else if (zone==2) {
                 spikeDropX=-55;
                 spikeDropY=-21.5;
-                bbDropX=44;
+                bbDropX=44.5;
                 bbDropY=-35;
                 wait = 250;
                 wrist=0;
@@ -129,7 +129,7 @@ public class autoredfarold extends CommandOpMode {
             else{
                 spikeDropX=-41;
                 spikeDropY=-31.6;
-                bbDropX=44;
+                bbDropX=44.5;
                 bbDropY=-39;
                 wait = 750;
                 wrist=120;
@@ -172,7 +172,7 @@ public class autoredfarold extends CommandOpMode {
                     new Point(-27,-4,Point.CARTESIAN),
                     new Point(30,-5,Point.CARTESIAN),
                     new Point(43,-14 ,Point.CARTESIAN),
-                    new Point(43 ,-35 , Point.CARTESIAN)));
+                    new Point(44 ,-35 , Point.CARTESIAN)));
             toBackboardfromstack.setConstantHeadingInterpolation(Math.toRadians(-2));
 
             TostackSecondTime = new Path(new BezierCurve(
@@ -300,6 +300,7 @@ public class autoredfarold extends CommandOpMode {
                             new stopIntake(),
                             new WaitCommand(100),
                             new pivotToTransferPosition(),
+                            new WaitCommand(80), //NEW
                             new pitchToTransferPosition(),
                             new WaitCommand(400),
                             new grabLeftPixel(),
@@ -341,6 +342,7 @@ public class autoredfarold extends CommandOpMode {
                             new stopIntake(),
                             new WaitCommand(400),
                             new pivotToTransferPosition(),
+                            new WaitCommand(80), //NEW
                             new pitchToTransferPosition(),
                             new WaitCommand(700),
                             new grabLeftPixel(),
